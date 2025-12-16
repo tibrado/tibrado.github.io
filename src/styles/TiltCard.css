@@ -1,0 +1,45 @@
+.holofoil-card-container {
+  /* This transition helps smooth the mouse tracking movement */
+  transition: transform 0.1s ease-out;
+  position: relative;
+  overflow: hidden; /* Ensures the shine stays within the boundaries */
+}
+
+.holofoil-card-content {
+  height: 100%;
+  width: 100%;
+  /* Apply the rotation using the CSS variables from JS */
+  transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+  transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 1; /* Keep content above the shine effect */
+}
+
+/* The magic: Our Holofoil overlay */
+.holofoil-card-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.5; /* Control intensity of the shine */
+  pointer-events: none; /* Allows mouse events to pass through the overlay to the JS listener */
+  background: radial-gradient(
+    circle at var(--glareX, 50%) var(--glareY, 50%),
+    /* Define the rainbow gradient colors */
+    #ffffff80, /* Subtle white highlight */
+    #ff00f333 10%, /* Magenta */
+    #00c4ff33 30%, /* Cyan */
+    #00ff2f33 50%, /* Green */
+    #fffb0033 70%, /* Yellow */
+    #ff000033 90%, /* Red */
+    #ffffff00 /* Fade to transparent */
+  );
+  transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+  transition: background-position 0.1s ease-out, opacity 0.3s ease-out;
+}
+
+.holofoil-card-content:hover::before {
+    opacity: 0.8; /* Make it shinier on hover */
+}
