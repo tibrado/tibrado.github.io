@@ -11,7 +11,9 @@ type Props = {
 export const UserFreeTextInput: React.FC<Props> = ({onSubmit}) => {
     const [inputType, setInputType] = useState<InputTypes>('text');
 
-
+    // Test
+    const a = "a"; 
+    console.log(a); 
     // ----------- Input Types
     const Inputs: Record<InputTypes, ReactNode> = {
         text: <TextField
