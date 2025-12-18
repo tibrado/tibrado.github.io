@@ -1,22 +1,30 @@
-import { InputAdornment, TextField } from "@mui/material";
-import {Send} from '@mui/icons-material';
+import { InputAdornment, TextField, IconButton } from "@mui/material";
+import {QrCodeScanner} from '@mui/icons-material';
+import QRScanner from "./QRScanner";
+import { useState, type ReactNode } from "react";
+import type { InputTypes } from "../../assets/types";
 
 type Props = {
     onSubmit: (value: string) => void;
 }; 
 
 export const UserFreeTextInput: React.FC<Props> = ({onSubmit}) => {
-    // const [value, setValue] = useState<string>(''); 
-    return (
-        <TextField
+    const [inputType, setInputType] = useState<InputTypes>('text');
+
+
+    // ----------- Input Types
+    const Inputs: Record<InputTypes, ReactNode> = {
+        text: <TextField
             id="input-with-icon-textfield"
             label="TextField"
             variant='outlined'
             slotProps={{
                 input: {
-                    endAdornment: (
+                    startAdornment: (
                         <InputAdornment position="start">
-                                <Send/>
+                            <IconButton onClick={() => setInputType('scan')}>
+                                <QrCodeScanner/>
+                            </IconButton>
                         </InputAdornment>
                     )
                 },
@@ -26,6 +34,9 @@ export const UserFreeTextInput: React.FC<Props> = ({onSubmit}) => {
                 width: '100%', 
                 height: '100%',
             }}
-        />
-    )
+        />, 
+        scan: <QRScanner onSubmit={onSubmit}/>
+    }; 
+
+    return (Inputs[inputType])
 }; 
