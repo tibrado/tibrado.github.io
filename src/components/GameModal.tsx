@@ -1,5 +1,5 @@
 import React, {type ReactElement} from 'react';
-import {Box, Button, IconButton, Modal, Paper} from '@mui/material'; 
+import {Box, Button, Modal, Paper} from '@mui/material'; 
 import { QuestionAnswer } from '@mui/icons-material';
 
 type Props = {
