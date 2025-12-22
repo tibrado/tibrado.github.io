@@ -1,5 +1,5 @@
 import React, {type ReactElement} from 'react';
-import {Box, IconButton, Modal, Paper} from '@mui/material'; 
+import {Box, Button, IconButton, Modal, Paper} from '@mui/material'; 
 import { QuestionAnswer } from '@mui/icons-material';
 
 type Props = {
@@ -14,7 +14,10 @@ export const GameModal: React.FC<Props> = ({children, open, setOpen}) => {
 
   return (
     <Box>
-      <IconButton onClick={handleOpen}><QuestionAnswer/></IconButton>
+      <Button onClick={handleOpen} 
+        variant="text"
+        sx={{
+      }}><QuestionAnswer/></Button>
       <Modal
         open={open}
         onClose={handleClose}

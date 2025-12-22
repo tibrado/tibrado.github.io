@@ -29,6 +29,10 @@ export const Hint: React.FC<Props> = ({hint}) => {
         <Tooltip 
             title={tips[hint]}
             children={hintIcons[hint]}
+            sx={{
+                color: '#ffffffff',
+                filter: 'drop-shadow(0px 1px 1px rgba(255, 255, 255, 1))'
+            }}
         />
     );
 }; 

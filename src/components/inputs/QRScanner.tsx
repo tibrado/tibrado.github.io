@@ -8,6 +8,7 @@ const QRScanner: React.FC<Props> = ({onSubmit}) => (
     <Scanner
         onScan={(code) => onSubmit(code[0].rawValue)}
         onError={(error) => console.error(error)}
+        sound={false}
     />
 );
 
