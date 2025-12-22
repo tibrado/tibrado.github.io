@@ -4,8 +4,8 @@ export type HintIconTypes = 'internet' | 'walk' | 'drive' | 'here' | 'think';
 export type ClueObject = {
     hint: HintIconTypes;
     text: string;
-    response: string;
-    location?: Location; 
+    responses: string[];
+    inputType?: InputTypes;
 };
 
 export type Location = {
@@ -19,6 +19,7 @@ export type Location = {
 export type Game = {
     title: string;
     date: Date;
+    location?: Location; 
     clues: ClueObject[];
 }; 
 //------------------------------------------------------------------------------------------//

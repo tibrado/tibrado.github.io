@@ -3,9 +3,9 @@ import {Card, CardContent, CardHeader, CardActions, Typography} from '@mui/mater
 import {GameClue} from '../components/GameClue';
 import { Hint } from '../components/Hint';
 import { GameProgress } from '../components/GameProgress';
-import { UserFreeTextInput } from '../components/inputs/InputTypes';
+import GameInputs  from '../components/inputs/GameInputs';
 import type { Game, GameStates } from '../assets/types';
-import TiltCard from '../animations/TiltCard';
+import GameModal from '../components/GameModal';
 
 type Props = {
     game: Game | undefined;
@@ -15,9 +15,10 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
     if(!game) return <>-_-</>; 
 
     const [index, setIndex] = useState<number>(0); 
-    
+    const [open, setOpen] = useState<boolean>(false); 
+
     const ValidateResponse = (response: string) => {
-        if (response === game.clues[index].response) {
+        if (game.clues[index].responses.includes(response.toLocaleLowerCase())) {
             setIndex(index + 1); 
             console.log(index, game.clues.length - 1); 
             if(index >= game.clues.length - 1){ 
@@ -29,26 +30,26 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
     };
 
     return(
-        <TiltCard
-            children = {
-                <Card>
-                    <CardHeader
-                        avatar={<Hint hint={game!.clues[index].hint}/>}
-                        title={
-                            <Typography sx={{alignContent: 'center', textAlign: 'center'}}>{game!.title}</Typography>
-                        }
-                        subheader={<GameProgress max={game!.clues.length + 1} current={ index + 1}/>}
-                    />
-                
-                    <CardContent>
-                        <GameClue clue={game!.clues[index].text}/>
-                    </CardContent>
+        <Card>
+            <CardHeader
+                avatar={<Hint hint={game!.clues[index].hint}/>}
+                title={
+                    <Typography sx={{alignContent: 'center', textAlign: 'center'}}>{game!.title}</Typography>
+                }
+                subheader={<GameProgress max={game!.clues.length + 1} current={ index + 1}/>}
+            />
+        
+            <CardContent>
+                <GameClue clue={game!.clues[index].text}/>
+            </CardContent>
 
-                    <CardActions disableSpacing>
-                        <UserFreeTextInput onSubmit={ValidateResponse}/>
-                    </CardActions>
-                </Card>
-            }
-        />
+            <CardActions disableSpacing>
+                <GameModal 
+                    children={<GameInputs onSubmit={ValidateResponse} inputType={game!.clues[index].inputType ?? 'text'}/>} 
+                    open={open} 
+                    setOpen={setOpen} 
+                />
+            </CardActions>
+        </Card>
     ); 
 }

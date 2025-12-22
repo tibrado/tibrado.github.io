@@ -8,7 +8,7 @@ export type Props ={
 
 export const GameClue: React.FC<Props> = ({clue}) => {
     return (
-        <Box sx={{overflowY: 'auto', height: '500px', pl: 1, pr: 1}}>
+        <Box sx={{overflowY: 'auto', height: '70dvh', pl: 1, pr: 1}}>
             <ReactMarkdown>
                 {clue}
             </ReactMarkdown>

@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { UserFreeTextInput } from '../components/inputs/InputTypes';
+import GameInputs from '../components/inputs/GameInputs';
 import type { Game, GameStates } from '../assets/types';
 import { GetGame } from '../components/setup/TheHunt';
 
@@ -9,20 +9,27 @@ type Props = {
 };
 export const StartPage: React.FC<Props> = ({setGame, setState}) => {
 
+    // -- Chekc for Game ID on screen load
+    const params = new URLSearchParams(window.location.search); 
+    const gameId = params.get('gameId'); 
+
+    if(gameId){
+        submit(gameId); 
+    }; 
+
     // on submit get game 
     async function submit(value: string){
         try{
             const g = await GetGame(value); 
             setGame(g);
-            
             if(g) setState('game'); 
-        } catch {
+        } catch(e) {
             setGame(undefined); 
             setState('start'); 
         };
     }; 
 
     return (
-        <UserFreeTextInput onSubmit={submit}/>
+        <GameInputs onSubmit={submit} inputType={'text'} label={'What\'s the game code?'} helperText={'You\'re either in the loop or you\'re walking in circles.'}/>
     ); 
 }; 

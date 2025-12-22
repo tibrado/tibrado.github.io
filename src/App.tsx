@@ -28,11 +28,17 @@ export const App: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: 'background.default',
+          bgcolor: 'black',
           p: 2,
         }}
       >
-        <Paper elevation={3} sx={{ p: 1, maxWidth: 600, width: '90%', maxHeight: 1000, height: '90%' }}>
+        <Paper elevation={3} sx={{ 
+          width: '100%',
+          height: '100%', background: 'red',
+          alignItems: 'center',
+          justifyContent: 'center',
+
+        }}>
           {States[state]}
         </Paper>
       </Box>
