@@ -28,12 +28,12 @@ export const GameModal: React.FC<Props> = ({children, open, setOpen}) => {
         }}
       >
         <Paper 
-          elevation={10} 
-          sx={{m: 5, p: 0.5, width: '100%', background: 'white',
+          elevation={0} 
+          sx={{m: 5, p: 0.5, width: '100%', background: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            alignContent: 'center'
+            alignContent: 'center',
           }}
         >
           {children}

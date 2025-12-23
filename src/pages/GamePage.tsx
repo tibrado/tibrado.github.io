@@ -1,5 +1,5 @@
-import React, { useState } from 'react'; 
-import {Card, CardContent, CardHeader, CardActions, Typography, type SxProps, type Theme} from '@mui/material'; 
+import React, { useEffect, useState } from 'react'; 
+import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme} from '@mui/material'; 
 import {GameClue} from '../components/GameClue';
 import { Hint } from '../components/Hint';
 import { GameProgress } from '../components/GameProgress';
@@ -38,48 +38,77 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
 
     const [index, setIndex] = useState<number>(0); 
     const [open, setOpen] = useState<boolean>(false); 
+    const [transition, setTransition] = useState<boolean>(false); 
+    const [nope, setNope] = useState<boolean>(false); 
 
     const ValidateResponse = (response: string) => {
+        setNope(
+            response === "" ? false :
+            !game.clues[index].responses.some(item => item.startsWith(response))
+        ); 
         if (game.clues[index].responses.includes(response.toLocaleLowerCase())) {
-            setIndex(index + 1); 
-            console.log(index, game.clues.length - 1); 
+            setIndex(index + 1);
+
             if(index >= game.clues.length - 1){ 
-                console.log("Game Completed"); 
                 setIndex(0); 
+                setOpen(false);
                 setState('victory');
+            } else {
+                
+                setOpen(false);
+                setTransition(false); 
             }; 
         };
     };
 
-    return(
-        <Card sx={glassStyle}>
-            <CardHeader
-                avatar={<Hint hint={game!.clues[index].hint}/>}
-                title={
-                    <Typography 
-                        sx={{
-                            alignContent: 'center',
-                            fontFamily: 'system-ui',
-                            fontSize: '20px',
-                            fontWeight: 'bold',
-                            textShadow: '2px 3px 5px rgba(0, 0, 0, 0.25)'
-                        }}
-                    >{game!.title}</Typography>
-                }
-                subheader={<GameProgress max={game!.clues.length + 1} current={ index + 1}/>}
-            />
-        
-            <CardContent>
-                <GameClue clue={game!.clues[index].text}/>
-            </CardContent>
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setTransition(true); 
+        }, 800); 
+    
+        return () => clearTimeout(timer); 
 
-            <CardActions disableSpacing>
-                <GameModal 
-                    children={<GameInputs onSubmit={ValidateResponse} inputType={game!.clues[index].inputType ?? 'text'}/>} 
-                    open={open} 
-                    setOpen={setOpen} 
+    }, [transition]); 
+
+    return(
+        <Slide direction={transition ? 'right' : 'left'} in={transition} mountOnEnter unmountOnExit>
+            <Card sx={glassStyle}>
+                <CardHeader
+                    avatar={<Hint hint={game!.clues[index].hint}/>}
+                    title={
+                        <Typography 
+                            sx={{
+                                alignContent: 'center',
+                                fontFamily: 'system-ui',
+                                fontSize: '20px',
+                                fontWeight: 'bold',
+                                textShadow: '2px 3px 5px rgba(0, 0, 0, 0.25)'
+                            }}
+                        >{game!.title}</Typography>
+                    }
+                    subheader={<GameProgress max={game!.clues.length + 1} current={ index + 1}/>}
                 />
-            </CardActions>
-        </Card>
+            
+                <CardContent>
+                    <GameClue clue={game!.clues[index].text}/>
+                </CardContent>
+
+                <CardActions disableSpacing>
+                    <GameModal 
+                        children={
+                            <GameInputs 
+                                onSubmit={ValidateResponse} 
+                                inputType={game!.clues[index].inputType ?? 'text'}
+                                helperText='You know thy code?'
+                                label="code"
+                                nope={nope}
+                            />
+                        } 
+                        open={open} 
+                        setOpen={setOpen} 
+                    />
+                </CardActions>
+            </Card>
+        </Slide>
     ); 
 }
