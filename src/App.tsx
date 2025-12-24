@@ -11,14 +11,20 @@ export const App: React.FC = () => {
   const [game, setGame] = useState<Game | undefined>(undefined);
   const [state, setState] = useState<GameStates>('start');
 
+  // TSX Example: Enter fullscreen on first click anywhere
+  document.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    }
+  }, { once: true });
+
   const States: Record<GameStates, ReactNode> = {
     start: <StartPage setGame={setGame} setState={setState} />,
     game: <GamePage game={game} setState={setState} />,
-    victory: <Done/>,
+    victory: <Done />,
     transition: undefined,
     loading: undefined
   };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
