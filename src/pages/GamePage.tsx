@@ -44,8 +44,9 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
     const ValidateResponse = (response: string) => {
         setNope(
             response === "" ? false :
-            !game.clues[index].responses.some(item => item.startsWith(response))
+            !game.clues[index].responses.some(item => item.startsWith(response.toLocaleLowerCase()))
         ); 
+
         if (game.clues[index].responses.includes(response.toLocaleLowerCase())) {
             setIndex(index + 1);
 
@@ -74,15 +75,16 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
         <Slide direction={transition ? 'right' : 'left'} in={transition} mountOnEnter unmountOnExit>
             <Card sx={glassStyle}>
                 <CardHeader
-                    avatar={<Hint hint={game!.clues[index].hint}/>}
+                    avatar={<Hint hint={game!.clues[index].hintIcon}/>}
                     title={
                         <Typography 
                             sx={{
+                                color: '#ffffffff',
                                 alignContent: 'center',
                                 fontFamily: 'system-ui',
                                 fontSize: '20px',
                                 fontWeight: 'bold',
-                                textShadow: '2px 3px 5px rgba(0, 0, 0, 0.25)'
+                                textShadow: '1px 1px 3px rgba(255, 255, 255, 0.7)'
                             }}
                         >{game!.title}</Typography>
                     }
@@ -99,7 +101,7 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
                             <GameInputs 
                                 onSubmit={ValidateResponse} 
                                 inputType={game!.clues[index].inputType ?? 'text'}
-                                helperText='You know thy code?'
+                                helperText={game!.clues[index].hint}
                                 label="code"
                                 nope={nope}
                             />

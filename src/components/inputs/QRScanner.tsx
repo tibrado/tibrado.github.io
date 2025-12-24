@@ -7,7 +7,7 @@ type Props = {
     msg?: string;
     nope?: boolean; 
 };
-const QRScanner: React.FC<Props> = ({onSubmit, msg, nope}) => (
+const QRScanner: React.FC<Props> = ({onSubmit, msg = 'uess', nope}) => (
     <Box
         sx={{
             borderRadius: '5px',
@@ -18,14 +18,19 @@ const QRScanner: React.FC<Props> = ({onSubmit, msg, nope}) => (
     >
         <Typography 
             variant='caption'
-            color= 'gray'
+            sx={{
+                pl: 1, 
+                alignContent: 'center',
+                fontFamily: 'system-ui',
+                textShadow: '0px 1px 5px rgba(0, 0, 0, 0.5)',
+                color: `${nope ? 'red' : '#000000e1'}`
+            }}
         >
             {msg}
         </Typography>
         <Scanner
             onScan={(code) => onSubmit(code[0].rawValue)}
             onError={(error) => console.error(error)}
-            sound={true}
         />
     </Box>
 );

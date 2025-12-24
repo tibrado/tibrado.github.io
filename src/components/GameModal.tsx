@@ -1,23 +1,30 @@
-import React, {type ReactElement} from 'react';
-import {Box, Button, Modal, Paper} from '@mui/material'; 
+import React, { type ReactElement } from 'react';
+import { Box, Button, Modal, Paper } from '@mui/material';
 import { QuestionAnswer } from '@mui/icons-material';
 
 type Props = {
   children: ReactElement;
-  open: boolean; 
+  open: boolean;
   setOpen: (open: boolean) => void;
-}; 
+};
 
-export const GameModal: React.FC<Props> = ({children, open, setOpen}) => {
+export const GameModal: React.FC<Props> = ({ children, open, setOpen }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   return (
     <Box>
-      <Button onClick={handleOpen} 
-        variant="text"
+      <Button onClick={handleOpen}
+        variant="contained"
+        color='success'
+        size='small'
+        startIcon={<QuestionAnswer />}
         sx={{
-      }}><QuestionAnswer/></Button>
+          boxShadow: '2px 2px 1px rgba(255, 255, 255, 0.7)'
+        }}
+      >
+        Answer
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -27,9 +34,10 @@ export const GameModal: React.FC<Props> = ({children, open, setOpen}) => {
           justifyContent: 'center',
         }}
       >
-        <Paper 
-          elevation={0} 
-          sx={{m: 5, p: 0.5, width: '100%', background: 0,
+        <Paper
+          elevation={0}
+          sx={{
+            m: 5, p: 0.5, width: '100%', background: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

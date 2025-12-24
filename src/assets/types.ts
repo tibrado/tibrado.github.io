@@ -2,8 +2,9 @@
 export type HintIconTypes = 'internet' | 'walk' | 'drive' | 'here' | 'think';
 //------------------------------------CLUE OBJECT-------------------------------------------//
 export type ClueObject = {
-    hint: HintIconTypes;
+    hintIcon: HintIconTypes;
     text: string;
+    hint: string;
     responses: string[];
     inputType?: InputTypes;
 };

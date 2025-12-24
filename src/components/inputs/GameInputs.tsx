@@ -50,7 +50,7 @@ const GameInputs: React.FC<Props> = ({ onSubmit, inputType, label, helperText, n
                 }}
             />
         ,
-        scan: <QRScanner onSubmit={onSubmit} nope={nope}/>
+        scan: <QRScanner onSubmit={onSubmit} nope={nope} msg={nope ? 'red cause you wrong' : helperText}/>
     };
 
     return (Inputs[inputType]);
