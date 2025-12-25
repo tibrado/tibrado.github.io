@@ -10,11 +10,11 @@ type Props = {
 export const Hint: React.FC<Props> = ({hint}) => {
     const tips  = {
         internet: "use internet for solution",
-        walk: "solution to clue is less than 1 mile from where clue was recived",
-        drive: "solution to clue is more than 1 mile from where clue was recived",
+        walk: "solution to clue is less than 1 mile from where clue was received",
+        drive: "solution to clue is more than 1 mile from where clue was received",
         here: "solution to clue is within field of view",
         think: "solution to clue is based on something experienced in this game",
-        building: "solution to clue is in the building this clue was recived"
+        building: "solution to clue is in the building this clue was received"
     }; 
     const hintIcons: Record<string, ReactElement> = {
         'internet': <Wifi/>,

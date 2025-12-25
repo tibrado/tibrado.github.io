@@ -9,7 +9,7 @@ export async function GetGame(id: string): Promise<Game | undefined> {
         }; 
 
         const raw: any = await response.json(); 
-
+        console.log('here: ', raw); 
         const game: Game = {
             ...(raw as Partial<Game>),
             title: raw.title,
@@ -17,6 +17,7 @@ export async function GetGame(id: string): Promise<Game | undefined> {
             location: raw.location ?? undefined,
             clues: Array.isArray(raw.clues)
                 ? raw.clues.map((c: any) => ({
+                    hintIcon: c.hintIcon,
                     hint: c.hint,
                     text: c.text,
                     responses: c.responses,
