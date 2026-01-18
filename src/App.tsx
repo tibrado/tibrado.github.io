@@ -1,7 +1,7 @@
 import React, { useState, type ReactNode } from 'react';
 import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/material';
 import { StartPage } from './pages/StartPage';
-import { GamePage } from './pages/GamePage';
+import {GameMap} from './components/map/GameMap';
 import type { Game, GameStates } from './assets/types';
 import Done from './pages/DonePage';
 
@@ -20,11 +20,17 @@ export const App: React.FC = () => {
 
   const States: Record<GameStates, ReactNode> = {
     start: <StartPage setGame={setGame} setState={setState} />,
-    game: <GamePage game={game} setState={setState} />,
+    game: <GameMap game={game} setState={setState} POI={[{
+    longitude: 12.4,
+    latitude: 41.9,
+    info: 'This is a test', 
+    type: "none"}
+]} />,
     victory: <Done />,
     transition: undefined,
     loading: undefined
   };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -46,9 +52,10 @@ export const App: React.FC = () => {
         <Paper elevation={0} sx={{
           width: '100%',
           height: '100%',
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#ffffff00',
+          backgroundColor: 'transparent',
           p: 1
         }}>
           {States[state]}

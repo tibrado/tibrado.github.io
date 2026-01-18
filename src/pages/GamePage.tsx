@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react'; 
-import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme} from '@mui/material'; 
+import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme, Button} from '@mui/material'; 
 import {GameClue} from '../components/GameClue';
 import { Hint } from '../components/Hint';
-import { GameProgress } from '../components/GameProgress';
-import GameInputs  from '../components/inputs/GameInputs';
 import type { Game, GameStates } from '../assets/types';
-import GameModal from '../components/GameModal';
-
+import { QuestionAnswer } from '@mui/icons-material';
 
 
 const glassStyle: SxProps<Theme> = {
-    width: '100%',
-    height: '100%',
+    width: '250px',
+    height: '350px',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 1,
@@ -75,40 +72,57 @@ export const GamePage: React.FC<Props> = ({game, setState}) => {
         <Slide direction={transition ? 'right' : 'left'} in={transition} mountOnEnter unmountOnExit>
             <Card sx={glassStyle}>
                 <CardHeader
+                    sx={{p: 0}}
                     avatar={<Hint hint={game!.clues[index].hintIcon}/>}
                     title={
                         <Typography 
                             sx={{
-                                color: '#ffffffff',
+                                color: '#000000ff',
                                 alignContent: 'center',
                                 fontFamily: 'system-ui',
-                                fontSize: '20px',
+                                fontSize: '15px',
                                 fontWeight: 'bold',
-                                textShadow: '1px 1px 3px rgba(255, 255, 255, 0.7)'
+                                textShadow: '1px 1px 3px rgba(25, 23, 23, 0.7)'
                             }}
                         >{game!.title}</Typography>
                     }
-                    subheader={<GameProgress max={game!.clues.length + 1} current={ index + 1}/>}
+                    subheader={
+                        
+                        <Typography 
+                            sx={{
+                                color: '#757575ff',
+                                alignContent: 'center',
+                                fontFamily: 'system-ui',
+                                fontSize: '12px',
+                                pl: '10px'
+                            }}
+                        >{'testing stuff'}</Typography>
+                    }
                 />
             
-                <CardContent>
-                    <GameClue clue={game!.clues[index].text}/>
+                <CardContent sx={{p: 1, m:0, height: '240px', width: '100%'}}>
+                    <GameClue 
+                        showClue={open}
+                        clue={game!.clues[index].text}
+                        validateResponse={ValidateResponse} 
+                        inputType={game!.clues[index].inputType ?? 'text'}
+                        hint={game!.clues[index].hint}
+                        nope={nope}
+                    />
                 </CardContent>
 
                 <CardActions disableSpacing>
-                    <GameModal 
-                        children={
-                            <GameInputs 
-                                onSubmit={ValidateResponse} 
-                                inputType={game!.clues[index].inputType ?? 'text'}
-                                helperText={game!.clues[index].hint}
-                                label="code"
-                                nope={nope}
-                            />
-                        } 
-                        open={open} 
-                        setOpen={setOpen} 
-                    />
+                    <Button onClick={() => setOpen(!open)}
+                        variant="contained"
+                        color='success'
+                        size='small'
+                        startIcon={<QuestionAnswer />}
+                        sx={{
+                            boxShadow: '2px 2px 1px rgba(255, 255, 255, 0.7)'
+                        }}
+                    >
+                        Answer
+                    </Button>
                 </CardActions>
             </Card>
         </Slide>
