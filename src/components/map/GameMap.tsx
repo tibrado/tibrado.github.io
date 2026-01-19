@@ -1,54 +1,58 @@
-
-import { useMemo, useState } from 'react';
-import {
-    Map, Marker, Popup, 
-
-} from 'react-map-gl/maplibre';
+import { useMemo, useState, useRef } from 'react';
+import { Map, Marker, Popup, type MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Place } from '@mui/icons-material';
 import { GamePage } from '../../pages/GamePage';
 import type { Game, GameStates } from '../../assets/types';
 
 type Props = {
-    POI: PointOfInterest[]; // Points of Interest 
-    game: Game | undefined;
+    game: Game;
     setState: (state: GameStates) => void; 
 }; 
 
-type PointOfInterest = {
-    longitude: number;
-    latitude: number;
-    info: string; 
-    type: string;
-}; 
+export const GameMap: React.FC<Props> = ({game, setState}) => {
+    const [selected, setSelected] = useState<number | undefined>(undefined); 
+    // 1. Create a reference to the map
+    const mapRef = useRef<MapRef>(null);
 
-export const GameMap: React.FC<Props> = ({POI, game, setState}) => {
-    const [poi, setPoi] = useState<PointOfInterest | undefined>(undefined); 
+    // 2. Updated click handler to fly to the marker
+    const handleMarkerClick = (longitude: number, latitude: number, index: number) => {
+        setSelected(index);
+        
+        // Use the mapRef to call the flyTo method
+        mapRef.current?.flyTo({
+            center: [longitude, latitude],
+            duration: 2000, // Duration in milliseconds
+            zoom: 20,       // Optional: adjust zoom level on arrival
+            essential: true
+        });
+    };
 
-    const pins = useMemo(() => POI.map((point, index) => 
+    const pins = useMemo(() => game.clues.map((clue, index) => 
         <Marker
             key={`marker-${index}`}
-            longitude={point.longitude}
-            latitude={point.latitude}
+            longitude={clue.location.longitude}
+            latitude={clue.location.latitude}
             anchor='bottom'
             onClick={e => {
                 e.originalEvent.stopPropagation();
-                setPoi(point); 
+                handleMarkerClick(clue.location.longitude, clue.location.latitude, index); 
             }}
             style={{cursor: 'pointer'}}
         >
             <Place/>
         </Marker>
-    ), []); 
+    ), [game.clues]); // Added game.clues as dependency
 
     return (
         <Map
+            ref={mapRef} // 3. Attach the ref to the Map component
             initialViewState={{
-                longitude: 12.4,
-                latitude: 41.9,
-                zoom: 3.5,
-                bearing: 0,
-                pitch: 0
+                longitude: game.clues[0].location.longitude,
+                latitude: game.clues[0].location.latitude,
+                zoom: 20,
+                bearing: 90,
+                pitch: 60
             }}
             mapStyle='https://tiles.openfreemap.org/styles/liberty'
             style={{
@@ -57,6 +61,7 @@ export const GameMap: React.FC<Props> = ({POI, game, setState}) => {
                 borderRadius: '10px',
             }}
         >
+            {/* Custom Popup Styles */}
             <style>
                 {`
                     .maplibregl-popup-content {
@@ -72,20 +77,20 @@ export const GameMap: React.FC<Props> = ({POI, game, setState}) => {
 
             {pins}
 
-            {poi && (
+            {selected !== undefined && (
                 <Popup 
                     anchor='center'
-                    longitude={poi.longitude}
-                    latitude={poi.latitude}
+                    longitude={game.clues[selected].location.longitude}
+                    latitude={game.clues[selected].location.latitude}
                     closeButton={false}
                     style={{padding: 0, margin: 0}}
-                    onClose={() => setPoi(undefined)}
+                    onClose={() => setSelected(undefined)}
                 >
-                    <GamePage game={game} setState={setState} />
+                    <GamePage game={game} selected={selected} setState={setState} />
                 </Popup>
             )}
         </Map>
     );
 }; 
 
-export default GameMap; 
+export default GameMap;

@@ -20,12 +20,7 @@ export const App: React.FC = () => {
 
   const States: Record<GameStates, ReactNode> = {
     start: <StartPage setGame={setGame} setState={setState} />,
-    game: <GameMap game={game} setState={setState} POI={[{
-    longitude: 12.4,
-    latitude: 41.9,
-    info: 'This is a test', 
-    type: "none"}
-]} />,
+    game: game ? <GameMap game={game} setState={setState} /> : <>-_-</>,
     victory: <Done />,
     transition: undefined,
     loading: undefined

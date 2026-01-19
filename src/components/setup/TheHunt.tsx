@@ -14,14 +14,14 @@ export async function GetGame(id: string): Promise<Game | undefined> {
             ...(raw as Partial<Game>),
             title: raw.title,
             date: raw.date ? new Date(raw.date) : new Date(),
-            location: raw.location ?? undefined,
             clues: Array.isArray(raw.clues)
                 ? raw.clues.map((c: any) => ({
                     hintIcon: c.hintIcon,
                     hint: c.hint,
                     text: c.text,
                     responses: c.responses,
-                    inputType: c.inputType
+                    inputType: c.inputType,
+                    location: c.location
                 }))
                 : [],
         };
