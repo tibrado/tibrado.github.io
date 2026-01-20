@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useCallback } from 'react';
 import { Map, Marker, Popup, GeolocateControl,  type MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Place } from '@mui/icons-material';
@@ -44,6 +44,13 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
     }
     ), [game.clues]); // Added game.clues as dependency
 
+    // Geolocation Controller Ref
+    const geolocateControlRef = useCallback((ref: any) => {
+        if(ref){
+            ref.trigger(); 
+        }
+    }, []); 
+
     return (
         <Map
             ref={mapRef} // 3. Attach the ref to the Map component
@@ -79,6 +86,7 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
 
             {/*User Location*/}
             <GeolocateControl
+                ref={geolocateControlRef}
                 positionOptions={{
                     enableHighAccuracy: true
                 }}
