@@ -9,7 +9,7 @@ type Props = {
 };
 export const StartPage: React.FC<Props> = ({setGame, setState}) => {
 
-    // -- Chekc for Game ID on screen load
+    // -- Check for Game ID on screen load
     const params = new URLSearchParams(window.location.search); 
     const gameId = params.get('gameId'); 
 

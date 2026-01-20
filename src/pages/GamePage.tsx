@@ -29,9 +29,10 @@ type Props = {
     game: Game;
     selected: number;
     setState: (state: GameStates) => void; 
+    nextClue: (index: number) => void;
 };
 
-export const GamePage: React.FC<Props> = ({game, selected, setState}) => {
+export const GamePage: React.FC<Props> = ({game, selected, setState, nextClue}) => {
     const [open, setOpen] = useState<boolean>(false); 
     const [transition, setTransition] = useState<boolean>(false); 
     const [nope, setNope] = useState<boolean>(false); 
@@ -43,11 +44,10 @@ export const GamePage: React.FC<Props> = ({game, selected, setState}) => {
         ); 
 
         if (game.clues[selected].responses.includes(response.toLocaleLowerCase())) {
-            //TODO: check if victory condition is met.
-            // show next clue point but don't show clue
             if(selected >= game.clues.length - 1){ 
                 setState('victory');
             } else {
+                nextClue(selected + 1)
                 setTransition(false); 
             }; 
         };
@@ -90,7 +90,7 @@ export const GamePage: React.FC<Props> = ({game, selected, setState}) => {
                                 fontSize: '12px',
                                 pl: '10px'
                             }}
-                        >{`${game.clues[selected].location.longitude}`}</Typography>
+                        >{`${game.clues[selected].location.coordinates}`}</Typography>
                     }
                 />
             

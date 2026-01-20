@@ -15,8 +15,7 @@ export type ClueObject = {
 };
 
 export type Location = {
-    longitude: number;
-    latitude: number;
+    coordinates: [number, number];
     type?: LocationType;
     detail?: string; 
 
