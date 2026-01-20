@@ -84,6 +84,8 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
                 }}
                 trackUserLocation={true}
                 onGeolocate={(e) => console.log("User located:", e.coords)}
+                onTrackUserLocationStart={(e) => console.log(e.target)}
+                
             />
 
             {pins}
