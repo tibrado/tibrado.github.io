@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef } from 'react';
 import { Map, Marker, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Place, CenterFocusStrong } from '@mui/icons-material';
+import { Place } from '@mui/icons-material';
 import { GamePage } from '../../pages/GamePage';
 import type { Game, GameStates, Coordinates } from '../../assets/types';
 import {inRange} from '../../handlers/DistanceHandlers';
