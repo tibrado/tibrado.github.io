@@ -20,7 +20,7 @@ export const App: React.FC = () => {
 
   const States: Record<GameStates, ReactNode> = {
     start: <StartPage setGame={setGame} setState={setState} />,
-    game: game ? <GameMap game={game} setState={setState} /> : <>-_-</>,
+    game: game ? <GameMap game={game} setGame={setGame} setState={setState} /> : <>-_-</>,
     victory: <Done />,
     transition: undefined,
     loading: undefined

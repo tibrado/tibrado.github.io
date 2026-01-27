@@ -1,19 +1,24 @@
-import { useMemo, useState, useRef, useCallback } from 'react';
-import { Map, Marker, Popup, GeolocateControl,  type MapRef } from 'react-map-gl/maplibre';
+import { useMemo, useState, useRef } from 'react';
+import { Map, Marker, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Place } from '@mui/icons-material';
+import { Place, CenterFocusStrong } from '@mui/icons-material';
 import { GamePage } from '../../pages/GamePage';
-import type { Game, GameStates } from '../../assets/types';
+import type { Game, GameStates, Coordinates } from '../../assets/types';
+import {inRange} from '../../handlers/DistanceHandlers';
 
 type Props = {
     game: Game;
+    setGame: (game: Game | undefined) => void; 
     setState: (state: GameStates) => void; 
 }; 
 
-export const GameMap: React.FC<Props> = ({game, setState}) => {
+export const GameMap: React.FC<Props> = ({game, setGame, setState}) => {
     const [selected, setSelected] = useState<number | undefined>(undefined); 
-
+    //-- User Location
+    const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const mapRef = useRef<MapRef>(null);
+    const geolocateRef = useRef<any>(null); 
+
     const focusOnClue = (clueIndex: number) => {
         setSelected(clueIndex); 
         // Use the mapRef to call the flyTo method
@@ -27,7 +32,7 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
     }; 
 
     const pins = useMemo(() => game.clues.map((clue, index) => {
-       return  <Marker
+        return  game.current >= index ? <Marker
             key={`marker-${index}`}
             latitude={clue.location.coordinates[0]}
             longitude={clue.location.coordinates[1]}
@@ -37,23 +42,30 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
                 setSelected(index);
                 focusOnClue(index);
             }}
-            style={{cursor: 'pointer'}}
+            style={{
+                cursor: 'pointer',
+                zIndex: 1
+            }}
         >
-            <Place/>
-        </Marker>
-    }
-    ), [game.clues]); // Added game.clues as dependency
+                <Place color={
+                    inRange(coord, {latitude: clue.location.coordinates[0], longitude: clue.location.coordinates[1]}) && game.current == index ? 'error' 
+                    : index < game.current ? 'success' : undefined
+                }/> 
+        </Marker> : undefined
+    }), [game.clues, game.current]);
 
-    // Geolocation Controller Ref
-    const geolocateControlRef = useCallback((ref: any) => {
-        if(ref){
-            ref.trigger(); 
-        }
-    }, []); 
+    /**
+     * Check if pin is within 
+     * ******Check if ********/
 
     return (
         <Map
             ref={mapRef} // 3. Attach the ref to the Map component
+            onLoad={() => {
+                if(geolocateRef.current){
+                    geolocateRef.current.trigger(); 
+                }
+            }}
             initialViewState={{
                 latitude: game.clues[0].location.coordinates[0],
                 longitude: game.clues[0].location.coordinates[1],
@@ -86,14 +98,25 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
 
             {/*User Location*/}
             <GeolocateControl
-                ref={geolocateControlRef}
+                ref={geolocateRef}
                 positionOptions={{
-                    enableHighAccuracy: true
+                    enableHighAccuracy: false,
+                    maximumAge: 0,
+                    timeout: 6000 /* 6 sec */
+                }}
+                fitBoundsOptions={{
+                    maxZoom: 20
                 }}
                 trackUserLocation={true}
-                onGeolocate={(e) => console.log("User located:", e.coords)}
-                onTrackUserLocationStart={(e) => console.log(e.target)}
-                
+                showAccuracyCircle={true}
+                showUserLocation={true}
+                onGeolocate={(e) => {
+                        setCoord({
+                            longitude: e.coords.longitude, 
+                            latitude: e.coords.latitude, 
+                            accuracy: e.target._accuracy
+                        }); 
+                }}
             />
 
             {pins}
@@ -104,10 +127,10 @@ export const GameMap: React.FC<Props> = ({game, setState}) => {
                     latitude={game.clues[selected].location.coordinates[0]}
                     longitude={game.clues[selected].location.coordinates[1]}
                     closeButton={false}
-                    style={{padding: 0, margin: 0}}
+                    style={{padding: 0, margin: 0, zIndex: 2}}
                     onClose={() => setSelected(undefined)}
                 >
-                    <GamePage game={game} selected={selected} setState={setState} nextClue={focusOnClue} />
+                    <GamePage game={game} setGame={setGame} selected={selected} setState={setState} nextClue={focusOnClue} />
                 </Popup>
             )}
         </Map>

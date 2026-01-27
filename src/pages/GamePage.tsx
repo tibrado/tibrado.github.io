@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme, Button} from '@mui/material'; 
 import {GameClue} from '../components/GameClue';
 import { Hint } from '../components/Hint';
-import type { Game, GameStates } from '../assets/types';
+import type { ClueObject, Game, GameStates } from '../assets/types';
 import { QuestionAnswer } from '@mui/icons-material';
 
 
@@ -28,26 +28,32 @@ const glassStyle: SxProps<Theme> = {
 type Props = {
     game: Game;
     selected: number;
+    setGame: (game: Game) => void; 
     setState: (state: GameStates) => void; 
     nextClue: (index: number) => void;
 };
 
-export const GamePage: React.FC<Props> = ({game, selected, setState, nextClue}) => {
+export const GamePage: React.FC<Props> = ({game, selected, setState,setGame, nextClue}) => {
     const [open, setOpen] = useState<boolean>(false); 
     const [transition, setTransition] = useState<boolean>(false); 
     const [nope, setNope] = useState<boolean>(false); 
-
+    const clue: ClueObject = game.clues[selected]; 
+    
     const ValidateResponse = (response: string) => {
         setNope(
             response === "" ? false :
-            !game.clues[selected].responses.some(item => item.startsWith(response.toLocaleLowerCase()))
+            !clue.responses.some(item => item.startsWith(response.toLocaleLowerCase()))
         ); 
 
-        if (game.clues[selected].responses.includes(response.toLocaleLowerCase())) {
+        if (clue.responses.includes(response.toLocaleLowerCase())) {
             if(selected >= game.clues.length - 1){ 
                 setState('victory');
             } else {
-                nextClue(selected + 1)
+                console.log(game.current)
+                if(selected === game.current){
+                    setGame({...game, current: game.current + 1})
+                }
+                nextClue(selected + 1); 
                 setTransition(false); 
             }; 
         };
@@ -67,7 +73,7 @@ export const GamePage: React.FC<Props> = ({game, selected, setState, nextClue}) 
             <Card sx={glassStyle}>
                 <CardHeader
                     sx={{p: 0}}
-                    avatar={<Hint hint={game.clues[selected].hintIcon}/>}
+                    avatar={<Hint hint={clue.hintIcon}/>}
                     title={
                         <Typography 
                             sx={{
@@ -90,17 +96,17 @@ export const GamePage: React.FC<Props> = ({game, selected, setState, nextClue}) 
                                 fontSize: '12px',
                                 pl: '10px'
                             }}
-                        >{`${game.clues[selected].location.coordinates}`}</Typography>
+                        >{`${selected}`}</Typography>
                     }
                 />
             
                 <CardContent sx={{p: 1, m:0, height: '240px', width: '100%'}}>
                     <GameClue 
                         showClue={open}
-                        clue={game.clues[selected].text}
+                        clue={clue.text}
                         validateResponse={ValidateResponse} 
-                        inputType={game.clues[selected].inputType ?? 'text'}
-                        hint={`${game.clues[selected].location}`}//{game.clues[index].hint}
+                        inputType={clue.inputType ?? 'text'}
+                        hint={`${clue.location}`}//{game.clues[index].hint}
                         nope={nope}
                     />
                 </CardContent>

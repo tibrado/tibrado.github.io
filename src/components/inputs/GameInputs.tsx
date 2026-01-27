@@ -22,6 +22,7 @@ const GameInputs: React.FC<Props> = ({ onSubmit, inputType, label, helperText, n
                 helperText={nope ? 'red cause you wrong' : helperText}
                 variant="filled"
                 multiline
+                rows={7}
                 error={nope}
                 onChange={(e) => onSubmit(e.target.value)}
                 sx={{
