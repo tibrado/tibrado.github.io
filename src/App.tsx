@@ -9,7 +9,6 @@ const theme = createTheme();
 
 export const App: React.FC = () => {
   const [game, setGame] = useState<Game | undefined>(undefined);
-  const [state, setState] = useState<GameStates>('start');
 
   // TSX Example: Enter fullscreen on first click anywhere
   document.addEventListener('click', () => {
@@ -19,8 +18,8 @@ export const App: React.FC = () => {
   }, { once: true });
 
   const States: Record<GameStates, ReactNode> = {
-    start: <StartPage setGame={setGame} setState={setState} />,
-    game: game ? <GameMap game={game} setGame={setGame} setState={setState} /> : <>-_-</>,
+    start: <StartPage setGame={setGame} />,
+    game: game ? <GameMap game={game} setGame={setGame} /> : <>-_-</>,
     victory: <Done />,
     transition: undefined,
     loading: undefined
@@ -53,7 +52,7 @@ export const App: React.FC = () => {
           backgroundColor: 'transparent',
           p: 1
         }}>
-          {States[state]}
+          {States[game ? game.statue : 'start']}
         </Paper>
       </Box>
     </ThemeProvider>

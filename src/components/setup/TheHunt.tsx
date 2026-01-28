@@ -9,10 +9,11 @@ export async function GetGame(id: string): Promise<Game | undefined> {
         }; 
 
         const raw: any = await response.json(); 
-        console.log('here: ', raw); 
+
         const game: Game = {
             ...(raw as Partial<Game>),
             current: 0,
+            statue: 'game',
             title: raw.title,
             date: raw.date ? new Date(raw.date) : new Date(),
             clues: Array.isArray(raw.clues)

@@ -3,16 +3,15 @@ import { Map, Marker, Popup, GeolocateControl, type MapRef } from 'react-map-gl/
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Place } from '@mui/icons-material';
 import { GamePage } from '../../pages/GamePage';
-import type { Game, GameStates, Coordinates } from '../../assets/types';
+import type { Game, Coordinates } from '../../assets/types';
 import {inRange} from '../../handlers/DistanceHandlers';
 
 type Props = {
     game: Game;
     setGame: (game: Game | undefined) => void; 
-    setState: (state: GameStates) => void; 
 }; 
 
-export const GameMap: React.FC<Props> = ({game, setGame, setState}) => {
+export const GameMap: React.FC<Props> = ({game, setGame}) => {
     const [selected, setSelected] = useState<number | undefined>(undefined); 
     //-- User Location
     const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
@@ -130,7 +129,7 @@ export const GameMap: React.FC<Props> = ({game, setGame, setState}) => {
                     style={{padding: 0, margin: 0, zIndex: 2}}
                     onClose={() => setSelected(undefined)}
                 >
-                    <GamePage game={game} setGame={setGame} selected={selected} setState={setState} nextClue={focusOnClue} />
+                    <GamePage game={game} setGame={setGame} selected={selected} nextClue={focusOnClue} />
                 </Popup>
             )}
         </Map>

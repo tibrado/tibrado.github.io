@@ -9,9 +9,10 @@ type Props = {
     label?: string;
     helperText?: string;
     nope?: boolean;
+    textRows?: number;
 };
 
-const GameInputs: React.FC<Props> = ({ onSubmit, inputType, label, helperText, nope}) => {
+const GameInputs: React.FC<Props> = ({ onSubmit, inputType, label, helperText, nope, textRows}) => {
 
     // ----------- Input Types
     const Inputs: Record<InputTypes, ReactElement> = {
@@ -22,7 +23,7 @@ const GameInputs: React.FC<Props> = ({ onSubmit, inputType, label, helperText, n
                 helperText={nope ? 'red cause you wrong' : helperText}
                 variant="filled"
                 multiline
-                rows={7}
+                rows={textRows}
                 error={nope}
                 onChange={(e) => onSubmit(e.target.value)}
                 sx={{

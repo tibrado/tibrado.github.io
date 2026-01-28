@@ -5,7 +5,7 @@
 - [ ] Paths: Add variations to clues so that a clues at carious index are different.
 - [ ] Team: Add a team id so that user can group to solve clues. 
 ### General Updates & Improvements 
-- [ ] Combine the functionality of setState to setGame.
+- [x] Combine the functionality of setState to setGame.
 ### Landing Page
 ### Game Page
 **User Inputs**

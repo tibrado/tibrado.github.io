@@ -26,6 +26,7 @@ export const GameClue: React.FC<Props> = ({showClue, clue, validateResponse, hin
             helperText={hint}
             label="code"
             nope={nope}
+            textRows={7}
         />
     ); 
 }; 

@@ -23,6 +23,7 @@ export type Location = {
 
 export type Game = {
     current: number; // current clue index
+    statue: GameStates; 
     title: string;
     date: Date;
     clues: ClueObject[];

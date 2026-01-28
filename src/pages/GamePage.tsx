@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme, Button} from '@mui/material'; 
 import {GameClue} from '../components/GameClue';
 import { Hint } from '../components/Hint';
-import type { ClueObject, Game, GameStates } from '../assets/types';
+import type { ClueObject, Game } from '../assets/types';
 import { QuestionAnswer } from '@mui/icons-material';
 
 
@@ -29,11 +29,10 @@ type Props = {
     game: Game;
     selected: number;
     setGame: (game: Game) => void; 
-    setState: (state: GameStates) => void; 
     nextClue: (index: number) => void;
 };
 
-export const GamePage: React.FC<Props> = ({game, selected, setState,setGame, nextClue}) => {
+export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) => {
     const [open, setOpen] = useState<boolean>(false); 
     const [transition, setTransition] = useState<boolean>(false); 
     const [nope, setNope] = useState<boolean>(false); 
@@ -47,7 +46,7 @@ export const GamePage: React.FC<Props> = ({game, selected, setState,setGame, nex
 
         if (clue.responses.includes(response.toLocaleLowerCase())) {
             if(selected >= game.clues.length - 1){ 
-                setState('victory');
+                    setGame({...game, statue: 'victory'});
             } else {
                 console.log(game.current)
                 if(selected === game.current){
@@ -127,4 +126,4 @@ export const GamePage: React.FC<Props> = ({game, selected, setState,setGame, nex
             </Card>
         </Slide>
     ); 
-}
+};
