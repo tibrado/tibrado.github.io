@@ -2,15 +2,18 @@ import React, { useState, type ReactNode } from 'react';
 import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/material';
 import { StartPage } from './pages/StartPage';
 import {GameMap} from './components/map/GameMap';
+// import { LeaderBoard } from './components/LeaderBoard';
 import type { Game, GameStates } from './assets/types';
 import Done from './pages/DonePage';
+import Timer from './components/Timer';
 
 const theme = createTheme();
 
 export const App: React.FC = () => {
   const [game, setGame] = useState<Game | undefined>(undefined);
-
-  // TSX Example: Enter fullscreen on first click anywhere
+  const [_, setGameTime] = useState<number>(0); 
+  
+  // Enter fullscreen on first click anywhere
   document.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -19,7 +22,13 @@ export const App: React.FC = () => {
 
   const States: Record<GameStates, ReactNode> = {
     start: <StartPage setGame={setGame} />,
-    game: game ? <GameMap game={game} setGame={setGame} /> : <>-_-</>,
+    game: game ? 
+      <Box sx={{position: 'relative'}}>
+        <Timer active={game != undefined} getTime={setGameTime}/>
+        {/*<LeaderBoard/>*/}
+        <GameMap game={game} setGame={setGame} /> 
+      </Box>
+      : <>-_-</>,
     victory: <Done />,
     transition: undefined,
     loading: undefined

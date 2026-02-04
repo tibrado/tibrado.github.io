@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; 
 import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme, Button} from '@mui/material'; 
-import {GameClue} from '../components/GameClue';
+import {GameClue} from '../components/map/GameClue';
 import { Hint } from '../components/Hint';
 import type { ClueObject, Game } from '../assets/types';
 import { QuestionAnswer } from '@mui/icons-material';
@@ -51,7 +51,9 @@ export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) =>
                 console.log(game.current)
                 if(selected === game.current){
                     setGame({...game, current: game.current + 1})
-                }
+                }; 
+                
+                setOpen(false); 
                 nextClue(selected + 1); 
                 setTransition(false); 
             }; 

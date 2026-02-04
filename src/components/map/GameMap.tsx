@@ -73,6 +73,13 @@ export const GameMap: React.FC<Props> = ({game, setGame}) => {
                 pitch: 60
             }}
             
+            // Disable all interactions
+            doubleClickZoom={true}
+            dragPan={true}
+            dragRotate={true}
+            touchZoomRotate={true}
+            scrollZoom={true}
+            
             mapStyle='https://tiles.openfreemap.org/styles/liberty'
             style={{
                 height: '95dvh', 
@@ -117,7 +124,6 @@ export const GameMap: React.FC<Props> = ({game, setGame}) => {
                         }); 
                 }}
             />
-
             {pins}
 
             {selected !== undefined && (

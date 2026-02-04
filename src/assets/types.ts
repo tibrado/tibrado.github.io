@@ -29,6 +29,12 @@ export type Game = {
     clues: ClueObject[];
 }; 
 //------------------------------------------------------------------------------------------//
+export type Team = {
+    uuid: string; 
+    name: string; 
+    players: number; // number of people on team
+    completionTime: number[]; 
+}; 
 //------------------------------------------------------------------------------------------//
 export type Coordinates = {
     latitude: number; 

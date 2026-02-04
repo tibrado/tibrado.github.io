@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import GameInputs from './inputs/GameInputs';
-import type { InputTypes } from '../assets/types';
+import GameInputs from '../inputs/GameInputs';
+import type { InputTypes } from '../../assets/types';
 import {Box} from '@mui/material';
 
 export type Props ={
