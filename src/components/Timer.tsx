@@ -1,27 +1,32 @@
 import {useState, useEffect} from 'react'; 
 import { Box, Typography } from '@mui/material';
+import type { Game } from '../assets/types';
 
 type Props = {
-    active: boolean;  
-    getTime: (time: number) => void; 
+    game: Game | undefined;  
+    setGame: (game: Game) => void; 
 }; 
 
-export default function Timer({active, getTime}: Props){
+export default function Timer({game, setGame}: Props){
     const [time, setTime] = useState<number>(0); 
 
-    useEffect(() => {getTime(time)}, [time]); 
+    useEffect(() => {
+        if(game){
+            setGame({...game, gameTime: time})
+        }
+    }, [time]); 
 
     useEffect(() => {
         let interval: number | undefined; 
 
-        if(active){
+        if(game){
             interval = window.setInterval(() => {
                 setTime(pre => pre + 1); 
             }, 1000); 
         };
 
         return () =>  window.clearInterval(interval); 
-    }, [active]); 
+    }, [game]); 
     
     // formate time 
     const formatTime = (seconds: number) => {

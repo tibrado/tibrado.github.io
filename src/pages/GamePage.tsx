@@ -38,6 +38,12 @@ export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) =>
     const [nope, setNope] = useState<boolean>(false); 
     const clue: ClueObject = game.clues[selected]; 
     
+    const calculate_score = (): number => {
+        const score = Math.round(((600 - game.gameTime) / 600) * 10);
+        console.log(score, game.gameTime, ((600 - game.gameTime) / 600) * 10); 
+        return score > 1 ? score : 1; 
+    }; 
+
     const ValidateResponse = (response: string) => {
         setNope(
             response === "" ? false :
@@ -46,11 +52,19 @@ export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) =>
 
         if (clue.responses.includes(response.toLocaleLowerCase())) {
             if(selected >= game.clues.length - 1){ 
-                    setGame({...game, statue: 'victory'});
+                setGame({...game, statue: 'victory'});
             } else {
                 console.log(game.current)
                 if(selected === game.current){
-                    setGame({...game, current: game.current + 1})
+                    setGame({
+                        ...game, 
+                        current: game.current + 1, 
+                        player: {
+                            ...game.player,
+                            score: game.player.score + calculate_score()
+                        },
+                        gameTime: 0
+                    })
                 }; 
                 
                 setOpen(false); 
@@ -107,7 +121,7 @@ export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) =>
                         clue={clue.text}
                         validateResponse={ValidateResponse} 
                         inputType={clue.inputType ?? 'text'}
-                        hint={`${clue.location}`}//{game.clues[index].hint}
+                        hint={`${clue.hint}`}//{game.clues[index].hint}
                         nope={nope}
                     />
                 </CardContent>

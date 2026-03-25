@@ -1,5 +1,6 @@
 
 import type { Game } from '../../assets/types';
+import { v4 as uuid } from 'uuid';
 
 export async function GetGame(id: string): Promise<Game | undefined> {
     try{
@@ -12,6 +13,7 @@ export async function GetGame(id: string): Promise<Game | undefined> {
 
         const game: Game = {
             ...(raw as Partial<Game>),
+            id: id, 
             current: 0,
             statue: 'game',
             title: raw.title,
@@ -26,8 +28,13 @@ export async function GetGame(id: string): Promise<Game | undefined> {
                     location: c.location
                 }))
                 : [],
+            gameTime: 0,
+            player: {game_id: id, date: new Date(Date.now()), uuid: uuid(), name: 'Player', score: 0, latitude: 0, longitude: 0},
+            players: []
         };
-    
+        // "game_id","date","name","score","lat","long","uuid"
+        // Load leader board for that game 
+        console.log(JSON.stringify(game.player))
         return game; 
 
     } catch(e) {

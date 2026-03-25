@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import GameInputs from '../inputs/GameInputs';
+import GameInputHandler from '../inputs/GameInputHandler';
 import type { InputTypes } from '../../assets/types';
 import {Box} from '@mui/material';
 
@@ -14,16 +14,16 @@ export type Props ={
 }; 
 
 export const GameClue: React.FC<Props> = ({showClue, clue, validateResponse, hint, inputType, nope}) => {
-
+    console.log(hint)
     return ( 
         !showClue 
         ? <Box sx={{height: '100%', width: '100%', p: 0, m: 0, overflowY: 'auto'}}> 
            <ReactMarkdown children={clue}/>
         </Box>
-        : <GameInputs 
+        : <GameInputHandler 
             onSubmit={validateResponse} 
             inputType={inputType}
-            helperText={hint}
+            hint={hint}
             label="code"
             nope={nope}
             textRows={7}

@@ -1,16 +1,18 @@
 #TODO's
 ### New Features
 - [x] Timer: time that shows game time.
-- [ ] UserID: current user name for leader board.
+- [ ] Event Types: Add event type to handle what kind of events user can select to participate in. 
+- [x] UserID: current user name for leader board.
 - [ ] Paths: Add variations to clues so that a clues at carious index are different.
 - [ ] Team: Add a team id so that user can group to solve clues. 
+- [ ] Add icon for player selection. Also just make a character creation screen and setup for players 
 ### General Updates & Improvements 
 - [x] Combine the functionality of setState to setGame.
 - [ ] Add settings mapping for control of map zoom feature example: Building, Outdoors, etc.. feature will set who users interact with the game map.
 ### Landing Page
 ### Game Page
 **User Inputs**
-- [ ] Add image recognition.
+- [x] Add image recognition.
 - [x] Increase the size of the text inputs block.
 
 **Map**
@@ -20,4 +22,4 @@
 
 **Scoring**
 - [ ] Add a leader board. User is scored based on how long it takes them to solve each clue. 
-- [ ] Add a method for users to see their scores. 
+- [x] Add a method for users to see their scores. 

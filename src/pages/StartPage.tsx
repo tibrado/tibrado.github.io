@@ -1,8 +1,7 @@
 import React from 'react'; 
-import GameInputs from '../components/inputs/GameInputs';
+import GameInputHandler from '../components/inputs/GameInputHandler';
 import type { Game } from '../assets/types';
 import { GetGame } from '../components/setup/TheHunt';
-
 type Props = {
     setGame: (game: Game | undefined) => void; 
 };
@@ -27,6 +26,6 @@ export const StartPage: React.FC<Props> = ({setGame}) => {
     }; 
 
     return (
-        <GameInputs onSubmit={submit} inputType={'text'} label={'What\'s the game code?'} helperText={'You\'re either in the loop or you\'re walking in circles.'} textRows={1}/>
+        <GameInputHandler onSubmit={submit} inputType={'text'} label={'What\'s the game code?'} hint={'You\'re either in the loop or you\'re walking in circles.'} textRows={1}/>
     ); 
 }; 

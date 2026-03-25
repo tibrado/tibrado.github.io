@@ -7,7 +7,8 @@ type Props = {
     msg?: string;
     nope?: boolean; 
 };
-const QRScanner: React.FC<Props> = ({onSubmit, msg = 'uess', nope}) => (
+
+const QRScanner: React.FC<Props> = ({onSubmit, msg = 'none', nope}) => (
     <Box
         sx={{
             borderRadius: '5px',

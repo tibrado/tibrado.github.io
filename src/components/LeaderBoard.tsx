@@ -1,25 +1,59 @@
-import React from 'react'; 
-import {Box, List, ListItem, ListItemText, Typography} from '@mui/material'; 
+import React, {useEffect, useState} from 'react'; 
+import {Box, Table, TableBody, TableCell, TableContainer, TableRow, Typography} from '@mui/material';
+import type { Game, Player } from '../assets/types'; 
 
 type Props = {
-
+    game: Game
+    //setGame: (game: Game) => void;  
 }; 
 
-export const LeaderBoard: React.FC<Props> = ({}) => {
+export const LeaderBoard: React.FC<Props> = ({game}) => {
+    const [leaders, setLeaders] = useState<Player[]>([]); 
+    const [showBoard, setShowBoard] = useState<boolean>(false); 
 
-    const createBoard = (name: string[]) => {
+    // updates
+    useEffect(() => {
+        if(game.players.length > 0){
+            setLeaders([...game.players, game.player]);
+        }; 
+    }, [game.players, game.player]); 
+
+    const createBoard = () => {
         return (
-            <List dense={true}>
-                {
-                    name.map((n, i) => {
-                        return <ListItem id={`li_${i}_${n}`} sx={{p: 0, m: 0,}}>
-                            <ListItemText id={`lit_${i}_${n}`} sx={{p: 0, m: 0}} 
-                                primary={`${i + 1}. ${n}`}
-                            />
-                        </ListItem>
-                    })
+            <TableContainer>
+                <Typography 
+                    variant="subtitle2" 
+                    sx={{ 
+                        padding: '8px', 
+                        cursor: 'pointer', 
+                        '&:hover': { color: 'primary.main' },
+                        fontWeight: 'bold'
+                    }}
+                    onClick={() => setShowBoard(!showBoard)}
+                >
+                    Leaderboard
+                </Typography>
+                {  showBoard ? 
+                    <Table size="small">
+                        <TableBody>
+                            {leaders
+                            .sort((a, b) => b.score - a.score)
+                            .map((p, i) => (
+                                <TableRow
+                                    key={i}
+                                    hover
+                                    onClick={() => console.log("Clicked:", p.name)}
+                                    sx={{ cursor: 'pointer'}}
+                                >
+                                    <TableCell sx={{fontSize: '10px'}}>{i + 1}</TableCell>
+                                    <TableCell sx={{fontSize: '10px'}}>{p.name}</TableCell>
+                                    <TableCell sx={{fontSize: '10px'}} align="right">{p.score}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table> : <></>
                 }
-            </List>
+            </TableContainer>
         ); 
     };
 
@@ -33,24 +67,9 @@ export const LeaderBoard: React.FC<Props> = ({}) => {
           pl: 1, pr: 2, pb: 0,
           width: '200px',
           backgroundColor: 'rgba(248, 159, 6, 0.01)',
-          pointerEvents: 'none',
           color: '#2196f3'
         }}>
-            <Typography color='secondary' variant='subtitle2' fontWeight='bold'>
-                Leader Board
-            </Typography>
-            {createBoard([
-  'Alex_M',
-  'Sarah_S',
-  'Jordan_D',
-  'Lisa_K',
-  'Mark_E',
-  'Chris_K',
-  'Atlas_P',
-  'Nova_S',
-  'Echo_R',
-  'Zenith_U'
-])}
+            {createBoard()}            
         </Box>
     ); 
 }; 

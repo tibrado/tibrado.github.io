@@ -116,12 +116,21 @@ export const GameMap: React.FC<Props> = ({game, setGame}) => {
                 trackUserLocation={true}
                 showAccuracyCircle={true}
                 showUserLocation={true}
-                onGeolocate={(e) => {
-                        setCoord({
-                            longitude: e.coords.longitude, 
-                            latitude: e.coords.latitude, 
-                            accuracy: e.target._accuracy
-                        }); 
+            onGeolocate={(e) => {
+                    setCoord({
+                        longitude: e.coords.longitude, 
+                        latitude: e.coords.latitude, 
+                        accuracy: e.target._accuracy
+                    }); 
+
+                    setGame({
+                        ...game, 
+                        player: {
+                            ...game.player,
+                            latitude: e.coords.latitude,
+                            longitude: e.coords.longitude
+                        }
+                    })
                 }}
             />
             {pins}

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------//
 export type HintIconTypes = 'internet' | 'walk' | 'drive' | 'here' | 'think';
 export type GameStates = 'start' | 'game' | 'victory' | 'transition' | 'loading';
-export type InputTypes = 'text' | 'scan';
+export type InputTypes = 'text' | 'scan' | 'detect';
 export type LocationType = 'start' | 'point';
 //------------------------------------CLUE OBJECT-------------------------------------------//
 export type ClueObject = {
@@ -22,19 +22,27 @@ export type Location = {
 }; 
 
 export type Game = {
+    id: string; 
     current: number; // current clue index
     statue: GameStates; 
     title: string;
     date: Date;
     clues: ClueObject[];
+    gameTime: number; 
+    player: Player;
+    players: Player[];
 }; 
 //------------------------------------------------------------------------------------------//
-export type Team = {
-    uuid: string; 
+export type Player = {
+    game_id: string;
+    date: Date; 
     name: string; 
-    players: number; // number of people on team
-    completionTime: number[]; 
+    score: number; 
+    latitude: number; 
+    longitude: number; 
+    uuid: string; 
 }; 
+// "game_id","date","name","score","lat","long","uuid"
 //------------------------------------------------------------------------------------------//
 export type Coordinates = {
     latitude: number; 
