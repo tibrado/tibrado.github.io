@@ -3,45 +3,45 @@ import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/materi
 import { StartPage } from './pages/StartPage';
 import {GameMap} from './components/map/GameMap';
 import { LeaderBoard } from './components/LeaderBoard';
-import type { Game, GameStates } from './assets/types';
+import type { World, WorldStates } from './assets/types';
 import Done from './pages/DonePage';
-import Timer from './components/Timer';
-import { PostPlayer, GetPlayers } from './handlers/PlayerApiHandler';
+import { PostPlayer, GetPlayers } from './handlers/ApiHandler';
+import { LoadWorldPage } from './pages/LoadPage';
 
 const theme = createTheme();
 
 export const App: React.FC = () => {
-    const [game, setGame] = useState<Game | undefined>(undefined);
-  
+    const [world, setWorld] = useState<World | undefined>(undefined);
+
     // Monitor Game Scores
     useEffect(() => {
-        if(game){
-            if(game.player.score > 0){
-                PostPlayer(game.player); 
-                GetPlayers(game, setGame)
+        if(world){
+            if(world.player.score > 0){
+                PostPlayer(world.player); 
+                GetPlayers(world, setWorld)
             }
         }
-    }, [game?.player.score]); 
+    }, [world?.player.score]); 
 
     // Enter fullscreen on first click anywhere
+    /*
     document.addEventListener('click', () => {
         if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
         }
     }, { once: true });
-
-    const States: Record<GameStates, ReactNode> = {
-        start: <StartPage setGame={setGame} />,
-        game: game ? 
-        <Box sx={{position: 'relative'}}>
-            <Timer game={game} setGame={setGame}/>
-            <LeaderBoard game={game}/>
-            <GameMap game={game} setGame={setGame} /> 
-        </Box>
-        : <>-_-</>,
+    */
+    const States: Record<WorldStates, ReactNode> = {
+        start: <StartPage setWorld={setWorld} />,
+        game: world ? 
+            <Box sx={{position: 'relative'}}>
+                <LeaderBoard world={world} setWorld={setWorld}/>
+                <GameMap world={world} setWorld={setWorld} /> 
+            </Box>
+        : <>World does not exists.</>,
         victory: <Done />,
         transition: undefined,
-        loading: undefined
+        loading: <LoadWorldPage world={world} setWorld={setWorld}/>
     };
 
 
@@ -64,15 +64,15 @@ export const App: React.FC = () => {
             }}
         >
             <Paper elevation={0} sx={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent',
-            p: 1
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                p: 1
             }}>
-            {States[game ? game.statue : 'start']}
+                {States[world ? world.statue : 'start']}
             </Paper>
         </Box>
         </ThemeProvider>

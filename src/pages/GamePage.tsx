@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {Card, CardContent, CardHeader, CardActions, Slide, Typography, type SxProps, type Theme, Button} from '@mui/material'; 
 import {GameClue} from '../components/map/GameClue';
 import { Hint } from '../components/Hint';
-import type { ClueObject, Game } from '../assets/types';
+import type { Trials, World } from '../assets/types';
 import { QuestionAnswer } from '@mui/icons-material';
 
 
@@ -26,21 +26,21 @@ const glassStyle: SxProps<Theme> = {
 };
 
 type Props = {
-    game: Game;
+    world: World;
     selected: number;
-    setGame: (game: Game) => void; 
-    nextClue: (index: number) => void;
+    setWorld: (game: World) => void; 
+    nextTrial: (long: number, lat: number) => void;
 };
 
-export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) => {
+export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial}) => {
     const [open, setOpen] = useState<boolean>(false); 
     const [transition, setTransition] = useState<boolean>(false); 
     const [nope, setNope] = useState<boolean>(false); 
-    const clue: ClueObject = game.clues[selected]; 
+    const clue: Trials = world.trials[selected]; 
     
     const calculate_score = (): number => {
-        const score = Math.round(((600 - game.gameTime) / 600) * 10);
-        console.log(score, game.gameTime, ((600 - game.gameTime) / 600) * 10); 
+        const score = Math.round(((600 - world.worldTime) / 600) * 10);
+        console.log(score, world.worldTime, ((600 - world.worldTime) / 600) * 10); 
         return score > 1 ? score : 1; 
     }; 
 
@@ -51,28 +51,38 @@ export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) =>
         ); 
 
         if (clue.responses.includes(response.toLocaleLowerCase())) {
-            if(selected >= game.clues.length - 1){ 
-                setGame({...game, statue: 'victory'});
+            if(selected >= world.trials.length - 1){ 
+                setWorld({...world, statue: 'victory'});
             } else {
-                console.log(game.current)
-                if(selected === game.current){
-                    setGame({
-                        ...game, 
-                        current: game.current + 1, 
+                if(selected === world.current){
+                    setWorld({
+                        ...world, 
+                        current: world.current + 1, 
                         player: {
-                            ...game.player,
-                            score: game.player.score + calculate_score()
+                            ...world.player,
+                            score: world.player.score + calculate_score()
                         },
-                        gameTime: 0
+                        worldTime: 0
                     })
                 }; 
                 
                 setOpen(false); 
-                nextClue(selected + 1); 
                 setTransition(false); 
             }; 
         };
     };
+
+    // --------- Transitions Animations 
+    useEffect(() => {
+        if(world.id){
+            // fly to next clue 
+            nextTrial(
+                world.trials[world.current].location.coordinates[1], 
+                world.trials[world.current].location.coordinates[0]
+            ); 
+
+        }; 
+    }, [world.current]); 
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -99,7 +109,7 @@ export const GamePage: React.FC<Props> = ({game, selected,setGame, nextClue}) =>
                                 fontWeight: 'bold',
                                 textShadow: '1px 1px 3px rgba(25, 23, 23, 0.7)'
                             }}
-                        >{game.title}</Typography>
+                        >{world.title}</Typography>
                     }
                     subheader={
                         
