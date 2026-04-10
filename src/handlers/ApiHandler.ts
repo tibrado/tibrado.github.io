@@ -83,7 +83,6 @@ export async function LoadGames(world: World, setWorld: (world: World) => void):
 
         setWorld({
             ...world,
-            statue: hunts.length > 0 ? 'game' : 'loading',
             games
         }); 
 
@@ -120,7 +119,8 @@ export async function LoadTrial(world: World, setWorld: (world: World) => void, 
             player: {
                 ...world.player,
                 game_id: id
-            }
+            },
+            loading: false
         }); 
 
         return true; 

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------//
 export type HintIconTypes = 'internet' | 'walk' | 'drive' | 'here' | 'think';
-export type WorldStates = 'start' | 'game' | 'victory' | 'transition' | 'loading';
+export type Page = 'start' | 'game' | 'end';
 export type InputTypes = 'text' | 'scan' | 'detect';
 export type LocationType = 'start' | 'point';
 export type PlayerIcon = 'bear'|'buffalo'|'chick'|'chicken'|'cow'|'crocodile'|'dog'|
@@ -48,7 +48,7 @@ export type World = {
     id: string | undefined; 
     description: string;
     current: number; // current clue index
-    statue: WorldStates; 
+    page: Page; 
     title: string;
     date: Date;
     trials: Trials[];
@@ -56,6 +56,7 @@ export type World = {
     player: Player;
     players: Player[];
     games: Games | undefined; 
+    loading: boolean; 
 }; 
 //------------------------------------------------------------------------------------------//
 export type Player = {

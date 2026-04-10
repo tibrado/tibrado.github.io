@@ -18,14 +18,15 @@ export const LoadWorldPage: React.FC<Props> = ({world, setWorld}) => {
                 id: undefined, 
                 description: '',
                 current: 0,
-                statue: 'loading',
+                page: 'start',
                 title: '',
                 date: new Date(),
                 trials:[],
                 worldTime: 0,
                 player: {game_id: '', date: new Date(Date.now()), uuid: uuid(), name: 'Unknown', score: 0, latitude: 0, longitude: 0, icon: 'cow'},
                 players: [],
-                games: undefined
+                games: undefined,
+                loading: false
             };
 
             LoadGames(_world, setWorld); 

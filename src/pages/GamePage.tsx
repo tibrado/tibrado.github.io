@@ -52,7 +52,7 @@ export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial}
 
         if (clue.responses.includes(response.toLocaleLowerCase())) {
             if(selected >= world.trials.length - 1){ 
-                setWorld({...world, statue: 'victory'});
+                setWorld({...world, page: 'end'});
             } else {
                 if(selected === world.current){
                     setWorld({

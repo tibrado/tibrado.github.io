@@ -3,7 +3,7 @@ import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/materi
 import { StartPage } from './pages/StartPage';
 import {GameMap} from './components/map/GameMap';
 import { LeaderBoard } from './components/LeaderBoard';
-import type { World, WorldStates } from './assets/types';
+import type { World, Page } from './assets/types';
 import Done from './pages/DonePage';
 import { PostPlayer, GetPlayers } from './handlers/ApiHandler';
 import { LoadWorldPage } from './pages/LoadPage';
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
         }
     }, { once: true });
     */
-    const States: Record<WorldStates, ReactNode> = {
+    const Pages: Record<Page, ReactNode> = {
         start: <StartPage setWorld={setWorld} />,
         game: world ? 
             <Box sx={{position: 'relative'}}>
@@ -39,9 +39,7 @@ export const App: React.FC = () => {
                 <GameMap world={world} setWorld={setWorld} /> 
             </Box>
         : <>World does not exists.</>,
-        victory: <Done />,
-        transition: undefined,
-        loading: <LoadWorldPage world={world} setWorld={setWorld}/>
+        end: <Done />,
     };
 
 
@@ -63,6 +61,8 @@ export const App: React.FC = () => {
             overflow: 'hidden'
             }}
         >
+            
+            <LoadWorldPage load={world?.loading ?? false}/>
             <Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',
@@ -72,7 +72,7 @@ export const App: React.FC = () => {
                 backgroundColor: 'transparent',
                 p: 1
             }}>
-                {States[world ? world.statue : 'start']}
+                {Pages[world ? world.page : 'start']}
             </Paper>
         </Box>
         </ThemeProvider>

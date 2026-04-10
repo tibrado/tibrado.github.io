@@ -25,7 +25,8 @@ export const LeaderBoard: React.FC<Props> = ({world, setWorld}) => {
         return (
             <TableContainer>
                 <Typography 
-                    variant="subtitle2" 
+                    variant='subtitle2'
+                    component={'div'}
                     sx={{ 
                         display: 'flex',       // Enables flexbox
                         alignItems: 'center',  // Vertically centers timer and avatar

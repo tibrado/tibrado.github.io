@@ -1,9 +1,5 @@
 import React from "react";
-import { Box, Button, CircularProgress } from "@mui/material";
-import type { World } from "../assets/types";
-import {LoadGames} from "../handlers/ApiHandler"; 
-import { v4 as uuid } from 'uuid';
-
+import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
 export type LoadStatus = {
     map: boolean; 
     games: boolean;
@@ -12,54 +8,37 @@ export type LoadStatus = {
 
 
 type Props = {
-    world: World | undefined;
-    setWorld: (world: World | undefined) => void; 
+    load: boolean;
 };
-export const LoadWorldPage: React.FC<Props> = ({world, setWorld}) => {
-    
-    function Load() {
-        console.log("TODO: Update this to loading the game or load screen"); 
-
-        if(!world){
-            // Create a new world 
-            const _world: World = {
-                id: undefined, 
-                description: '',
-                current: 0,
-                statue: 'loading',
-                title: '',
-                date: new Date(),
-                trials:[],
-                worldTime: 0,
-                player: {game_id: '', date: new Date(Date.now()), uuid: uuid(), name: 'Unknown', score: 0, latitude: 0, longitude: 0, icon: 'cow'},
-                players: [],
-                games: undefined
-            };
-
-            LoadGames(_world, setWorld); 
-        }
-        else if(!world.games){
-            LoadGames(world, setWorld); 
-        };
-    }
-
+export const LoadWorldPage: React.FC<Props> = ({load}) => {
 
     return (
-        <Box
+        <Backdrop
+            open={load}
             sx={{
-                height: '95dvh', 
-                width: '95dvw',
-                borderRadius: '10px',
+                backgroundColor: 'hsla(230, 59%, 25%, 1)', // fallback
+                backgroundImage: 'linear-gradient(180deg, hsla(230,59%,25%,1) 0%, hsla(359,73%,39%,1) 70%, hsla(32,97%,59%,1) 100%)',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                color:'white',
+                zIndex: (theme) => theme.zIndex.drawer + 1,
+                flexDirection: 'column',
             }}
         >
-            <CircularProgress enableTrackSlot/>
-            <Button
-                onClick={() => Load()}
-            >
-            
-                {world?.games ? "World Loaded" : "Loading Games..."}    
-            </Button>
+        {/* Decorative Icon or Logo */}
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+            <CircularProgress size={60} enableTrackSlot  thickness={4} sx={{ color: '#ffffff' }} />
+            <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
+                LOADING WORLD
+            </Typography>
         </Box>
+  
+        
+        <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
+            "Tip: Keep your eyes on the prize!"
+        </Typography>
+
+        </Backdrop>
     );
    
 }; 

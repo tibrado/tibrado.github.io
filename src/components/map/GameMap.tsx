@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useState, useRef, useCallback } from 'react';
 import { Map, Marker, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Place } from '@mui/icons-material';
@@ -15,20 +15,18 @@ type Props = {
 
 export const GameMap: React.FC<Props> = ({world, setWorld}) => {
     const [selected, setSelected] = useState<number | undefined>(undefined); 
-    //-- User Location
     const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const mapRef = useRef<MapRef>(null);
     const geolocateRef = useRef<any>(null); 
 
-    const FocusOnPin = (long: number, lat: number) => {
+    const FocusOnPin = useCallback((lng: number, lat: number) => {
         mapRef.current?.flyTo({
-            center: [long, lat] ,
+            center: [lng, lat] ,
             duration: 2000, // Duration in milliseconds
             zoom: 20,       // Optional: adjust zoom level on arrival
             essential: true
         });
-
-    }; 
+    }, []);  
 
     const user_pin = useMemo(() => {
         return (
@@ -121,17 +119,6 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
         </Marker> : undefined
     }), [world.trials, world.current]);
 
-
-    /**
-     * Check if pin is within 
-     * ******Check if ********/
-    useEffect(() => {
-        if(!mapRef.current) return; 
-        mapRef.current.on('zoom', () => {
-            const z = mapRef.current?.getZoom(); 
-            console.log(z)
-        })
-    }, [])
     return (
         <Map
             ref={mapRef} // 3. Attach the ref to the Map component
@@ -144,17 +131,18 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
 
                 // Remove other icons 
                 if(style && style.layers){
-                    style.layers.forEach((l) => {
-                        if(l.type === 'symbol')
-                            _map.removeLayer(l.id);
-                    })
+                    style.layers
+                    .filter(l => l.type === 'symbol')    
+                    .forEach(l =>  _map.removeLayer(l.id))
                 }; 
-
+                
+                setWorld({...world, loading: false}); 
             }}
+
             initialViewState={{
-                latitude: 0,
-                longitude: 0,
-                zoom: 24,
+                latitude: world.player.latitude,
+                longitude: world.player.longitude,
+                zoom: 18,
                 bearing: 90,
                 pitch: 60,
             }}
@@ -165,7 +153,7 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
             dragRotate={true}
             touchZoomRotate={true}
             scrollZoom={true}
-            maxZoom={24}
+            maxZoom={22}
             mapStyle='https://tiles.openfreemap.org/styles/liberty'
             style={{
                 height: '95dvh', 
@@ -206,7 +194,7 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                     setCoord({
                         longitude: e.coords.longitude, 
                         latitude: e.coords.latitude, 
-                        accuracy: e.target._accuracy
+                        accuracy: e.target?._accuracy
                     }); 
                     
                     setWorld({
@@ -219,6 +207,7 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                     })
                 }}
             />
+
             {world.id ? pins : world_pins}
             {player_pins}
             {user_pin}

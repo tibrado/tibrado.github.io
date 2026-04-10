@@ -1,10 +1,11 @@
-import React, { useState } from 'react'; 
-import { PlayerIcons, type World } from '../assets/types';
+import React, { useEffect, useState } from 'react'; 
+import { PlayerIcons, type PlayerIcon, type World } from '../assets/types';
 import { Button, Card, CardActions, CardContent, CardHeader, TextField,
     Avatar, Grid,  Typography
 } from '@mui/material';
 import { Public } from '@mui/icons-material';
 import { v4 as uuid } from 'uuid';
+import { LoadGames } from '../handlers/ApiHandler';
 
 type Props = {
     setWorld: (world: World | undefined) => void; 
@@ -12,36 +13,63 @@ type Props = {
 export const StartPage: React.FC<Props> = ({setWorld}) => {
     const [name, setName] = useState<string>('')
     const [icon, setIcon] = useState<string>('')
-    
+    const [gps, setGps] = useState<{lat: number, lng: number} | undefined>(); 
     // -- If user access through qr-scan
     const params = new URLSearchParams(window.location.search); 
+
+    // ----- get user location on start 
+    useEffect(() => {
+        if(!navigator.geolocation) {
+            console.log('Geolocation is not supported by your browser');
+            return;
+        }; 
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                setGps({
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                });
+            },
+            (err) => {
+                console.log(`Error: ${err.message}`);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+            }
+        );
+
+    }, []); 
 
     // ------------------------------------------------------------
     const OnStart = () => {
         const _id = params.get('gameId') ?? undefined; 
-        setWorld(
-            {
-                id: _id, 
-                description: '',
-                current: 0,
-                statue: 'game',
-                title: '',
-                date: new Date(),
-                trials:[],
-                worldTime: 0,
-                player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, latitude: 0, longitude: 0, icon: icon},
-                players: [],
-                games: undefined
-            } as World
-        )
+        const _world: World = {
+            id: _id, 
+            description: '',
+            current: 0,
+            page: 'game',
+            title: '',
+            date: new Date(),
+            trials:[],
+            worldTime: 0,
+            player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, latitude: gps?.lat ?? 0, longitude: gps?.lng ?? 0, icon: icon as PlayerIcon},
+            players: [],
+            games: undefined,
+            loading: true
+        }; 
+        console.log(gps)
+        LoadGames(_world, setWorld); 
     }; 
 
     return (
         <Card 
             sx={{
-                maxWidth: '430px', // Standard max-width for modern large phones
+                maxWidth: '430px', // Standard max-width for modern large phones,
+                maxHeight: '95vh',
                 width: '100%',     // Occupies full width on actual mobile devices
-                height: '90vh',   // Mimics phone screen height
+                height: '95vh',   // Mimics phone screen height
                 margin: '0 auto',  // Centers the "phone" on desktop
                 boxShadow: 3,      // Optional: adds a slight shadow to define the "phone" edge on desktop
                 display: 'flex',
