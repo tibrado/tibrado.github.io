@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'; 
 import { PlayerIcons, type PlayerIcon, type World } from '../assets/types';
 import { Button, Card, CardActions, CardContent, CardHeader, TextField,
-    Avatar, Grid,  Typography
+    Avatar, Grid
 } from '@mui/material';
 import { Public } from '@mui/icons-material';
 import { v4 as uuid } from 'uuid';
@@ -12,8 +12,10 @@ type Props = {
 };
 export const StartPage: React.FC<Props> = ({setWorld}) => {
     const [name, setName] = useState<string>('')
-    const [icon, setIcon] = useState<string>('')
+    const [icon, setIcon] = useState<string>('bear')
     const [gps, setGps] = useState<{lat: number, lng: number} | undefined>(); 
+    
+    const valid = name.length > 15 || name.length < 3; 
     // -- If user access through qr-scan
     const params = new URLSearchParams(window.location.search); 
 
@@ -66,14 +68,14 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
     return (
         <Card 
             sx={{
-                maxWidth: '430px', // Standard max-width for modern large phones,
-                maxHeight: '95vh',
+                maxWidth: '400px', // Standard max-width for modern large phones,
+                maxHeight: '800px',
                 width: '100%',     // Occupies full width on actual mobile devices
-                height: '95vh',   // Mimics phone screen height
                 margin: '0 auto',  // Centers the "phone" on desktop
                 boxShadow: 3,      // Optional: adds a slight shadow to define the "phone" edge on desktop
                 display: 'flex',
                 flexDirection: 'column',
+                flexGrow: 1,
                 overflow: 'hidden' // Keeps the "screen" contained
             }}
         >
@@ -91,8 +93,8 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                             alignItems: "center",
                             justifyContent: "center", 
                             textAlign: "center",   
-                            mb: 2,
-                            p: 0,         
+                            mb: 0,
+                            p: 0,   
                         }}
                     >
                         <Grid> 
@@ -102,49 +104,36 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                                 src={`/icons/${icon}.png`}
                                 sx={{
                                     borderRadius: '10%',
-                                    width: { xs: 80, md: 90, lg: 100 }, 
-                                    height: { xs: 80, md: 90, lg: 100 },
-                                    p: "5px",
+                                    width: 120, 
+                                    height: 120,
+                                    p: "20px",
                                     mb: 0, // Added margin bottom to separate from text
                                     "& img": {
                                         objectFit: "contain",
-                                        filter: "drop-shadow(0px 5px 2px rgba(0, 0, 0, 0.38))"
+                                        filter: "drop-shadow(0px 10px 3px rgba(0, 0, 0, 0.5))"
                                     },
-                                    bgcolor: 'rgba(0, 0, 0, 0.03)'
+                                    zIndex: 5
                                 }}
                             />
                         </Grid>
                         <Grid>
-                            <Typography 
-                                variant='subtitle2' 
-                                sx={{ 
-                                    minWidth: '10em',
-                                    minHeight: '2em',
-                                    fontWeight: 'bold',
-                                    border: '2px solid rgba(0, 0, 0, 0.1)',
-                                    p: '1px',
-                                    mt: '5px',
-                                    mb: '0',
-                                    borderRadius: '5px',
-                                    boxShadow: '2px 3px 2px rgba(0, 0, 0, 0.1)'
-
+                            <TextField
+                                id="player-name"
+                                label="NAME"
+                                defaultValue={name}
+                                helperText={`letters remaining ${15 - name.length}`}
+                                fullWidth
+                                error={valid}
+                                onChange={(e) => setName(e.target.value)}
+                                size='small'
+                                sx={{
+                                    input: { 
+                                        textAlign: 'center',
+                                    }
                                 }}
-                            >
-                                {name}
-                            </Typography>
+                            />
                         </Grid>
                     </Grid>
-                }
-                subheader={
-                    <TextField
-                        id="player-name"
-                        label="name your self"
-                        defaultValue={name}
-                        helperText={`letters remaining ${15 - name.length}`}
-                        fullWidth
-                        error={name.length > 15}
-                        onChange={(e) => setName(e.target.value)}
-                    />
                 }
             />
         
@@ -153,14 +142,14 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                     flexGrow: 1, 
                     pl: 2, 
                     pr: 2, 
-                    mb: 2,
+                    mb: 1,
+                    mt: 1,
                     width: '100%',
                     alignItems: 'center',
                     justifyContent: 'center',
                     overflowY: 'auto',
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#8888884f #f1f1f1',
-                    height: { xs: 370, md: 480, lg: 500 },
                 }}
             >
                  <Grid 
@@ -177,8 +166,8 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                                     alignItems: "center",      // Horizontal centering
                                     justifyContent: "center",   // Vertical centering
                                     alignContent: "center",     // Centers multi-line content
-                                    width: { xs: 60, md: 70, lg: 80 }, 
-                                    height: { xs: 65, md: 65, lg: 65 },
+                                    width: 55, 
+                                    height: 55,
                                 }}
                             >
                                 <Avatar 
@@ -190,8 +179,8 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                                         border: '1px solid rgba(0, 0, 0, 0.38)',
                                         borderRadius:  '25% 5%',
                                         boxShadow: '3px 3px 2px rgba(0, 0, 0, 0.38)',
-                                        width: { xs: 60, md: 65, lg: 65 }, 
-                                        height: { xs: 60, md: 65, lg: 65 },
+                                        width: 55, 
+                                        height: 55,
                                         p: "10px", // Padding to keep the image away from the circle edge
                                         "& img": {
                                             objectFit: "contain", // Ensures the full PNG is visible
@@ -219,6 +208,7 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                     color='success'
                     size='small'
                     startIcon={<Public/>}
+                    disabled={valid}
                     fullWidth
                     sx={{
                         height: '40px',
