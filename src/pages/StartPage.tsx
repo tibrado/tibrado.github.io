@@ -69,7 +69,6 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
         <Card 
             sx={{
                 maxWidth: '400px', // Standard max-width for modern large phones,
-                maxHeight: '800px',
                 width: '100%',     // Occupies full width on actual mobile devices
                 margin: '0 auto',  // Centers the "phone" on desktop
                 boxShadow: 3,      // Optional: adds a slight shadow to define the "phone" edge on desktop
@@ -145,6 +144,7 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                     mb: 1,
                     mt: 1,
                     width: '100%',
+                    maxHeight: {xs: 300, md: 800},
                     alignItems: 'center',
                     justifyContent: 'center',
                     overflowY: 'auto',
@@ -153,7 +153,9 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
                 }}
             >
                  <Grid 
-                    container spacing={2.5}
+                    container 
+                    spacing={2.5}
+                    justifyContent="center"
                 >
                     {
                         PlayerIcons.map((p, i) => (

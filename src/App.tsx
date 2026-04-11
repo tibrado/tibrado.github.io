@@ -48,17 +48,17 @@ export const App: React.FC = () => {
         <CssBaseline />
         <Box
             sx={{
-            minHeight: '100dvh',
-            minWidth: '100dvw',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'hsla(230, 59%, 25%, 1)', // fallback
-            backgroundImage: 'linear-gradient(180deg, hsla(230,59%,25%,1) 0%, hsla(359,73%,39%,1) 70%, hsla(32,97%,59%,1) 100%)',
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            overflow: 'hidden'
+                minWidth: '100dvw',
+                minHeight: '100dvh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'hsla(230, 59%, 25%, 1)', // fallback
+                backgroundImage: 'linear-gradient(180deg, hsla(230,59%,25%,1) 0%, hsla(359,73%,39%,1) 70%, hsla(32,97%,59%,1) 100%)',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                overflow: 'hidden'
             }}
         >
             
