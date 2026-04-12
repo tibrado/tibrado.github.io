@@ -46,22 +46,7 @@ export const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box
-            sx={{
-                width: '100dvw',
-                height: '100dvh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'hsla(230, 59%, 25%, 1)', // fallback
-                backgroundImage: 'linear-gradient(180deg, hsla(230,59%,25%,1) 0%, hsla(359,73%,39%,1) 70%, hsla(32,97%,59%,1) 100%)',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                overflow: 'hidden', 
-                m: 0, p: 0
-            }}
-        >
+        <Box>
             
             <LoadWorldPage load={world?.loading ?? false}/>
             <Paper elevation={0} sx={{
