@@ -48,8 +48,8 @@ export const App: React.FC = () => {
         <CssBaseline />
         <Box
             sx={{
-                minWidth: '100dvw',
-                minHeight: '100dvh',
+                width: '100dvw',
+                height: '100dvh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -58,7 +58,8 @@ export const App: React.FC = () => {
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
-                overflow: 'hidden'
+                overflow: 'hidden', 
+                m: 0, p: 0
             }}
         >
             
