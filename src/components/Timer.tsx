@@ -8,10 +8,10 @@ type Props = {
 }; 
 
 export default function Timer({world, setWorld}: Props){
-    const [time, setTime] = useState<number>(0); 
+    const [time, setTime] = useState<number>(world?.worldTime ?? 0); 
 
     useEffect(() => {
-        if(world){
+        if(world?.id){
             setWorld({...world, worldTime: time})
         }
     }, [time]); 
@@ -19,14 +19,17 @@ export default function Timer({world, setWorld}: Props){
     useEffect(() => {
         let interval: number | undefined; 
 
-        if(world){
+        if(world?.id){
             interval = window.setInterval(() => {
                 setTime(pre => pre + 1); 
             }, 1000); 
-        };
+        }
+        else {
+            setTime(0); 
+        }; 
 
         return () =>  window.clearInterval(interval); 
-    }, [world]); 
+    }, [world?.id]); 
     
     // formate time 
     const formatTime = (seconds: number) => {
@@ -40,7 +43,7 @@ export default function Timer({world, setWorld}: Props){
 
     return (
         <Typography variant="subtitle2" color='#0000007d'>
-            {formatTime(time)}
+            {formatTime(world?.worldTime ?? 0)}
         </Typography>
     );
 }; 

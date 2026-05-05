@@ -20,7 +20,6 @@ export async function GetPlayers(world: World, setWorld: (world: World) => void)
                 (row) => {
                     // Create object from headers and row values
                     return ['game_id', 'date', 'name', 'score', 'latitude', 'longitude', 'uuid', 'icon'].reduce((obj, header, index) => {
-                        console.log(`${obj} ${header} ${index}`)
                         obj[header] = row[index];
                         return obj;
                     }, {} as any);
@@ -74,13 +73,15 @@ export async function LoadGames(world: World, setWorld: (world: World) => void):
         const games: Games = {
             ...(raw as Partial<Games>),
             hunts: hunts.map((r: GameInfo) => ({
-                    latitude: r.latitude, 
-                    longitude: r.longitude,
-                    description: r.description
+                    coord: r.coord,
+                    description: r.description,
+                    title: r.title,
+                    type: r.type
                 })
             )
         };  
-
+        
+            console.log(games);
         setWorld({
             ...world,
             games
@@ -93,8 +94,10 @@ export async function LoadGames(world: World, setWorld: (world: World) => void):
 
 }; 
 
-export async function LoadTrial(world: World, setWorld: (world: World) => void, id: string): Promise<boolean>{
+export async function LoadTrial(world: World, setWorld: (world: World) => void, gameInfo: GameInfo): Promise<boolean>{
+    
     try{
+        const id = `${gameInfo.coord}`; 
         const response = await fetch(`${TRIAL_API}${id}.json`); 
         
         if(!response.ok){
@@ -111,11 +114,13 @@ export async function LoadTrial(world: World, setWorld: (world: World) => void, 
                 inputType: c.inputType,
                 location: c.location
             })) : []; 
-
+            
         setWorld({
             ...world,
             id: id,
             trials: _trails,
+            title: gameInfo.title,
+            gameType: gameInfo.type,
             player: {
                 ...world.player,
                 game_id: id

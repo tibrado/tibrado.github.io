@@ -12,11 +12,15 @@ export const PlayerIcons: string[] = ['bear','buffalo','chick','chicken','cow','
     'moose','narwhal','owl','panda','parrot','penguin','pig','rabbit','rhino',
     'sloth','snake','walrus','whale','zebra'
 ]; 
+export type MapMode = 'game' | 'trial'; 
+export type GameType = undefined | 'Fire' | 'Water' | 'Earth' | 'Air' | 'Spirit' | 'Ether'; 
+
 //------------------------------------GAME LIST---------------------------------------------//
 export type GameInfo = {
-    latitude: number; 
-    longitude: number; 
+    coord: [number, number]; // lat, lng 
     description: string; 
+    title: string; 
+    type: GameType; 
 }; 
 
 export type Games = {
@@ -28,13 +32,12 @@ export type Games = {
 //------------------------------------------------------------------------------------------//
 //------------------------------------CLUE OBJECT-------------------------------------------//
 export type Trials = {
-    location: Location; 
-    hintIcon: HintIconTypes;
-    text: string;
-    hint: string;
-    responses: string[];
-    inputType?: InputTypes;
-    reward?: number;
+    hintIcon: HintIconTypes[];
+    text: string[];
+    hint: string[];
+    responses: string[]; // three options: 1. Connect
+    location: [number, number][]; 
+    inputType?: InputTypes[];
 };
 
 export type Location = {
@@ -51,6 +54,7 @@ export type World = {
     page: Page; 
     title: string;
     date: Date;
+    gameType: GameType;
     trials: Trials[];
     worldTime: number; 
     player: Player;

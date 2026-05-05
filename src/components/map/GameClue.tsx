@@ -14,7 +14,6 @@ export type Props ={
 }; 
 
 export const GameClue: React.FC<Props> = ({showClue, clue, validateResponse, hint, inputType, nope}) => {
-    console.log(hint)
     return ( 
         !showClue 
         ? <Box sx={{height: '100%', width: '100%', p: 0, m: 0, overflowY: 'auto'}}> 

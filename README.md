@@ -5,7 +5,7 @@
 - [x] UserID: current user name for leader board.
 - [ ] Paths: Add variations to clues so that a clues at carious index are different.
 - [ ] Team: Add a team id so that user can group to solve clues. 
-- [ ] Add icon for player selection. Also just make a character creation screen and setup for players 
+- [x] Add icon for player selection. Also just make a character creation screen and setup for players 
 ### General Updates & Improvements 
 - [x] Combine the functionality of setState to setGame.
 - [ ] Add settings mapping for control of map zoom feature example: Building, Outdoors, etc.. feature will set who users interact with the game map.

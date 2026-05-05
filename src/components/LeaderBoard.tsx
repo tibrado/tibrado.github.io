@@ -50,7 +50,6 @@ export const LeaderBoard: React.FC<Props> = ({world, setWorld}) => {
                                 width: "100%",        // Forces image to respect container width
                                 height: "100%",        // Forces image to respect container height
                                 filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5))" // Shadow follows PNG shape
-                            
                             }
                         }}
                     />
@@ -81,17 +80,16 @@ export const LeaderBoard: React.FC<Props> = ({world, setWorld}) => {
     return (
         <Box 
             sx={{
-            position: 'absolute', // Locks it relative to the container
-            top: 10,
-            left: 1,
-            zIndex: 1,           // Ensures it stays above the map
-            pl: 1, pr: 2, pb: 0,
-            width: '200px',
-            backgroundColor: 'rgba(248, 159, 6, 0.01)',
-            color: '#f32121'
+                position: 'absolute', // Locks it relative to the container
+                top: 10,
+                left: 1,
+                zIndex: 1,           // Ensures it stays above the map
+                pl: 1, pr: 2, pb: 0,
+                width: '200px',
+                backgroundColor: 'rgb(248, 159, 6)',
+                color: '#f32121'
             }}
         >
-            
             {createBoard()}            
         </Box>
     ); 

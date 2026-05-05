@@ -1,0 +1,86 @@
+import React from "react";
+import {Menu, MenuItem, Box, Button, Avatar} from "@mui/material"; 
+import type { World } from "../assets/types";
+import Timer from "./Timer";
+
+type Props = {
+    world: World; 
+    setWorld: (w: World) => void; 
+}; 
+
+const GameMenu: React.FC<Props> = ({world, setWorld}) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+
+    return (
+        <Box
+            sx={{
+                zIndex: 1, 
+                top: 5,
+                position: 'absolute', // Locks it relative to the container
+                width: '100px',
+                backgroundColor: 'rgba(248, 159, 6, 0)',
+                color: '#f32121'
+            }}
+        >
+            <Button
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                startIcon={
+                    <Avatar 
+                        alt="UK" 
+                        src={`/icons/${world.player.icon}.png`}
+                        sx={{
+                            width: { xs: 40, md: 40, lg: 40 }, 
+                            height: { xs: 40, md: 40, lg: 40 },
+                            p: "5px", // Padding to keep the image away from the circle edge
+                            "& img": {
+                                objectFit: "contain", // Ensures the full PNG is visible
+                                width: "100%",        // Forces image to respect container width
+                                height: "100%",        // Forces image to respect container height
+                                filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5))" // Shadow follows PNG shape
+                            }
+                        }}
+                    />
+                }
+            >
+                {world.id ? <Timer world={world} setWorld={setWorld}/> : <></>}
+            </Button>
+
+            <Menu
+                id="menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
+                <MenuItem onClick={handleClose}>Leaderboard</MenuItem>
+                <MenuItem onClick={() => {
+                    handleClose(); 
+                    setWorld({
+                        ...world, 
+                        id: undefined,
+                        trials: [],
+                        players: [],
+                        worldTime: 0,
+                        current: 0
+                    }); 
+                }}>Quit Game</MenuItem>
+            </Menu>
+        </Box>
+    )
+
+}; 
+
+
+export default GameMenu;
