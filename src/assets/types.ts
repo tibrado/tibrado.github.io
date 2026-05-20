@@ -38,6 +38,7 @@ export type Trials = {
     responses: string[]; // three options: 1. Connect
     location: [number, number][]; 
     inputType?: InputTypes[];
+    path_selected?: number; 
 };
 
 export type Location = {
@@ -56,6 +57,7 @@ export type World = {
     date: Date;
     gameType: GameType;
     trials: Trials[];
+    paths: number[]; 
     worldTime: number; 
     player: Player;
     players: Player[];

@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { Send } from "@mui/icons-material";
-import type { InputTypes, Trials} from "../assets/types";
+import type { Trials} from "../assets/types";
 import { GameClue } from "../components/map/GameClue";
 import BaseCard from "./BaseCard";
 import { Box, Slide, TextField, Typography } from "@mui/material";
@@ -16,8 +15,6 @@ type Props = {
 }; 
 
 const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResponse, ValidateResponse}) => {
-    const [inputType, setInputType] = useState<InputTypes>('text'); 
-
     return (
         <Slide direction={transition ? 'right' : 'left'} in={transition} mountOnEnter unmountOnExit>
             <Box>
@@ -28,7 +25,7 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: 1,
-                        borderRadius: '20px',
+                        borderRadius: '5px',
                         // 1. Semi-transparent background
                         backgroundColor: 'rgba(255, 255, 255, 0.15)', 
                         // 2. The "Frosted" effect
@@ -63,15 +60,15 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                                 fontSize: '12px',
                                 pl: '10px'
                             }}
-                        >{`${0}`}</Typography>
+                        >{trial.hint[path]}</Typography>
                     }
                     content={
                         <GameClue 
                             showClue={false}
                             clue={trial.text[path]}
                             validateResponse={ValidateResponse} 
-                            inputType={inputType}
-                            hint={`${trial.hint[path]}`}//{game.clues[index].hint}
+                            inputType={'text'}
+                            hint={`${trial.hint[path]}`}
                             nope={invalidResponse}
                         />
                     }
@@ -82,34 +79,6 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                             gap: 1,
                             justifyContent: 'space-between'
                         }}>
-                            {/*
-                            <IconButton 
-                                onClick={() => setInputType('detect')}
-                                color='error'
-                                size='small'
-                                children={<CameraAlt/>}
-                                sx={{
-                                    boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
-                                }}
-                            />
-                            <IconButton 
-                                onClick={() => setInputType('scan')}
-                                color='success'
-                                size='small'
-                                children={<QrCodeScanner/>}
-                                sx={{
-                                    boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
-                                }}
-                            />
-                            <IconButton 
-                                onClick={() => setInputType('text')}
-                                color='success'
-                                size='small'
-                                children={<QuestionAnswer/>}
-                                sx={{
-                                    boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
-                                }}
-                            />*/}
                             <TextField
                                 id="input-with-icon-textfield"
                                 label={'response'}

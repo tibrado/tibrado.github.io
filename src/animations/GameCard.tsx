@@ -21,7 +21,7 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: 1,
-                        borderRadius: '20px',
+                        borderRadius: '5px',
                         // 1. Semi-transparent background
                         backgroundColor: 'rgba(255, 255, 255, 0.15)', 
                         // 2. The "Frosted" effect

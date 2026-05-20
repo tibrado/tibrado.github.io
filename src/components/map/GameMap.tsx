@@ -99,17 +99,23 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                 <PlayerDisplay name={p.name} position={i} icon={p.icon}/>
             </Marker> : undefined
     }), [world.players]);
-
+    
     const pins = useMemo(() => world.trials.flatMap((clue, index) =>
-        clue.location.flatMap((c, p) => 
-            <Marker
+        clue.location.flatMap((c, p) => {
+            if(world.paths.length - 1 < index)
+                return undefined; 
+            
+            if(world.paths[index] !== p)
+                return undefined
+            
+            return <Marker
                 key={`marker-${index}-${p}`}
                 latitude={c[0]}
                 longitude={c[1]}
                 anchor='bottom'
                 onClick={e => {
                     e.originalEvent.stopPropagation();
-                    setSelected({ mode: 'trial', index: index, path: 0}); 
+                    setSelected({ mode: 'trial', index: index, path: p}); 
                     setPopupCoord({lat: c[0], lng: c[1]});
                     FocusOnPin(c[1], c[0], 1.5);
                 }}
@@ -119,12 +125,14 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                 }}
             >
                 <Place color={
-                    inRange(coord, {latitude: c[0], longitude: c[1]}) && world.current == index ? 'error' 
-                    : index < world.current ? 'success' : undefined
-                }/> 
+                        world.current > index ? 
+                            'success' :  inRange(coord, {latitude: c[0], longitude: c[1]}) ? 'primary' : 'secondary'
+                    }
+                /> 
             </Marker>
-        )), [world.trials, world.current]);
-        
+        })
+    ), [world.trials, world.current]);
+    // ---------------------------------------------------
     return (
         <Map
             ref={mapRef} // 3. Attach the ref to the Map component
@@ -210,7 +218,7 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                             latitude: e.coords.latitude,
                             longitude: e.coords.longitude
                         }
-                    })
+                    }); 
                 }}
             />
 

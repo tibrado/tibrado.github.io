@@ -24,19 +24,17 @@ export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial,
 
 
     const ValidateResponse = (response: string): boolean => {
-        console.log("validation running")
+        response = response.toLocaleLowerCase(); 
         setNope(
             response === "" ? false :
-            !clue.responses.some(item => item.startsWith(response.toLocaleLowerCase()))
+            !clue.responses.some(item => item.startsWith(response))
         ); 
-
-        if (clue.responses.includes(response.toLocaleLowerCase())) {
+        console.log(response, clue.responses)
+        if (clue.responses.includes(response)) {
             if(selected.index >= world.trials.length - 1){ 
                 setWorld({...world, page: 'end'});
             } else {
-                console.log(`Here => ${world.current}`)
-
-                nextTrial(
+               nextTrial(
                     world.trials[selected.index + 1].location[selected.path][1], 
                     world.trials[selected.index + 1].location[selected.path][0]
                 ); 
@@ -48,6 +46,7 @@ export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial,
                             ...world.player,
                             score: world.player.score + calculate_score()
                         },
+                        paths: [...world.paths, clue.responses.indexOf(response)],
                         worldTime: 0
                     })
                 }; 

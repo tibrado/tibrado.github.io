@@ -22,6 +22,7 @@ export const LoadWorldPage: React.FC<Props> = ({world, setWorld}) => {
                 title: '',
                 date: new Date(),
                 trials:[],
+                paths: [],
                 worldTime: 0,
                 player: {game_id: '', date: new Date(Date.now()), uuid: uuid(), name: 'Unknown', score: 0, latitude: 0, longitude: 0, icon: 'cow'},
                 players: [],

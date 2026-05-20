@@ -55,6 +55,7 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
             title: '',
             date: new Date(),
             trials:[],
+            paths: [],
             worldTime: 0,
             player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, latitude: gps?.lat ?? 0, longitude: gps?.lng ?? 0, icon: icon as PlayerIcon},
             players: [],

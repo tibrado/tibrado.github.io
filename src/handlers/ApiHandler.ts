@@ -84,7 +84,8 @@ export async function LoadGames(world: World, setWorld: (world: World) => void):
             console.log(games);
         setWorld({
             ...world,
-            games
+            games,
+            paths: [0]
         }); 
 
         return true; 
@@ -121,6 +122,7 @@ export async function LoadTrial(world: World, setWorld: (world: World) => void, 
             trials: _trails,
             title: gameInfo.title,
             gameType: gameInfo.type,
+            paths: [0],
             player: {
                 ...world.player,
                 game_id: id
