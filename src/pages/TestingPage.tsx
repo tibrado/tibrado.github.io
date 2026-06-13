@@ -1,15 +1,22 @@
-import {Table, TableBody, TableCell, TableContainer, TableRow, Typography, Avatar, Backdrop} from '@mui/material';
-import { useWorld } from '../context';
-import BaseCard from '../animations/BaseCard';
+import React from 'react';
+import { Avatar, Box, IconButton, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
+import BaseCard, {RewardBaseCard} from '../animations/BaseCard';
+import type { Player } from '../assets/types';
 
-function LeaderBoard(){
-    const {world} = useWorld(); 
+type Props = {
+    players: Player[]; 
+}; 
+
+
+
+const P1: Player = { game_id: '0',date: new Date(0),name: 'my name is',score: 1, latitude: 0,longitude: 0,icon: 'buffalo',uuid: '0'}
+const P2: Player = { game_id: '0',date: new Date(0),name: 'p2',score: 1, latitude: 0,longitude: 0,icon: 'buffalo',uuid: '1'}
+const P3: Player = { game_id: '0',date: new Date(0),name: 'p3',score: 1, latitude: 0,longitude: 0,icon: 'buffalo',uuid: '2'}
+
+export const LeaderBoardCard: React.FC<Props> = ({players}) => {
+    players = [P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3]; 
+
     return (
-        <Backdrop
-            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-            open={true}
-            onClick={undefined}
-        >
         <BaseCard
             style={{
                 width: '250px',
@@ -53,13 +60,13 @@ function LeaderBoard(){
                         fontSize: '12px',
                         pl: '10px'
                     }}
-                >{world.gameType}</Typography>
+                >{`Sub Header or Game title`}</Typography>
             }
             content={
                 <TableContainer sx={{overflowY: 'auto', height: '100%' }}>
                     <Table size="small" stickyHeader>
                         <TableBody>
-                        {world.players.map((p, i) => (
+                        {players.map((p, i) => (
                             <TableRow 
                             key={i} 
                             hover 
@@ -103,8 +110,50 @@ function LeaderBoard(){
                 </TableContainer>
             }
         />
-        </Backdrop>
   );
 };
 
-export default LeaderBoard; 
+
+// --------------------------------------------------------------------
+import { Cancel } from '@mui/icons-material';
+type PropCard = {}
+export const RewardCard: React.FC<PropCard> = ({}) => {
+    return (
+        <Box>
+        <RewardBaseCard
+            style={{
+                width: '250px',
+                height: '350px',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 1,
+                borderRadius: '5px',
+                // 1. Semi-transparent background
+                backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+                // 2. The "Frosted" effect
+                backdropFilter: 'blur(12px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(12px) saturate(180%)', // Safari support
+                // 3. Subtle border to define the edges
+                border: '2px solid rgba(255, 255, 255, 0.1)',
+                // 4. Soft shadow for depth
+                boxShadow: '0 8px 32px 0 rgb(255, 255, 255)',
+                color: '#000000ff',
+            }}
+            content={
+                <Box sx={{bgcolor: 'yellow', width: '100%', height: '100%'}}>
+                    <Box>
+                        <Cancel/>
+                    </Box>
+                    
+                    <Box sx={{alignContent: 'center'}}>
+                        'Name'
+                    </Box>
+                </Box>
+            }
+            actions={
+                <Box>Test</Box>
+            }
+        />
+        </Box>
+  );
+};

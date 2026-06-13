@@ -13,7 +13,16 @@ export const PlayerIcons: string[] = ['bear','buffalo','chick','chicken','cow','
     'sloth','snake','walrus','whale','zebra'
 ]; 
 export type MapMode = 'game' | 'trial'; 
-export type GameType = undefined | 'Fire' | 'Water' | 'Earth' | 'Air' | 'Spirit' | 'Ether'; 
+export type GameType = 'Fire' | 'Water' | 'Earth' | 'Air' | 'Spirit' | 'Ether'; 
+export type MenuOptions = 'none' | 'leaderBoard';
+export const Team: Record<GameType, string> = {
+    Fire: 'red',
+    Water: 'blue',
+    Earth: 'brown',
+    Air: 'gray',
+    Spirit: 'white',
+    Ether: 'purple' 
+}; 
 
 //------------------------------------GAME LIST---------------------------------------------//
 export type GameInfo = {
@@ -55,14 +64,14 @@ export type World = {
     page: Page; 
     title: string;
     date: Date;
-    gameType: GameType;
+    gameType?: GameType;
     trials: Trials[];
     paths: number[]; 
     worldTime: number; 
     player: Player;
     players: Player[];
-    games: Games | undefined; 
-    loading: boolean; 
+    games: Games | undefined;
+    menu?: MenuOptions;
 }; 
 //------------------------------------------------------------------------------------------//
 export type Player = {

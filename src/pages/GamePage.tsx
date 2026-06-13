@@ -1,18 +1,18 @@
 import React, { useState, type ReactNode } from 'react'; 
-import type { Trials, World, MapMode } from '../assets/types';
+import type { Trials, MapMode } from '../assets/types';
 import TrailCard from '../animations/TrialCard';
 import GameCard from '../animations/GameCard';
 import { LoadTrial } from '../handlers/ApiHandler';
+import { useWorld } from '../context';
 
 type Props = {
-    world: World;
     selected: {mode: MapMode, index: number, path: number};
-    setWorld: (game: World) => void; 
-    nextTrial: (long: number, lat: number) => void;
+    FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void;
     setPopupCoord: (coord: {lat: number, lng: number} | undefined) => void; 
 };
 
-export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial, setPopupCoord}) => {
+export const GamePage: React.FC<Props> = ({selected, FocusOnPin, setPopupCoord}) => {
+    const {world, setWorld} = useWorld(); 
     const [nope, setNope] = useState<boolean>(false); 
     const clue: Trials = world.trials[selected.index]; 
     
@@ -32,15 +32,16 @@ export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial,
         console.log(response, clue.responses)
         if (clue.responses.includes(response)) {
             if(selected.index >= world.trials.length - 1){ 
-                setWorld({...world, page: 'end'});
+                setWorld(pre => ({...pre, page: 'end'}));
             } else {
-               nextTrial(
+                FocusOnPin(
                     world.trials[selected.index + 1].location[selected.path][1], 
-                    world.trials[selected.index + 1].location[selected.path][0]
+                    world.trials[selected.index + 1].location[selected.path][0],
+                    0
                 ); 
                 if(selected.index === world.current){
-                    setWorld({
-                        ...world, 
+                    setWorld(pre => ({
+                        ...pre, 
                         current: world.current + 1, 
                         player: {
                             ...world.player,
@@ -48,7 +49,7 @@ export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial,
                         },
                         paths: [...world.paths, clue.responses.indexOf(response)],
                         worldTime: 0
-                    })
+                    })); 
                 }; 
             }; 
             handleCancel()
@@ -64,7 +65,7 @@ export const GamePage: React.FC<Props> = ({world, selected, setWorld, nextTrial,
     const handleGameAccept = () => {
         const g = world.games?.hunts[selected.index]; 
         if(g){
-            LoadTrial(world, setWorld, g); 
+            LoadTrial(setWorld, g, FocusOnPin); 
         };
 
         setPopupCoord(undefined);

@@ -1,17 +1,44 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
 import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/material';
 import { StartPage } from './pages/StartPage';
+import {LeaderBoardCard, RewardCard} from './pages/TestingPage';
 import {GameMap} from './components/map/GameMap';
-import type { World, Page } from './assets/types';
+import type { Page, PlayerIcon } from './assets/types';
 import Done from './pages/DonePage';
 import { PostPlayer, GetPlayers } from './handlers/ApiHandler';
 import { LoadWorldPage } from './pages/LoadPage';
-import GameMenu from './components/GameMenu';
+import GameMenu, {GameMenuItem} from './components/GameMenu';
+import { v4 as uuid } from 'uuid';
+import { LoadGames } from './handlers/ApiHandler';
+import { useWorld } from './context';
 
 const theme = createTheme();
+const TESTING: boolean = false; 
 
 export const App: React.FC = () => {
-    const [world, setWorld] = useState<World | undefined>(undefined);
+    const [loading, setLoading] = useState<boolean>(false); 
+    const {world, setWorld} = useWorld(); 
+
+    const OnStart = (name: string, icon: PlayerIcon) => {
+        const params = new URLSearchParams(window.location.search); 
+        const _id = params.get('gameId') ?? undefined;
+
+        setWorld(pre => ({
+            ...pre,
+            id: _id,
+            page: 'game',
+            player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, latitude: 0, longitude: 0, icon: icon as PlayerIcon}
+        })); 
+        
+        LoadGames(setWorld); 
+        setLoading(true); 
+    }; 
+    // check if world was updated 
+    useEffect(() => {
+        if(world && loading){
+            
+        }; 
+    }, [world])
 
     // Monitor Game Scores
     useEffect(() => {
@@ -31,23 +58,27 @@ export const App: React.FC = () => {
         }
     }, { once: true });
     */
+
+    // ------------------------------
     const Pages: Record<Page, ReactNode> = {
-        start: <StartPage setWorld={setWorld} />,
+        start: <StartPage onStart={OnStart} />,
         game: world ? 
             <Box sx={{position: 'relative'}}>
-                <GameMenu world={world} setWorld={setWorld}/>
-                <GameMap world={world} setWorld={setWorld} /> 
+                <GameMenu/>
+                <GameMap/> 
             </Box>
         : <>World does not exists.</>,
-        end: <Done />,
+        end: <Done />
     };
 
-
+    // ---------------------------------
     return (
         <ThemeProvider theme={theme}>
         <CssBaseline />
+        {!TESTING ? 
         <Box>
-            <LoadWorldPage load={world?.loading ?? false}/>
+            {loading ? <LoadWorldPage loading={loading} setLoading={setLoading}/> : <></>}
+            {<GameMenuItem/>}
             <Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',
@@ -59,7 +90,7 @@ export const App: React.FC = () => {
             }}>
                 {Pages[world ? world.page : 'start']}
             </Paper>
-        </Box>
+        </Box> : <>Testing</>}
         </ThemeProvider>
     );
 };

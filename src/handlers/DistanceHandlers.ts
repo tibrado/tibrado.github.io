@@ -14,7 +14,8 @@ export function getDistance(A: Coordinates, B: Coordinates): number {
 
 export function inRange( userLocation: Coordinates | undefined, pin:  Coordinates): boolean {
     if(userLocation){
-        return getDistance(userLocation, pin) < (userLocation?.accuracy ?? 0); 
+        console.log(getDistance(userLocation, pin))
+        return getDistance(userLocation, pin) < (userLocation?.accuracy ?? 2); 
     }; 
     return false; 
 };

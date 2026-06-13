@@ -1,18 +1,14 @@
 import {useState, useEffect} from 'react'; 
 import {Typography } from '@mui/material';
-import type { World } from '../assets/types';
+import { useWorld } from '../context';
 
-type Props = {
-    world: World | undefined;  
-    setWorld: (world: World) => void; 
-}; 
-
-export default function Timer({world, setWorld}: Props){
+export default function Timer(){
+    const {world, setWorld} = useWorld(); 
     const [time, setTime] = useState<number>(world?.worldTime ?? 0); 
 
     useEffect(() => {
         if(world?.id){
-            setWorld({...world, worldTime: time})
+            setWorld(pre => ({...pre, worldTime: time})); 
         }
     }, [time]); 
 

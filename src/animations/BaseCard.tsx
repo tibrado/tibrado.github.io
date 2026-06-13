@@ -3,7 +3,7 @@ import { Card, CardHeader, CardContent, CardActions, type SxProps, type Theme } 
 
 type CardProps = {
     style?: SxProps<Theme>;
-    header: ReactNode;
+    header?: ReactNode;
     subheader?: ReactNode;
     content: ReactNode;
     actions?: ReactNode;
@@ -44,3 +44,35 @@ const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actio
 
 
 export default BaseCard; 
+
+export const RewardBaseCard: React.FC<CardProps> = ({style, header, subheader, content, actions, avatar}) => {
+    return(
+        <Card sx={style}>
+            <CardHeader
+                sx={{p: 0}}
+                avatar={avatar}
+                title={header}
+                subheader={subheader}
+            />
+        
+            <CardContent 
+                sx={{
+                    p: 0, m:0, display: 'flex', height:'100%',  flexDirection: "column", width: '100%'
+                }}
+            >
+                {content}
+            </CardContent>
+
+            <CardActions 
+                disableSpacing 
+                sx={{
+                    p: 0,
+                    m: 0
+                }}
+            >
+                {actions}
+            </CardActions>
+        </Card>
+
+    ); 
+}; 

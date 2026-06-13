@@ -4,21 +4,16 @@ import { Button, Card, CardActions, CardContent, CardHeader, TextField,
     Avatar, Grid
 } from '@mui/material';
 import { Public } from '@mui/icons-material';
-import { v4 as uuid } from 'uuid';
-import { LoadGames } from '../handlers/ApiHandler';
 
 type Props = {
-    setWorld: (world: World | undefined) => void; 
+    onStart: (name: string, icon: PlayerIcon) => void; 
 };
-export const StartPage: React.FC<Props> = ({setWorld}) => {
+export const StartPage: React.FC<Props> = ({ onStart}) => {
     const [name, setName] = useState<string>('')
     const [icon, setIcon] = useState<string>('bear')
     const [gps, setGps] = useState<{lat: number, lng: number} | undefined>(); 
     
     const valid = name.length > 15 || name.length < 3; 
-    // -- If user access through qr-scan
-    const params = new URLSearchParams(window.location.search); 
-
     // ----- get user location on start 
     useEffect(() => {
         if(!navigator.geolocation) {
@@ -43,29 +38,6 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
         );
 
     }, []); 
-
-    // ------------------------------------------------------------
-    const OnStart = () => {
-        const _id = params.get('gameId') ?? undefined; 
-        const _world: World = {
-            id: _id, 
-            description: '',
-            current: 0,
-            page: 'game',
-            title: '',
-            date: new Date(),
-            trials:[],
-            paths: [],
-            worldTime: 0,
-            player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, latitude: gps?.lat ?? 0, longitude: gps?.lng ?? 0, icon: icon as PlayerIcon},
-            players: [],
-            gameType: undefined,
-            games: undefined,
-            loading: true
-        }; 
-        console.log(gps)
-        LoadGames(_world, setWorld); 
-    }; 
 
     return (
         <Card 
@@ -207,7 +179,7 @@ export const StartPage: React.FC<Props> = ({setWorld}) => {
 
             <CardActions disableSpacing>
                 <Button 
-                    onClick={OnStart}
+                    onClick={() => onStart(name, icon as PlayerIcon)}
                     variant="contained"
                     color='success'
                     size='small'

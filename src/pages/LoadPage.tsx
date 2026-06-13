@@ -1,5 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
+import { GpsHandler } from "../handlers/GpsHandler";
+import { LocationOff, LocationOn } from "@mui/icons-material";
+import type { Coordinates } from "../assets/types";
+import { useWorld } from "../context";
+
 export type LoadStatus = {
     map: boolean; 
     games: boolean;
@@ -8,13 +13,36 @@ export type LoadStatus = {
 
 
 type Props = {
-    load: boolean;
+    loading: boolean; 
+    setLoading: (loading: boolean) => void; 
 };
-export const LoadWorldPage: React.FC<Props> = ({load}) => {
+export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
+    const {world, setWorld} = useWorld(); 
+    const [gps, setGps] = useState<Coordinates | undefined>(); 
+    const [status, setStatus] = useState<string>(''); 
+    
+    GpsHandler(setStatus, setGps);
+    
+    console.log(status, gps, world)
+    useEffect(() => {
+        if(gps && world){
+            console.log('player', gps)
+            setWorld(pre => ({
+                ...pre,
+                player:{
+                    ...world.player,
+                    latitude: gps.latitude,
+                    longitude: gps.longitude
+                }
+            })); 
+
+            setLoading(false); 
+        };
+    }, [gps]); 
 
     return (
         <Backdrop
-            open={load}
+            open={loading}
             sx={{
                 backgroundColor: 'hsla(230, 59%, 25%, 1)', // fallback
                 backgroundImage: 'linear-gradient(180deg, hsla(230,59%,25%,1) 0%, hsla(359,73%,39%,1) 70%, hsla(32,97%,59%,1) 100%)',
@@ -31,13 +59,25 @@ export const LoadWorldPage: React.FC<Props> = ({load}) => {
             <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
                 LOADING WORLD
             </Typography>
+        
+        <Typography variant="caption" color="black" 
+            sx={{ 
+                fontStyle: 'italic', 
+                opacity: 0.7,
+                display: 'inline-flex',
+                alignItems: 'center', 
+                gap: 0.5
+            }}
+        >
+            {status == "granted" ? <LocationOn/> : <LocationOff fontSize="small"/>}
+            gps required - status {status}
+        </Typography>
         </Box>
-  
+        
         
         <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
             "Tip: Keep your eyes on the prize!"
         </Typography>
-
         </Backdrop>
     );
    

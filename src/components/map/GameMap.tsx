@@ -3,20 +3,16 @@ import { Map, Marker, Popup, GeolocateControl, type MapRef } from 'react-map-gl/
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Place } from '@mui/icons-material';
 import { GamePage } from '../../pages/GamePage';
-import type { World, Coordinates, MapMode } from '../../assets/types';
+import type { Coordinates, MapMode } from '../../assets/types';
 import {inRange} from '../../handlers/DistanceHandlers';
 import { PlayerDisplay } from '../player_details/Player';
 import GameMapPin from '../../animations/GameMapPin';
-
+import { useWorld } from '../../context';
 
 const MAP_ZOOM = 14.5; 
 
-type Props = {
-    world: World;
-    setWorld: (world: World | undefined) => void; 
-}; 
-
-export const GameMap: React.FC<Props> = ({world, setWorld}) => {
+export function GameMap() {
+    const {world, setWorld} = useWorld(); 
     const [selected, setSelected] = useState<{mode: MapMode, index: number, path: number}>({mode: 'game', index: 0, path: 0}); 
     const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
@@ -89,7 +85,6 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                 anchor='bottom'
                 onClick={e => {
                     e.originalEvent.stopPropagation();
-                    console.log(`${i}.${p.name}`)
                 }}
                 style={{
                     cursor: 'pointer',
@@ -135,8 +130,8 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
     // ---------------------------------------------------
     return (
         <Map
-            ref={mapRef} // 3. Attach the ref to the Map component
-            attributionControl={false} // Removes the 'i' and copyright text
+            ref={mapRef}
+            attributionControl={false}
             onLoad={(e) => {
                 geolocateRef.current?.trigger(); 
 
@@ -146,11 +141,9 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                 // Remove other icons 
                 if(style && style.layers){
                     style.layers
-                    .filter(l => l.type === 'symbol')    
+                    .filter(l => l.type === 'symbol' && !l.id.includes('the-scavenger'))    
                     .forEach(l =>  _map.removeLayer(l.id))
                 }; 
-                
-                setWorld({...world, loading: false}); 
             }}
 
             initialViewState={{
@@ -211,14 +204,14 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                         accuracy: e.target?._accuracy
                     }); 
                     
-                    setWorld({
-                        ...world, 
+                    setWorld(pre => ({
+                        ...pre, 
                         player: {
                             ...world.player,
                             latitude: e.coords.latitude,
                             longitude: e.coords.longitude
                         }
-                    }); 
+                    })); 
                 }}
             />
 
@@ -234,7 +227,11 @@ export const GameMap: React.FC<Props> = ({world, setWorld}) => {
                     style={{padding: 0, margin: 0, zIndex: 3}}
                     onClose={() => setPopupCoord(undefined)}
                 >
-                    <GamePage world={world} setWorld={setWorld} selected={selected} nextTrial={FocusOnPin} setPopupCoord={setPopupCoord}/>
+                    {
+                        inRange(coord, {latitude: popupCoord.lat, longitude: popupCoord.lng})
+                        ? <GamePage selected={selected} FocusOnPin={FocusOnPin} setPopupCoord={setPopupCoord}/>
+                        : "You are not in range"
+                    }
                 </Popup>
             )}
         </Map>

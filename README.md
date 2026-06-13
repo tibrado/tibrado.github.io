@@ -8,6 +8,7 @@
 - [x] Add icon for player selection. Also just make a character creation screen and setup for players 
 ### General Updates & Improvements 
 - [x] Combine the functionality of setState to setGame.
+- [ ] * Create a global context for world and setWorld
 - [ ] Add settings mapping for control of map zoom feature example: Building, Outdoors, etc.. feature will set who users interact with the game map.
 ### Landing Page
 ### Game Page

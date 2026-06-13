@@ -1,20 +1,21 @@
-import React from "react";
-import {Menu, MenuItem, Box, Button, Avatar} from "@mui/material"; 
-import type { World } from "../assets/types";
+import React, { type ReactNode } from "react";
+import {Menu, MenuItem, Box, Button, Avatar, Backdrop} from "@mui/material"; 
+import type { MenuOptions } from "../assets/types";
 import Timer from "./Timer";
+import LeaderBoard from './LeaderBoard';
+import { useWorld } from "../context";
 
-type Props = {
-    world: World; 
-    setWorld: (w: World) => void; 
-}; 
+//--------------------------------------------------------------------------------//
+function GameMenu() {
+    const {world, setWorld} = useWorld(); 
 
-const GameMenu: React.FC<Props> = ({world, setWorld}) => {
+    if(!world) return; 
+    
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClose = () => {
         setAnchorEl(null);
     };
-
 
     return (
         <Box
@@ -47,7 +48,7 @@ const GameMenu: React.FC<Props> = ({world, setWorld}) => {
                     />
                 }
             >
-                {world.id ? <Timer world={world} setWorld={setWorld}/> : <></>}
+                {world.id ? <Timer/> : <></>}
             </Button>
 
             <Menu
@@ -64,23 +65,57 @@ const GameMenu: React.FC<Props> = ({world, setWorld}) => {
                     horizontal: 'left',
                 }}
             >
-                <MenuItem onClick={handleClose}>Leaderboard</MenuItem>
+                {/*OLeader Board */}
                 <MenuItem onClick={() => {
                     handleClose(); 
-                    setWorld({
-                        ...world, 
+                    setWorld(pre => ({
+                        ...pre,
+                        menu: 'leaderBoard'
+                    }));
+                }
+                }>Leaderboard</MenuItem>
+                <MenuItem onClick={() => {
+                    handleClose(); 
+                    setWorld( pre => ({
+                        ...pre, 
                         id: undefined,
                         trials: [],
                         players: [],
                         worldTime: 0,
                         current: 0
-                    }); 
+                    }));
                 }}>Quit Game</MenuItem>
             </Menu>
+            
         </Box>
     )
 
 }; 
 
-
 export default GameMenu;
+
+//------------------------------------Menu Backdrop--------------------------------------------//
+export function GameMenuItem(){
+    const {world, setWorld} = useWorld(); 
+
+    if(!world?.menu) return; 
+    console.log('here')
+    const handleClose = () => {
+        setWorld(pre => ({...pre, menu: 'none'})); 
+    }; 
+
+    const Menus: Record<MenuOptions, ReactNode> = {
+        none: <></>,
+        leaderBoard: <LeaderBoard/> 
+    };
+
+    return(
+        <Backdrop
+            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+            open={world?.menu != 'none'}
+            onClick={handleClose}
+        >
+            {Menus[world.menu]}
+        </Backdrop>
+    )
+}; 

@@ -1,12 +1,11 @@
-import type { World, Player, Games, GameInfo, Trials } from "../assets/types";
+import type { Player, Games, GameInfo, Trials, World } from "../assets/types";
 
 const API = "https://script.google.com/macros/s/AKfycbxtZho5mvTwgZ6ifc3wROu5krIMctQDlYD1gyFSFia7PZInZX4NmmgVZKMD26QyG2Nm/exec"; 
 const GAMES_API = "https://raw.githubusercontent.com/tibrado/regnevacs/refs/heads/main/games.json"; 
 const TRIAL_API = "https://raw.githubusercontent.com/tibrado/regnevacs/refs/heads/main/"; 
 
-export async function GetPlayers(world: World, setWorld: (world: World) => void): Promise<boolean> {
+export async function GetPlayers(world: World, setWorld: Function): Promise<boolean> {
     try{
-
         const response = await fetch(`${API}?game_id=${world.id}`); 
 
         if(!response.ok){
@@ -28,7 +27,7 @@ export async function GetPlayers(world: World, setWorld: (world: World) => void)
                 p.uuid !== world.player.uuid // Remove active player
             ).map(({ title, rows: _rows, ...rest }) => rest as Player); // Remove extra fields
             
-            setWorld({...world, players: players});
+            setWorld((pre: World) => ({...pre, players: players}));
             return true; 
         }; 
 
@@ -59,7 +58,7 @@ export async function PostPlayer(player: Player): Promise<string | undefined> {
     }
 }; 
 
-export async function LoadGames(world: World, setWorld: (world: World) => void): Promise<boolean>{
+export async function LoadGames(setWorld: Function): Promise<boolean>{
     try{
         const response = await fetch(GAMES_API); 
         
@@ -82,11 +81,11 @@ export async function LoadGames(world: World, setWorld: (world: World) => void):
         };  
         
             console.log(games);
-        setWorld({
-            ...world,
-            games,
+        setWorld((pre: World) => ({
+            ...pre,
+            games: games,
             paths: [0]
-        }); 
+        })); 
 
         return true; 
     } catch (e) {
@@ -95,8 +94,7 @@ export async function LoadGames(world: World, setWorld: (world: World) => void):
 
 }; 
 
-export async function LoadTrial(world: World, setWorld: (world: World) => void, gameInfo: GameInfo): Promise<boolean>{
-    
+export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void): Promise<boolean>{
     try{
         const id = `${gameInfo.coord}`; 
         const response = await fetch(`${TRIAL_API}${id}.json`); 
@@ -116,19 +114,22 @@ export async function LoadTrial(world: World, setWorld: (world: World) => void, 
                 location: c.location
             })) : []; 
             
-        setWorld({
-            ...world,
+        setWorld((pre: World) => ({
+            ...pre,
             id: id,
             trials: _trails,
             title: gameInfo.title,
             gameType: gameInfo.type,
             paths: [0],
             player: {
-                ...world.player,
+                ...pre.player,
                 game_id: id
-            },
-            loading: false
-        }); 
+            }
+        })); 
+
+        // Fly to first pin 
+        const loc = _trails[0].location[0]; 
+        FocusOnPin(loc[1], loc[0], 1.5); 
 
         return true; 
     } catch (e) {
