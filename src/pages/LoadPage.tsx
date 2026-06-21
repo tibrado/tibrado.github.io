@@ -31,8 +31,8 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
                 ...pre,
                 player:{
                     ...world.player,
-                    latitude: gps.latitude,
-                    longitude: gps.longitude
+                    lat: gps.latitude,
+                    lng: gps.longitude
                 }
             })); 
 

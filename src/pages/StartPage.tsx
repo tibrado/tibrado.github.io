@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'; 
-import { PlayerIcons, type PlayerIcon, type World } from '../assets/types';
+import React, { useState } from 'react'; 
+import { PlayerIcons, type PlayerIcon } from '../assets/types';
 import { Button, Card, CardActions, CardContent, CardHeader, TextField,
     Avatar, Grid
 } from '@mui/material';
@@ -11,33 +11,8 @@ type Props = {
 export const StartPage: React.FC<Props> = ({ onStart}) => {
     const [name, setName] = useState<string>('')
     const [icon, setIcon] = useState<string>('bear')
-    const [gps, setGps] = useState<{lat: number, lng: number} | undefined>(); 
     
-    const valid = name.length > 15 || name.length < 3; 
-    // ----- get user location on start 
-    useEffect(() => {
-        if(!navigator.geolocation) {
-            console.log('Geolocation is not supported by your browser');
-            return;
-        }; 
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                setGps({
-                    lat: pos.coords.latitude,
-                    lng: pos.coords.longitude,
-                });
-            },
-            (err) => {
-                console.log(`Error: ${err.message}`);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0,
-            }
-        );
-
-    }, []); 
+    const valid = name.length > 15 || name.length < 3;
 
     return (
         <Card 
@@ -74,7 +49,7 @@ export const StartPage: React.FC<Props> = ({ onStart}) => {
                             <Avatar 
                                 key={`selected_icon`}
                                 variant="square"
-                                src={`/icons/${icon}.png`}
+                                src={`/player_icons/${icon}.png`}
                                 sx={{
                                     borderRadius: '10%',
                                     width: 120, 
@@ -150,7 +125,7 @@ export const StartPage: React.FC<Props> = ({ onStart}) => {
                                     key={`pia_${i}`}
                                     variant="square"
                                     alt="UK" 
-                                    src={`/icons/${p}.png`}
+                                    src={`/player_icons/${p}.png`}
                                     sx={{
                                         border: '1px solid rgba(0, 0, 0, 0.38)',
                                         borderRadius:  '25% 5%',

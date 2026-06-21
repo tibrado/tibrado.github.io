@@ -2,7 +2,7 @@ import React, { useState, type ReactNode } from 'react';
 import type { Trials, MapMode } from '../assets/types';
 import TrailCard from '../animations/TrialCard';
 import GameCard from '../animations/GameCard';
-import { LoadTrial } from '../handlers/ApiHandler';
+import { GetPlayers, LoadTrial } from '../handlers/ApiHandler';
 import { useWorld } from '../context';
 
 type Props = {
@@ -65,7 +65,10 @@ export const GamePage: React.FC<Props> = ({selected, FocusOnPin, setPopupCoord})
     const handleGameAccept = () => {
         const g = world.games?.hunts[selected.index]; 
         if(g){
-            LoadTrial(setWorld, g, FocusOnPin); 
+            LoadTrial(setWorld, g, FocusOnPin)
+                .then(() => {
+                    GetPlayers(world, setWorld);
+                 }); 
         };
 
         setPopupCoord(undefined);

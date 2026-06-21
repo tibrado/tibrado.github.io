@@ -1,13 +1,12 @@
-import { useMemo, useState, useRef, useCallback } from 'react';
-import { Map, Marker, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre';
+import { useState, useRef, useCallback} from 'react';
+import { Map, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre';
+import type { MapStyleImageMissingEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Place } from '@mui/icons-material';
 import { GamePage } from '../../pages/GamePage';
-import type { Coordinates, MapMode } from '../../assets/types';
-import {inRange} from '../../handlers/DistanceHandlers';
-import { PlayerDisplay } from '../player_details/Player';
-import GameMapPin from '../../animations/GameMapPin';
+import { PlayerIcons, OtherIcons, type Coordinates, type MapMode } from '../../assets/types';
 import { useWorld } from '../../context';
+import { QuestLayer,TrialLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
+import { PulsingPin } from './pins/PinAnimations';
 
 const MAP_ZOOM = 14.5; 
 
@@ -16,10 +15,12 @@ export function GameMap() {
     const [selected, setSelected] = useState<{mode: MapMode, index: number, path: number}>({mode: 'game', index: 0, path: 0}); 
     const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
+    
+    const loadingImages = new Set<string>(); 
     const mapRef = useRef<MapRef>(null);
     const geolocateRef = useRef<any>(null); 
 
-    const FocusOnPin = useCallback((lng: number, lat: number, zoom_offset: number = 0) => {
+    const onPinFocus = useCallback((lng: number, lat: number, zoom_offset: number = 0) => {
         mapRef.current?.flyTo({
             center: [lng, lat] ,
             duration: 2000, // Duration in milliseconds
@@ -28,127 +29,80 @@ export function GameMap() {
         });
     }, []);  
 
-    const user_pin = useMemo(() => {
-        return (
-            coord ? 
-                <Marker
-                    key={`active-user`}
-                    latitude={coord.latitude}
-                    longitude={coord.longitude}
-                    anchor='bottom'
-                    offset={[0, 20]}
-                    onClick={e => {
-                        e.originalEvent.stopPropagation();
-                        console.log(`user}`)
-                    }}
-                    style={{
-                        cursor: 'pointer',
-                        zIndex: 1
-                    }}
-                >
-                    <PlayerDisplay name={world.player.name} position={0} icon={world.player.icon}/>
-                </Marker> 
-            : undefined
-        )
-    }, [coord]); 
-
-    const game_pins = useMemo(() => world.games?.hunts.map((g, index) => {
-        return ( world.games ? 
-            <Marker
-                key={`event_marker-${index}`}
-                latitude={g.coord[0]}
-                longitude={g.coord[1]}
-                anchor='bottom'
-                onClick={e => {
-                    e.originalEvent.stopPropagation();
-                    FocusOnPin(g.coord[1], g.coord[0]);
-                    setPopupCoord({lat: g.coord[0], lng: g.coord[1]}); 
-                    setSelected({ mode: 'game', index: index, path: 0}); 
-                    
-                }}
-                style={{
-                    cursor: 'pointer',
-                    zIndex: 2
-                }}
-            >
-                <GameMapPin/>
-            </Marker> : <></>
-        )
-    }), [world.games]);
-
-    const player_pins = useMemo(() => world.players.map((p, i) => {
-        return world.id ?  
-            <Marker
-                key={`player-${i}`}
-                latitude={p.latitude}
-                longitude={p.longitude}
-                anchor='bottom'
-                onClick={e => {
-                    e.originalEvent.stopPropagation();
-                }}
-                style={{
-                    cursor: 'pointer',
-                    zIndex: 1
-                }}
-            >
-                <PlayerDisplay name={p.name} position={i} icon={p.icon}/>
-            </Marker> : undefined
-    }), [world.players]);
     
-    const pins = useMemo(() => world.trials.flatMap((clue, index) =>
-        clue.location.flatMap((c, p) => {
-            if(world.paths.length - 1 < index)
-                return undefined; 
-            
-            if(world.paths[index] !== p)
-                return undefined
-            
-            return <Marker
-                key={`marker-${index}-${p}`}
-                latitude={c[0]}
-                longitude={c[1]}
-                anchor='bottom'
-                onClick={e => {
-                    e.originalEvent.stopPropagation();
-                    setSelected({ mode: 'trial', index: index, path: p}); 
-                    setPopupCoord({lat: c[0], lng: c[1]});
-                    FocusOnPin(c[1], c[0], 1.5);
-                }}
-                style={{
-                    cursor: 'pointer',
-                    zIndex: 1
-                }}
-            >
-                <Place color={
-                        world.current > index ? 
-                            'success' :  inRange(coord, {latitude: c[0], longitude: c[1]}) ? 'primary' : 'secondary'
-                    }
-                /> 
-            </Marker>
-        })
-    ), [world.trials, world.current]);
+    function onClickGamePin(id: number, lng: number, lat: number){
+        onPinFocus(lng, lat);
+        setPopupCoord({lat: lat, lng: lng}); 
+        setSelected({ mode: 'game', index: id, path: 0}); 
+    }; 
+    
+    function onClickTrialPin(id: number, path: number, lng: number, lat: number){
+        onPinFocus(lng, lat, 1.5);
+        setPopupCoord({lat: lat, lng: lng}); 
+        setSelected({ mode: 'trial', index: id, path: path}); 
+    }; 
+
     // ---------------------------------------------------
+    const handleMissingIcon = async (e: MapStyleImageMissingEvent) => {
+        const map = e.target; 
+        const iconName = e.id;
+      
+        if(PlayerIcons.includes(iconName) || OtherIcons.includes(iconName)){
+            if(map.hasImage(iconName) || loadingImages.has(iconName)){
+                return; 
+            };
+            
+            loadingImages.add(iconName); 
+
+            try {
+                if(OtherIcons.includes(iconName)){
+                    const image = await map.loadImage(`other_icons/${iconName}.png`)
+                    map.addImage(iconName, image.data);
+                } 
+                else{
+                    map.addImage(iconName, PulsingPin(300, map, `player_icons/${iconName}.png`));
+                }
+            } catch (error) {
+                console.error(`Failed to load map icon:`, error);
+            }
+        }
+    };
+
+
     return (
         <Map
             ref={mapRef}
             attributionControl={false}
             onLoad={(e) => {
+                const map = e.target; 
+
+                map.on('styleimagemissing', handleMissingIcon)
+                map.on('click', 'scavenger-game-layer', (e) => {
+                    const features = e.features; 
+
+                    if(features){
+                        onClickGamePin(features[0].id as number, e.lngLat.lng, e.lngLat.lat)
+                    }
+                }); 
+
+                map.on('click', 'scavenger-trial-layer', (e) => {
+                    const features = e.features; 
+
+                    if(features){
+                        console.log(features)
+                        onClickTrialPin(
+                            features[0].properties.id as number,
+                            features[0].properties.path as number, 
+                            e.lngLat.lng, e.lngLat.lat
+                        )
+                    }
+                });
+
                 geolocateRef.current?.trigger(); 
-
-                const _map = e.target; 
-                const style = _map.getStyle(); 
-
-                // Remove other icons 
-                if(style && style.layers){
-                    style.layers
-                    .filter(l => l.type === 'symbol' && !l.id.includes('the-scavenger'))    
-                    .forEach(l =>  _map.removeLayer(l.id))
-                }; 
             }}
-
             initialViewState={{
-                latitude: world.player.latitude,
-                longitude: world.player.longitude,
+                latitude: world.player.lat,
+                longitude: world.player.lng,
                 zoom: coord ? MAP_ZOOM : 1,
                 bearing: 90,
                 pitch: 60,
@@ -195,8 +149,8 @@ export function GameMap() {
                     maxZoom: MAP_ZOOM
                 }}
                 trackUserLocation={true}
-                showAccuracyCircle={true}
-                showUserLocation={true}
+                showAccuracyCircle={false}
+                showUserLocation={false}
                 onGeolocate={(e) => {
                     setCoord({
                         longitude: e.coords.longitude, 
@@ -208,16 +162,18 @@ export function GameMap() {
                         ...pre, 
                         player: {
                             ...world.player,
-                            latitude: e.coords.latitude,
-                            longitude: e.coords.longitude
+                            lat: e.coords.latitude,
+                            lng: e.coords.longitude
                         }
                     })); 
                 }}
             />
 
-            {world.id ? pins : game_pins}
-            {player_pins}
-            {user_pin}
+            <TrialLayer/>
+            <QuestLayer/>
+            <OtherPlayersLayer/>
+            <MainCharacterLayer/>
+
             {popupCoord !== undefined && (
                 <Popup 
                     anchor='center'
@@ -228,8 +184,8 @@ export function GameMap() {
                     onClose={() => setPopupCoord(undefined)}
                 >
                     {
-                        inRange(coord, {latitude: popupCoord.lat, longitude: popupCoord.lng})
-                        ? <GamePage selected={selected} FocusOnPin={FocusOnPin} setPopupCoord={setPopupCoord}/>
+                        true
+                        ? <GamePage selected={selected} FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord}/>
                         : "You are not in range"
                     }
                 </Popup>

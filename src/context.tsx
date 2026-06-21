@@ -19,7 +19,7 @@ const defaultWorld: World = {
     trials:[],
     paths: [],
     worldTime: 0,
-    player: {game_id: '', date: new Date(Date.now()), uuid: '', name: 'default', score: 0, latitude: 0, longitude: 0, icon: 'bear' as PlayerIcon},
+    player: {game_id: '', date: new Date(Date.now()), uuid: '', name: 'default', score: 0, lat: 0, lng: 0, icon: 'bear' as PlayerIcon},
     players: [],
     gameType: undefined,
     games: undefined

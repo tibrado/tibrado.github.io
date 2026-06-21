@@ -18,7 +18,7 @@ export async function GetPlayers(world: World, setWorld: Function): Promise<bool
             const players: Player[] = raw.map(
                 (row) => {
                     // Create object from headers and row values
-                    return ['game_id', 'date', 'name', 'score', 'latitude', 'longitude', 'uuid', 'icon'].reduce((obj, header, index) => {
+                    return ['game_id', 'date', 'name', 'score', 'lat', 'lng', 'uuid', 'icon'].reduce((obj, header, index) => {
                         obj[header] = row[index];
                         return obj;
                     }, {} as any);

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
 import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/material';
 import { StartPage } from './pages/StartPage';
-import {LeaderBoardCard, RewardCard} from './pages/TestingPage';
 import {GameMap} from './components/map/GameMap';
 import type { Page, PlayerIcon } from './assets/types';
 import Done from './pages/DonePage';
@@ -27,7 +26,7 @@ export const App: React.FC = () => {
             ...pre,
             id: _id,
             page: 'game',
-            player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, latitude: 0, longitude: 0, icon: icon as PlayerIcon}
+            player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, lat: 0, lng: 0, icon: icon as PlayerIcon}
         })); 
         
         LoadGames(setWorld); 

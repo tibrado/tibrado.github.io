@@ -11,7 +11,8 @@ export const PlayerIcons: string[] = ['bear','buffalo','chick','chicken','cow','
     'duck','elephant','frog','giraffe','goat','gorilla','hippo','horse','monkey',
     'moose','narwhal','owl','panda','parrot','penguin','pig','rabbit','rhino',
     'sloth','snake','walrus','whale','zebra'
-]; 
+];
+export const OtherIcons: string[] = ['quest', 'search'];
 export type MapMode = 'game' | 'trial'; 
 export type GameType = 'Fire' | 'Water' | 'Earth' | 'Air' | 'Spirit' | 'Ether'; 
 export type MenuOptions = 'none' | 'leaderBoard';
@@ -79,8 +80,8 @@ export type Player = {
     date: Date; 
     name: string; 
     score: number; 
-    latitude: number; 
-    longitude: number; 
+    lat: number; 
+    lng: number; 
     icon: PlayerIcon; 
     uuid: string; 
 }; 
