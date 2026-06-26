@@ -2,6 +2,9 @@ import { CheckCircle, Cancel  } from "@mui/icons-material";
 import type { GameInfo } from "../assets/types";
 import BaseCard from "./BaseCard";
 import { IconButton, Typography, Zoom, Box } from "@mui/material";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 type Props = {
     transition: boolean;
@@ -50,16 +53,20 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                     subheader={
                         <Typography 
                             sx={{
-                                color: '#757575ff',
+                                color: 'rgb(82, 82, 82)',
                                 alignContent: 'center',
                                 fontFamily: 'system-ui',
-                                fontSize: '12px',
+                                fontSize: '10px',
                                 pl: '10px'
                             }}
-                        >{`Trial of ${info.type}`}</Typography>
+                        >{`${info.type}`}</Typography>
                     }
                     content={
-                        <Typography>{info.description}</Typography>
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm]} 
+                            rehypePlugins={[rehypeRaw]}
+                            
+                        >{info.description}</ReactMarkdown>
                     }
                     actions={
                         <Box sx={{
