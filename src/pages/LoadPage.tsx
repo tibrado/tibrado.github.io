@@ -23,10 +23,8 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
     
     GpsHandler(setStatus, setGps);
     
-    console.log(status, gps, world)
     useEffect(() => {
         if(gps && world){
-            console.log('player', gps)
             setWorld(pre => ({
                 ...pre,
                 player:{

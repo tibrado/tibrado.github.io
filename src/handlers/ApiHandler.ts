@@ -51,7 +51,6 @@ export async function PostPlayer(player: Player): Promise<string | undefined> {
             throw new Error("fail to post score")
         }; 
         
-        console.log(`API Response: ${response.ok}`); 
         return undefined; 
     } catch (e) {
         throw new Error(`Fail to get player: ${e}`); 
@@ -80,7 +79,6 @@ export async function LoadGames(setWorld: Function): Promise<boolean>{
             )
         };  
         
-            console.log(games);
         setWorld((pre: World) => ({
             ...pre,
             games: games,
@@ -124,6 +122,11 @@ export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, FocusOnP
             player: {
                 ...pre.player,
                 game_id: id
+            },
+            selected: {
+                mode: 'trial',
+                index: 0,
+                path: 0
             }
         })); 
 

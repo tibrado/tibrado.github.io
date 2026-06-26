@@ -6,19 +6,20 @@ import { GetPlayers, LoadTrial } from '../handlers/ApiHandler';
 import { useWorld } from '../context';
 
 type Props = {
-    selected: {mode: MapMode, index: number, path: number};
     FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void;
     setPopupCoord: (coord: {lat: number, lng: number} | undefined) => void; 
 };
 
-export const GamePage: React.FC<Props> = ({selected, FocusOnPin, setPopupCoord}) => {
+export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
     const {world, setWorld} = useWorld(); 
     const [nope, setNope] = useState<boolean>(false); 
-    const clue: Trials = world.trials[selected.index]; 
+    const clue: Trials = world.trials[world?.selected?.index ?? 0]; 
     
+    const i: number = world.selected!.index; 
+    const p: number = world.selected!.path ?? 0; 
+
     const calculate_score = (): number => {
         const score = Math.round(((600 - world.worldTime) / 600) * 10);
-        console.log(score, world.worldTime, ((600 - world.worldTime) / 600) * 10); 
         return score > 1 ? score : 1; 
     }; 
 
@@ -29,20 +30,20 @@ export const GamePage: React.FC<Props> = ({selected, FocusOnPin, setPopupCoord})
             response === "" ? false :
             !clue.responses.some(item => item.startsWith(response))
         ); 
-        console.log(response, clue.responses)
+
         if (clue.responses.includes(response)) {
-            if(selected.index >= world.trials.length - 1){ 
+            if(i >= world.trials.length - 1){ 
                 setWorld(pre => ({...pre, page: 'end'}));
             } else {
                 FocusOnPin(
-                    world.trials[selected.index + 1].location[selected.path][1], 
-                    world.trials[selected.index + 1].location[selected.path][0],
+                    world.trials[i + 1].location[p][1], 
+                    world.trials[i + 1].location[p][0],
                     0
                 ); 
-                if(selected.index === world.current){
+                if(i === world.current.index){
                     setWorld(pre => ({
                         ...pre, 
-                        current: world.current + 1, 
+                        current: {index: world.current.index+1, path: clue.responses.indexOf(response)}, 
                         player: {
                             ...world.player,
                             score: world.player.score + calculate_score()
@@ -63,7 +64,7 @@ export const GamePage: React.FC<Props> = ({selected, FocusOnPin, setPopupCoord})
     };
 
     const handleGameAccept = () => {
-        const g = world.games?.hunts[selected.index]; 
+        const g = world.games?.hunts[world?.selected?.index ?? 0]; 
         if(g){
             LoadTrial(setWorld, g, FocusOnPin)
                 .then(() => {
@@ -75,9 +76,9 @@ export const GamePage: React.FC<Props> = ({selected, FocusOnPin, setPopupCoord})
     }; 
 
     const DisplayCard: Record<MapMode, ReactNode> = {
-        game: world.games ? <GameCard transition={selected?.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games?.hunts[selected.index] ?? ''}/> : <></>,
-        trial: world.trials.length > selected.index ?  <TrailCard transition={true} title={world.title} trial={world.trials[selected.index]} path={selected.path} ValidateResponse={ValidateResponse} invalidResponse={nope}/> : <></>
+        game: world.games ? <GameCard transition={world!.selected!.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games?.hunts[i] ?? ''}/> : <></>,
+        trial: world.trials.length > i ?  <TrailCard transition={true} title={world.title} trial={world.trials[i]} path={i} ValidateResponse={ValidateResponse} invalidResponse={nope}/> : <></>
     };
 
-    return DisplayCard[selected.mode]; 
+    return DisplayCard[world!.selected!.mode]; 
 };

@@ -32,7 +32,11 @@ export type GameInfo = {
     title: string; 
     type: GameType; 
 }; 
-
+export type UserSelection = {
+    mode: 'game' | 'trial';
+    index: number;
+    path?: number;
+};
 export type Games = {
     hunts: GameInfo[]; 
 };
@@ -61,7 +65,7 @@ export type Location = {
 export type World = {
     id: string | undefined; 
     description: string;
-    current: number; // current clue index
+    current: {index: number, path: number},
     page: Page; 
     title: string;
     date: Date;
@@ -73,6 +77,7 @@ export type World = {
     players: Player[];
     games: Games | undefined;
     menu?: MenuOptions;
+    selected?: UserSelection;
 }; 
 //------------------------------------------------------------------------------------------//
 export type Player = {

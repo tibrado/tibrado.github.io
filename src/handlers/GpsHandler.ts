@@ -1,7 +1,6 @@
 import type { Coordinates } from "../assets/types";
 
 export function GpsHandler(setStatus: (s: string) => void, setGps: (c: Coordinates) => void) {
-    console.log('running')
     if(!navigator.geolocation){
         setStatus('not-supported'); 
         return; 

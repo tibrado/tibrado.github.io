@@ -53,7 +53,7 @@ function LeaderBoard(){
                         fontSize: '12px',
                         pl: '10px'
                     }}
-                >{world.gameType}</Typography>
+                >{'You\'re #1 to someone'}</Typography>
             }
             content={
                 <TableContainer sx={{overflowY: 'auto', height: '100%' }}>
@@ -75,7 +75,7 @@ function LeaderBoard(){
                                         key={`pia_${i}`}
                                         variant="square"
                                         alt="UK" 
-                                        src={`/icons/${p.icon}.png`}
+                                        src={`/player_icons/${p.icon}.png`}
                                         sx={{
                                             width:25, 
                                             height: 25,
@@ -85,7 +85,6 @@ function LeaderBoard(){
                                                 objectFit: "contain", // Ensures the full PNG is visible
                                                 width: "100%",        // Forces image to respect container width
                                                 height: "100%",        // Forces image to respect container height
-                                                filter: "drop-shadow(2px 3px 2px rgba(0, 0, 0, 0.38))" // Shadow follows PNG shape
                                             }
                                         }}
                                         

@@ -1,7 +1,7 @@
 import type { StyleImageInterface, Map } from 'maplibre-gl';
 
 // Define a type that combines MapLibre's interface with our custom context tracking
-type PulsingDotImage = StyleImageInterface & {
+type MapLayerImageAnim = StyleImageInterface & {
     context: CanvasRenderingContext2D | null;
     img: HTMLImageElement | null;
 };
@@ -12,7 +12,7 @@ type PulsingDotImage = StyleImageInterface & {
  * @param map The MapLibre Map instance.
  * @param imageUrl The URL path or imported asset string of your icon/pin image.
  */
-export function PulsingPin(size: number, map: Map, imageUrl: string): PulsingDotImage {
+export function PulsingPin(size: number, map: Map, imageUrl: string): MapLayerImageAnim {
   return {
     width: size,
     height: size,
@@ -97,4 +97,101 @@ export function PulsingPin(size: number, map: Map, imageUrl: string): PulsingDot
       return true;
     }
   };
+}
+
+/**
+ * Creates an animated rotating effect around a custom image pin.
+ * @param size The total width/height block of the marker layer.
+ * @param map The MapLibre Map instance.
+ * @param imageUrl The URL path or imported asset string of your icon/pin image.
+ */
+export function RotatingPin(size: number, map: Map, imageUrl: string): MapLayerImageAnim {    
+    // 1. Keep track of movement states within function closure scope
+    let posX = size / 2;
+    let posY = size / 2;
+
+    // Set a random starting speed and direction for X and Y axes
+    let speedX = 0.15;
+    let speedY = 0.2;
+
+    return {
+        width: size,
+        height: size,
+        data: new Uint8Array(size * size * 4),
+        context: null,
+        img: null,
+
+        onAdd: function () {
+            const canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
+
+            this.img = new Image();
+            this.img.src = imageUrl;
+            this.img.crossOrigin = 'Anonymous';
+            this.img.onload = () => {
+                map.triggerRepaint();
+            };
+        },
+
+        render: function () {
+            // Safety check: Stop if canvas is missing or image is broken
+            if (!this.context || !this.img || !this.img.complete || this.img.naturalWidth === 0) {
+                return false;
+            }
+
+            const ctx = this.context;
+            const imgW = this.img.width;
+            const imgH = this.img.height;
+
+            // Clear the frame for a fresh draw
+            ctx.clearRect(0, 0, this.width, this.height);
+            
+
+            // 3. Draw the colored bounce area background
+            const padding = 100; 
+            ctx.fillStyle = '#00000010';
+            ctx.fillRect(
+                padding, 
+                padding, 
+                this.width - (padding * 2), 
+                this.height - (padding * 2)
+            );
+            // Update positions using current speed vectors
+            posX += speedX;
+            posY += speedY;
+            // Bounce off Left or Right borders with padding
+            if (posX - imgW / 2 < padding || posX + imgW / 2 > this.width - padding) {
+                speedX = -speedX; // Simply reverse the direction
+                //speedX += (Math.random() - 0.5) * 0.2; // Add minor random angle deviation
+            }
+            
+            // Bounce off Top or Bottom borders with padding
+            if (posY - imgH / 2 < padding || posY + imgH / 2 > this.height - padding) {
+                speedY = -speedY; // Simply reverse the direction
+                //speedY += (Math.random() - 0.5) * 0.2; // Add minor random angle deviation
+            }
+
+            // Draw the pin centered at the newly updated coordinates
+            ctx.save();
+            ctx.translate(posX, posY);
+            ctx.drawImage(
+                this.img, 
+                -imgW / 2, 
+                -imgH / 2, 
+                imgW, 
+                imgH
+            );
+            ctx.restore();
+
+            // Push updated canvas buffer to MapLibre layer data array
+            this.data = ctx.getImageData(0, 0, this.width, this.height).data;
+            
+            // Queue up the next frame render block
+            map.triggerRepaint();
+
+            return true;
+        }
+    };
 }

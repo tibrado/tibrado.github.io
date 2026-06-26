@@ -3,23 +3,21 @@ import { Map, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre
 import type { MapStyleImageMissingEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { GamePage } from '../../pages/GamePage';
-import { PlayerIcons, OtherIcons, type Coordinates, type MapMode } from '../../assets/types';
+import { PlayerIcons, OtherIcons, type Coordinates } from '../../assets/types';
 import { useWorld } from '../../context';
 import { QuestLayer,TrialLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
-import { PulsingPin } from './pins/PinAnimations';
+import { RotatingPin } from './pins/PinAnimations';
 
 const MAP_ZOOM = 14.5; 
 
 export function GameMap() {
-    const {world, setWorld} = useWorld(); 
-    const [selected, setSelected] = useState<{mode: MapMode, index: number, path: number}>({mode: 'game', index: 0, path: 0}); 
-    const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
+    const {world, setWorld} = useWorld(); const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
     
     const loadingImages = new Set<string>(); 
     const mapRef = useRef<MapRef>(null);
     const geolocateRef = useRef<any>(null); 
-
+    const myLayers = ['scavenger-mc-layer', 'scavenger-players-layer', 'scavenger-trial-layer', 'scavenger-game-layer']; 
     const onPinFocus = useCallback((lng: number, lat: number, zoom_offset: number = 0) => {
         mapRef.current?.flyTo({
             center: [lng, lat] ,
@@ -33,34 +31,51 @@ export function GameMap() {
     function onClickGamePin(id: number, lng: number, lat: number){
         onPinFocus(lng, lat);
         setPopupCoord({lat: lat, lng: lng}); 
-        setSelected({ mode: 'game', index: id, path: 0}); 
+        setWorld(pre => ({
+            ...pre, 
+           selected: {
+                mode: 'game',
+                index: id
+           }
+        })); 
     }; 
     
     function onClickTrialPin(id: number, path: number, lng: number, lat: number){
         onPinFocus(lng, lat, 1.5);
         setPopupCoord({lat: lat, lng: lng}); 
-        setSelected({ mode: 'trial', index: id, path: path}); 
+        setWorld(pre => ({
+            ...pre, 
+           selected: {
+                mode: 'trial',
+                index: id,
+                path: path
+           }
+        })); 
     }; 
 
     // ---------------------------------------------------
     const handleMissingIcon = async (e: MapStyleImageMissingEvent) => {
         const map = e.target; 
         const iconName = e.id;
-      
+
+
         if(PlayerIcons.includes(iconName) || OtherIcons.includes(iconName)){
             if(map.hasImage(iconName) || loadingImages.has(iconName)){
                 return; 
             };
-            
             loadingImages.add(iconName); 
 
             try {
-                if(OtherIcons.includes(iconName)){
+                if(iconName == 'search'){
+                    map.addImage(iconName, RotatingPin(300, map, `other_icons/${iconName}.png`));
+                }
+                else if(OtherIcons.includes(iconName)){
                     const image = await map.loadImage(`other_icons/${iconName}.png`)
                     map.addImage(iconName, image.data);
                 } 
                 else{
-                    map.addImage(iconName, PulsingPin(300, map, `player_icons/${iconName}.png`));
+                    const image = await map.loadImage(`player_icons/${iconName}.png`)
+                    map.addImage(iconName, image.data);
                 }
             } catch (error) {
                 console.error(`Failed to load map icon:`, error);
@@ -84,12 +99,10 @@ export function GameMap() {
                         onClickGamePin(features[0].id as number, e.lngLat.lng, e.lngLat.lat)
                     }
                 }); 
-
                 map.on('click', 'scavenger-trial-layer', (e) => {
                     const features = e.features; 
 
                     if(features){
-                        console.log(features)
                         onClickTrialPin(
                             features[0].properties.id as number,
                             features[0].properties.path as number, 
@@ -98,6 +111,28 @@ export function GameMap() {
                     }
                 });
 
+                ['scavenger-game-layer','scavenger-trial-layer'].forEach( l => {
+                    map.on('mouseenter', l, () => {map.getCanvas().style.cursor = 'pointer'})
+                    map.on('mouseleave', l, () => {map.getCanvas().style.cursor = ''})
+                })
+                
+                // Remove other symbols 
+                const layers = map.getStyle().layers; 
+
+                layers.forEach((layer) => {
+                    if(layer.type === 'symbol' && !myLayers.includes(layer.id) ){
+                        // Remove the default icons
+                        if (map.getLayoutProperty(layer.id, 'icon-image')) {
+                            map.setLayoutProperty(layer.id, 'icon-image', '');
+                        }
+                        /*
+                        // Optional: Remove default text labels (like city/street names)
+                        if (map.getLayoutProperty(layer.id, 'text-field')) {
+                            map.setLayoutProperty(layer.id, 'text-field', '');
+                        }
+                        */
+                    }
+                }); 
                 geolocateRef.current?.trigger(); 
             }}
             initialViewState={{
@@ -169,8 +204,7 @@ export function GameMap() {
                 }}
             />
 
-            <TrialLayer/>
-            <QuestLayer/>
+            {world.selected?.mode == 'trial' ? <TrialLayer/> : <QuestLayer/>} 
             <OtherPlayersLayer/>
             <MainCharacterLayer/>
 
@@ -185,7 +219,7 @@ export function GameMap() {
                 >
                     {
                         true
-                        ? <GamePage selected={selected} FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord}/>
+                        ? <GamePage FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord}/>
                         : "You are not in range"
                     }
                 </Popup>

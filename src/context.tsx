@@ -12,7 +12,7 @@ const WorldContext = createContext<WorldContextType | undefined>(undefined);
 const defaultWorld: World = {
     id: undefined, 
     description: '',
-    current: 0,
+    current: {index: 0, path: 0},
     page: 'start',
     title: '',
     date: new Date(),

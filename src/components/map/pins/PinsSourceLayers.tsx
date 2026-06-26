@@ -45,7 +45,7 @@ export function QuestLayer() {
                 type="symbol" 
                 layout={{ 
                     'icon-image': 'quest', 
-                    'icon-size': 0.3,
+                    'icon-size': 0.56,
                     'icon-allow-overlap': true, 
                 }}
             />
@@ -58,6 +58,8 @@ export function TrialLayer() {
 
     const geoJsonData = useMemo(() => {
         const trials = world?.trials
+        const i = world.current.index;
+        const p = world.current.path; 
 
         if(!Array.isArray(trials)){
             return {
@@ -73,6 +75,7 @@ export function TrialLayer() {
                 "properties": {
                     "id": id,
                     "path": path,
+                    "active": id == i && path == p,
                     "in_range": true,
                     "text": text,
                     "distance_meters": get_distance({latitude: t.location[path][0], longitude: t.location[path][1]}, {latitude: world.player.lat, longitude: world.player.lng}, true)
@@ -84,18 +87,19 @@ export function TrialLayer() {
 
             })))
         );
-
+        
         return {
             "type": "FeatureCollection" as const,
             "features": features.flat()
         };
-    }, [world?.trials]);
+    }, [world?.trials, world.current]);
   
     return (
         <Source id="trial-pin-source" type="geojson" data={geoJsonData}>
             <Layer 
                 id="scavenger-trial-layer" 
                 type="symbol" 
+                filter={['==', ['get', 'active'], true]}
                 layout={{ 
                     'icon-image': 'search', 
                     'icon-size': 0.3,
@@ -137,12 +141,24 @@ export function MainCharacterLayer() {
     // 2. Initial render returns an empty collection so the layer exists
     return (
         <Source id="mc-pin-source" type="geojson" data={{ type: "FeatureCollection", features: [] }}>
+            
+            {/* 1. PULSING BACKGROUND LAYER (Rendered first so it sits underneath) */}
+            <Layer 
+                id="scavenger-mc-pulse-layer" 
+                type="circle" 
+                paint={{
+                'circle-radius': ['get', 'pulseRadius'], 
+                'circle-opacity': ['get', 'pulseOpacity'],
+                'circle-color': '#0f8fe8',
+                'circle-stroke-width': 0
+                }} 
+            />
             <Layer 
                 id="scavenger-mc-layer" 
                 type="symbol" 
                 layout={{ 
                     'icon-image': mc.icon as string, 
-                    'icon-size': 0.2,
+                    'icon-size': 0.25,
                     'icon-allow-overlap': true, 
                 }}
             />

@@ -1,9 +1,10 @@
-import { Send } from "@mui/icons-material";
+import {ReportProblem, QuestionAnswer, Quiz } from "@mui/icons-material";
 import type { Trials} from "../assets/types";
 import { GameClue } from "../components/map/GameClue";
 import BaseCard from "./BaseCard";
-import { Box, Slide, TextField, Typography } from "@mui/material";
-import { blue, red } from '@mui/material/colors';
+import { Box, Slide, Typography, IconButton } from "@mui/material";
+// import { blue, red } from '@mui/material/colors';
+import { useState } from "react";
 
 type Props = {
     transition: boolean;
@@ -15,6 +16,7 @@ type Props = {
 }; 
 
 const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResponse, ValidateResponse}) => {
+    const [showClue, setShowClue] = useState<boolean>(true); 
     return (
         <Slide direction={transition ? 'right' : 'left'} in={transition} mountOnEnter unmountOnExit>
             <Box>
@@ -60,11 +62,11 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                                 fontSize: '12px',
                                 pl: '10px'
                             }}
-                        >{trial.hint[path]}</Typography>
+                        >{trial.hint[path]} _</Typography>
                     }
                     content={
                         <GameClue 
-                            showClue={false}
+                            showClue={showClue}
                             clue={trial.text[path]}
                             validateResponse={ValidateResponse} 
                             inputType={'text'}
@@ -79,45 +81,25 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                             gap: 1,
                             justifyContent: 'space-between'
                         }}>
-                            <TextField
-                                id="input-with-icon-textfield"
-                                label={'response'}
-                                variant="outlined"
-                                error={invalidResponse}
-                                size={'small'}
-                                onChange={(e) => ValidateResponse(e.target.value)}
-                                fullWidth
-                                slotProps={{
-                                    input: {
-                                        endAdornment: <Send
-                                            sx={{
-                                                color: blue[500]
-                                            }}
-                                        />
-                                    }
-                                }}
+                            <IconButton 
+                                onClick={undefined}
+                                color='error'
+                                size='small'
+                                children={<ReportProblem/>}
                                 sx={{
-                                    m: 0,
-                                    borderRadius: '5px',
-                                    boxShadow: `2px 2px 3px ${invalidResponse ? blue[500] : red[500]}`,
-                                    backgroundColor: 'transparent', // Ensure shadow is visible against a background
-                                    '& .MuiFilledInput-root': {
-                                        backgroundColor: 'transparent',
-                                    },
-                                    '& .MuiFilledInput-root:hover': {
-                                        backgroundColor: 'transparent',
-                                    },
-                                    '& .MuiFilledInput-root.Mui-focused': {
-                                        backgroundColor: 'transparent',
-                                    },
-                                    '& .MuiFormHelperText-root': {
-                                        width: '100%',
-                                        textAlign: 'end',
-                                        m: 0,
-                                        pr: 0,
-                                    },
+                                    boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
                                 }}
                             />
+                            <IconButton 
+                                onClick={() => setShowClue(!showClue)}
+                                color='success'
+                                size='small'
+                                children={ showClue ? <QuestionAnswer /> : <Quiz/>}
+                                sx={{
+                                    boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
+                                }}
+                            />
+
                         </Box>
                     }
                 />
