@@ -58,7 +58,6 @@ const GameInputHandler: React.FC<Props> = ({ onSubmit, inputType, label, hint, n
         detect: <ObjectClassifier inputType={inputType} onSubmit={onSubmit} nope={nope} msg={nope ? 'red cause you wrong' : hint}/>
 
     };
-
     return (Inputs[inputType]);
 };
 

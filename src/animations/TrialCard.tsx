@@ -62,14 +62,14 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                                 fontSize: '12px',
                                 pl: '10px'
                             }}
-                        >{trial.hint[path]} _</Typography>
+                        >{trial.hint[path]}</Typography>
                     }
                     content={
                         <GameClue 
                             showClue={showClue}
                             clue={trial.text[path]}
                             validateResponse={ValidateResponse} 
-                            inputType={'text'}
+                            inputType={trial?.inputType[path]}
                             hint={`${trial.hint[path]}`}
                             nope={invalidResponse}
                         />

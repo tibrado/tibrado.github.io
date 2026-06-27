@@ -51,7 +51,7 @@ export type Trials = {
     hint: string[];
     responses: string[]; // three options: 1. Connect
     location: [number, number][]; 
-    inputType?: InputTypes[];
+    inputType: InputTypes[];
     path_selected?: number; 
 };
 

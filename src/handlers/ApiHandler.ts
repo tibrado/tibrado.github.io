@@ -94,7 +94,7 @@ export async function LoadGames(setWorld: Function): Promise<boolean>{
 
 export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void): Promise<boolean>{
     try{
-        const id = `${gameInfo.coord}`; 
+        const id = `${gameInfo.coord}`.replace(',', ''); 
         const response = await fetch(`${TRIAL_API}${id}.json`); 
         
         if(!response.ok){

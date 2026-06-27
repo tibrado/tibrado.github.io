@@ -24,11 +24,12 @@ const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actio
                 sx={{
                     p: 0, m:0, 
                     display: 'flex', 
-                    justifyContent: 'center',
+                    justifyContent: 'left',
                     alignItems: 'center',
                     height:'250px',  
                     width: '100%',
                     flexDirection: "column", 
+                    fontSize: '14px'
                 }}
             >
                 {content}

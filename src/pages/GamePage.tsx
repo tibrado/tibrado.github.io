@@ -32,6 +32,7 @@ export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
         ); 
 
         if (clue.responses.includes(response)) {
+            console.log('Valid: ', world)
             if(i >= world.trials.length - 1){ 
                 setWorld(pre => ({...pre, page: 'end'}));
             } else {
@@ -77,7 +78,7 @@ export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
 
     const DisplayCard: Record<MapMode, ReactNode> = {
         game: world.games ? <GameCard transition={world!.selected!.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games?.hunts[i] ?? ''}/> : <></>,
-        trial: world.trials.length > i ?  <TrailCard transition={true} title={world.title} trial={world.trials[i]} path={i} ValidateResponse={ValidateResponse} invalidResponse={nope}/> : <></>
+        trial: world.trials.length > i ?  <TrailCard transition={true} title={world.title} trial={world.trials[i]} path={p} ValidateResponse={ValidateResponse} invalidResponse={nope}/> : <></>
     };
 
     return DisplayCard[world!.selected!.mode]; 
