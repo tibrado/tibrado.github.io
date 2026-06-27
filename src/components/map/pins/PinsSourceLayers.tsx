@@ -102,7 +102,7 @@ export function TrialLayer() {
                 filter={['==', ['get', 'active'], true]}
                 layout={{ 
                     'icon-image': 'search', 
-                    'icon-size': 0.3,
+                    'icon-size': 0.4,
                     'icon-allow-overlap': true, 
                 }}
             />

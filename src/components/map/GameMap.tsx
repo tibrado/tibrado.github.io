@@ -8,7 +8,7 @@ import { useWorld } from '../../context';
 import { QuestLayer,TrialLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
 import { RotatingPin } from './pins/PinAnimations';
 
-const MAP_ZOOM = 14.5; 
+const MAP_ZOOM = 16.5; 
 
 export function GameMap() {
     const {world, setWorld} = useWorld(); const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
@@ -139,8 +139,8 @@ export function GameMap() {
                 latitude: world.player.lat,
                 longitude: world.player.lng,
                 zoom: coord ? MAP_ZOOM : 1,
-                bearing: 90,
-                pitch: 60,
+                bearing: 0,
+                pitch: 0,
             }}
             
             // Disable all interactions
@@ -149,7 +149,8 @@ export function GameMap() {
             dragRotate={true}
             touchZoomRotate={true}
             scrollZoom={true}
-            maxZoom={22}
+            maxZoom={18}
+            minZoom={2}
             mapStyle='https://tiles.openfreemap.org/styles/liberty'
             style={{
                 height: '95dvh', 

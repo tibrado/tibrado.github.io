@@ -150,7 +150,7 @@ export function RotatingPin(size: number, map: Map, imageUrl: string): MapLayerI
             
 
             // 3. Draw the colored bounce area background
-            const padding = 100; 
+            const padding = 80; 
             ctx.fillStyle = '#00000010';
             ctx.fillRect(
                 padding, 

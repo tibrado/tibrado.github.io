@@ -19,20 +19,20 @@ export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
     const p: number = world.selected!.path ?? 0; 
 
     const calculate_score = (): number => {
-        const score = Math.round(((600 - world.worldTime) / 600) * 10);
+        const score = Math.round(((600 - world.worldTime) / 600) * 9) + 1;
         return score > 1 ? score : 1; 
     }; 
 
 
     const ValidateResponse = (response: string): boolean => {
         response = response.toLocaleLowerCase(); 
+
         setNope(
             response === "" ? false :
-            !clue.responses.some(item => item.startsWith(response))
+            !clue.responses.some(item => item.toLocaleLowerCase().startsWith(response))
         ); 
 
         if (clue.responses.includes(response)) {
-            console.log('Valid: ', world)
             if(i >= world.trials.length - 1){ 
                 setWorld(pre => ({...pre, page: 'end'}));
             } else {

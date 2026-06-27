@@ -1,4 +1,4 @@
-import {ReportProblem, QuestionAnswer, Quiz } from "@mui/icons-material";
+import {/*ReportProblem,*/ QuestionAnswer, Quiz } from "@mui/icons-material";
 import type { Trials} from "../assets/types";
 import { GameClue } from "../components/map/GameClue";
 import BaseCard from "./BaseCard";
@@ -81,7 +81,7 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                             gap: 1,
                             justifyContent: 'space-between'
                         }}>
-                            <IconButton 
+                            {/*<IconButton 
                                 onClick={undefined}
                                 color='error'
                                 size='small'
@@ -89,14 +89,21 @@ const TrailCard: React.FC<Props> = ({transition, title, trial, path, invalidResp
                                 sx={{
                                     boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
                                 }}
-                            />
+                            />*/}
                             <IconButton 
                                 onClick={() => setShowClue(!showClue)}
                                 color='success'
                                 size='small'
                                 children={ showClue ? <QuestionAnswer /> : <Quiz/>}
                                 sx={{
+                                    bgcolor: 'success.main',
+                                    color: 'white',
+                                    borderRadius: '8px',
+                                    padding: '8px 12px',
                                     boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
+                                    '&:hover': {
+                                      bgcolor: 'success.dark',
+                                    },
                                 }}
                             />
 

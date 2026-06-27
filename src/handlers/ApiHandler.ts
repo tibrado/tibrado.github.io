@@ -1,6 +1,7 @@
 import type { Player, Games, GameInfo, Trials, World } from "../assets/types";
 
-const API = "https://script.google.com/macros/s/AKfycbxtZho5mvTwgZ6ifc3wROu5krIMctQDlYD1gyFSFia7PZInZX4NmmgVZKMD26QyG2Nm/exec"; 
+const API = "https://script.google.com/macros/s/AKfycbwKSyiEJjPm5TIU_JmgQdMFBB9sOPQGUGlNsfGrbG2ig-kh4OJ7_j_HsonZT_63U7rp/exec"; 
+const FEEDBACK_API = "https://script.google.com/macros/s/AKfycby7rRHQ-nFOTnz-wZku7o4SBV-AQMWmUqpwOcIV_2mxy2qcOiywKLXwf-qKh_jISiDS/exec"; 
 const GAMES_API = "https://raw.githubusercontent.com/tibrado/regnevacs/refs/heads/main/games.json"; 
 const TRIAL_API = "https://raw.githubusercontent.com/tibrado/regnevacs/refs/heads/main/"; 
 
@@ -46,7 +47,6 @@ export async function PostPlayer(player: Player): Promise<string | undefined> {
             method: 'POST',
             body: JSON.stringify(player)
         }); 
-        
         if(!response.ok){
             throw new Error("fail to post score")
         }; 
@@ -138,4 +138,24 @@ export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, FocusOnP
     } catch (e) {
         throw new Error(`fail to load trail: ${e}`); 
     }    
+}; 
+
+export async function PostFeedback(feedback: string, rating: number): Promise<string | undefined> {
+    try{
+
+        const response = await fetch(FEEDBACK_API, {
+            method: 'POST',
+            body: JSON.stringify({
+                feedback: feedback,
+                rating: rating
+            })
+        }); 
+        if(!response.ok){
+            throw new Error("fail to post score")
+        }; 
+        
+        return undefined; 
+    } catch (e) {
+        throw new Error(`Fail to get player: ${e}`); 
+    }
 }; 

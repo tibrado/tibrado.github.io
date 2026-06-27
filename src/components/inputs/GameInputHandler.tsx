@@ -21,7 +21,7 @@ const GameInputHandler: React.FC<Props> = ({ onSubmit, inputType, label, hint, n
             <TextField
                 id="input-with-icon-textfield"
                 label={label}
-                helperText={nope ? 'red cause you wrong' : hint}
+                helperText={nope ? 'stop guessing & start thinking' : hint}
                 variant="filled"
                 multiline
                 rows={textRows}
@@ -54,8 +54,8 @@ const GameInputHandler: React.FC<Props> = ({ onSubmit, inputType, label, hint, n
                     },
                 }}
             />,
-        scan: <QRScanner onSubmit={onSubmit} nope={nope} msg={nope ? 'red cause you wrong' : hint}/>,
-        detect: <ObjectClassifier inputType={inputType} onSubmit={onSubmit} nope={nope} msg={nope ? 'red cause you wrong' : hint}/>
+        scan: <QRScanner onSubmit={onSubmit} nope={nope} msg={nope ? 'stop guessing & start thinking' : hint}/>,
+        detect: <ObjectClassifier inputType={inputType} onSubmit={onSubmit} nope={nope} msg={nope ? 'stop guessing & start thinking' : hint}/>
 
     };
     return (Inputs[inputType]);

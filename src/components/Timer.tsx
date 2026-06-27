@@ -1,27 +1,20 @@
-import {useState, useEffect} from 'react'; 
+import { useEffect} from 'react'; 
 import {Typography } from '@mui/material';
 import { useWorld } from '../context';
 
 export default function Timer(){
     const {world, setWorld} = useWorld(); 
-    const [time, setTime] = useState<number>(world?.worldTime ?? 0); 
-
-    useEffect(() => {
-        if(world?.id){
-            setWorld(pre => ({...pre, worldTime: time})); 
-        }
-    }, [time]); 
 
     useEffect(() => {
         let interval: number | undefined; 
 
         if(world?.id){
             interval = window.setInterval(() => {
-                setTime(pre => pre + 1); 
+                setWorld(pre => ({...pre, worldTime: pre.worldTime + 1})); 
             }, 1000); 
         }
         else {
-            setTime(0); 
+            setWorld(pre => ({...pre, worldTime: 0})); 
         }; 
 
         return () =>  window.clearInterval(interval); 

@@ -10,6 +10,7 @@ import GameMenu, {GameMenuItem} from './components/GameMenu';
 import { v4 as uuid } from 'uuid';
 import { LoadGames } from './handlers/ApiHandler';
 import { useWorld } from './context';
+import CorrectAnswerBackdrop from './components/ScoreAnim';
 
 const theme = createTheme();
 const TESTING: boolean = false; 
@@ -74,6 +75,8 @@ export const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
         <CssBaseline />
+
+        <CorrectAnswerBackdrop score={world.player.score} />
         {!TESTING ? 
         <Box>
             {loading ? <LoadWorldPage loading={loading} setLoading={setLoading}/> : <></>}
