@@ -11,12 +11,8 @@ export function GpsHandler(setStatus: (s: string) => void, setGps: (c: Coordinat
         .then((permissionStatus) => {
             setStatus(permissionStatus.state) // granted, denied, prompt
 
-            // check changes 
-            permissionStatus.onchange = () => {
-                setStatus(permissionStatus.state); 
-            }
-
-            if(permissionStatus.state == 'granted'){
+            // Get Location 
+            const fetchLocation = () => {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         setGps(
@@ -35,8 +31,21 @@ export function GpsHandler(setStatus: (s: string) => void, setGps: (c: Coordinat
                         maximumAge: 0,
                     }
                 );
+            }; 
 
-            }
+            // Already have permission 
+            if(permissionStatus.state == 'granted'){
+                fetchLocation(); 
+            }; 
+
+            // check changes 
+            permissionStatus.onchange = () => {
+                setStatus(permissionStatus.state); 
+
+                if(permissionStatus.state === 'granted'){
+                    fetchLocation(); 
+                }; 
+            };
         })
         .catch(() => {
             setStatus('error'); 

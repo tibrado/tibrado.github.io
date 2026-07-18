@@ -20,10 +20,14 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
     const {world, setWorld} = useWorld(); 
     const [gps, setGps] = useState<Coordinates | undefined>(); 
     const [status, setStatus] = useState<string>(''); 
-    
-    GpsHandler(setStatus, setGps);
+
+    useEffect(() => {
+        GpsHandler(setStatus, setGps)
+    }, []); 
     
     useEffect(() => {
+        if (!gps) return;
+
         if(gps && world){
             setWorld(pre => ({
                 ...pre,
@@ -51,31 +55,31 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
                 flexDirection: 'column',
             }}
         >
-        {/* Decorative Icon or Logo */}
-        <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <CircularProgress size={60} enableTrackSlot  thickness={4} sx={{ color: '#ffffff' }} />
-            <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
-                LOADING WORLD
+            {/* Decorative Icon or Logo */}
+            <Box sx={{ mb: 4, textAlign: 'center' }}>
+                <CircularProgress size={60} enableTrackSlot  thickness={4} sx={{ color: '#ffffff' }} />
+                <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
+                    LOADING WORLD
+                </Typography>
+                
+                <Typography variant="caption" color="black" 
+                    sx={{ 
+                        fontStyle: 'italic', 
+                        opacity: 0.7,
+                        display: 'inline-flex',
+                        alignItems: 'center', 
+                        gap: 0.5
+                    }}
+                >
+                    {status == "granted" ? <LocationOn/> : <LocationOff fontSize="small"/>}
+                    gps required - status {status}
+                </Typography>
+            </Box>
+        
+        
+            <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
+                "Tip: Keep your eyes on the prize!"
             </Typography>
-        
-        <Typography variant="caption" color="black" 
-            sx={{ 
-                fontStyle: 'italic', 
-                opacity: 0.7,
-                display: 'inline-flex',
-                alignItems: 'center', 
-                gap: 0.5
-            }}
-        >
-            {status == "granted" ? <LocationOn/> : <LocationOff fontSize="small"/>}
-            gps required - status {status}
-        </Typography>
-        </Box>
-        
-        
-        <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
-            "Tip: Keep your eyes on the prize!"
-        </Typography>
         </Backdrop>
     );
    
