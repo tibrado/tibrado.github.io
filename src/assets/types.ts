@@ -25,6 +25,7 @@ export const Team: Record<GameType, string> = {
     Ether: 'purple' 
 }; 
 
+export type AppPermissionOptions = 'granted'|'denied'|'prompt'|'unsupported'|'error';
 //------------------------------------GAME LIST---------------------------------------------//
 export type GameInfo = {
     coord: [number, number]; // lat, lng 

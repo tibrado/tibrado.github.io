@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
 import { GpsHandler } from "../handlers/GpsHandler";
-import { LocationOff, LocationOn } from "@mui/icons-material";
-import type { Coordinates } from "../assets/types";
+import { PermissionStatus } from "../handlers/PermissionStatus";
+import type { Coordinates, AppPermissionOptions} from "../assets/types";
 import { useWorld } from "../context";
 
 export type LoadStatus = {
@@ -19,7 +19,7 @@ type Props = {
 export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
     const {world, setWorld} = useWorld(); 
     const [gps, setGps] = useState<Coordinates | undefined>(); 
-    const [status, setStatus] = useState<string>(''); 
+    const [status, setStatus] = useState<AppPermissionOptions>('prompt'); 
 
     useEffect(() => {
         GpsHandler(setStatus, setGps)
@@ -61,19 +61,8 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
                 <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
                     LOADING WORLD
                 </Typography>
-                
-                <Typography variant="caption" color="black" 
-                    sx={{ 
-                        fontStyle: 'italic', 
-                        opacity: 0.7,
-                        display: 'inline-flex',
-                        alignItems: 'center', 
-                        gap: 0.5
-                    }}
-                >
-                    {status == "granted" ? <LocationOn/> : <LocationOff fontSize="small"/>}
-                    gps required - status {status}
-                </Typography>
+                {/* Gps Status*/}
+                <PermissionStatus what="GPS" status={status} prompt="looking for gps" denied="app gps access denied"/>
             </Box>
         
         

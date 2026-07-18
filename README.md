@@ -7,7 +7,6 @@
 - [ ] Team: Add a team id so that user can group to solve clues. 
 - [x] Add icon for player selection. Also just make a character creation screen and setup for players 
 - [ ] Create Game: Make a application that make it easy to make a new game on the fly 
-- [ ] 
 ### General Updates & Improvements 
 - [x] Combine the functionality of setState to setGame.
 - [x] Create a global context for world and setWorld
@@ -33,4 +32,4 @@
 - [x] Add a method for users to see their scores. 
 
 ### Bugs ###
-- [ ] Fix issue that prevented user from accessing map when their GPS is not on initially
+- [x] Fix issue that prevented user from accessing map when their GPS is not on initially
