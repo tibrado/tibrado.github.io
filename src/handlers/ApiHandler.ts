@@ -57,7 +57,7 @@ export async function PostPlayer(player: Player): Promise<string | undefined> {
     }
 }; 
 
-export async function LoadGames(setWorld: Function): Promise<boolean>{
+export async function LoadGames(setWorld: Function, tutorial: GameInfo): Promise<boolean>{
     try{
         const response = await fetch(GAMES_API); 
         
@@ -77,8 +77,11 @@ export async function LoadGames(setWorld: Function): Promise<boolean>{
                     type: r.type
                 })
             )
-        };  
-        
+        }; 
+
+        // Add tutorial 
+        games.hunts = [...[tutorial], ...games.hunts]; 
+
         setWorld((pre: World) => ({
             ...pre,
             games: games,
@@ -92,25 +95,35 @@ export async function LoadGames(setWorld: Function): Promise<boolean>{
 
 }; 
 
-export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void): Promise<boolean>{
+export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, tutorial: Trials[], FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void): Promise<boolean>{
     try{
         const id = `${gameInfo.coord}`.replace(',', ''); 
-        const response = await fetch(`${TRIAL_API}${id}.json`); 
+        let _trails = []; 
         
-        if(!response.ok){
-            throw new Error("did not find trial")
-        }; 
-        
-        const raw: any = await response.json(); 
-        const _trails: Trials[] = Array.isArray(raw.clues)
-            ? raw.clues.map((c: any) => ({
-                hintIcon: c.hintIcon,
-                hint: c.hint,
-                text: c.text,
-                responses: c.responses,
-                inputType: c.inputType,
-                location: c.location
-            })) : []; 
+        // Add tutorial
+        if( gameInfo.title == "I Want to Scavenger!"){
+            _trails = tutorial;
+        } 
+        else
+        {
+            const response = await fetch(`${TRIAL_API}${id}.json`); 
+            
+            if(!response.ok){
+                throw new Error("did not find trial")
+            }; 
+            
+            const raw: any = await response.json(); 
+            _trails = Array.isArray(raw.clues)
+                ? raw.clues.map((c: any) => ({
+                    hintIcon: c.hintIcon,
+                    hint: c.hint,
+                    text: c.text,
+                    responses: c.responses,
+                    inputType: c.inputType,
+                    location: c.location
+                })
+            ) as Trials[]: []; 
+        };
             
         setWorld((pre: World) => ({
             ...pre,

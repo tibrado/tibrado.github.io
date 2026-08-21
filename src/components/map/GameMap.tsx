@@ -11,7 +11,8 @@ import { RotatingPin } from './pins/PinAnimations';
 const MAP_ZOOM = 16.5; 
 
 export function GameMap() {
-    const {world, setWorld} = useWorld(); const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
+    const {world, setWorld} = useWorld(); 
+    const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
     
     const loadingImages = new Set<string>(); 

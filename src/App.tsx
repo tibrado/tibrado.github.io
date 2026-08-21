@@ -8,9 +8,10 @@ import { PostPlayer, GetPlayers } from './handlers/ApiHandler';
 import { LoadWorldPage } from './pages/LoadPage';
 import GameMenu, {GameMenuItem} from './components/GameMenu';
 import { v4 as uuid } from 'uuid';
-import { LoadGames } from './handlers/ApiHandler';
 import { useWorld } from './context';
 import CorrectAnswerBackdrop from './components/ScoreAnim';
+
+import { PhotoBooth } from './components/inputs/CameraInputHandler';
 
 const theme = createTheme();
 const TESTING: boolean = false; 
@@ -29,16 +30,8 @@ export const App: React.FC = () => {
             page: 'game',
             player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, lat: 0, lng: 0, icon: icon as PlayerIcon}
         })); 
-        
-        LoadGames(setWorld); 
         setLoading(true); 
     }; 
-    // check if world was updated 
-    useEffect(() => {
-        if(world && loading){
-            
-        }; 
-    }, [world])
 
     // Monitor Game Scores
     useEffect(() => {
@@ -92,7 +85,19 @@ export const App: React.FC = () => {
             }}>
                 {Pages[world ? world.page : 'start']}
             </Paper>
-        </Box> : <>Testing</>}
+        </Box> : <>
+        <Paper elevation={0} sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'green',
+                p: 1
+            }}>
+                <PhotoBooth/>
+            </Paper>
+        </>}
         </ThemeProvider>
     );
 };

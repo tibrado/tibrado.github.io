@@ -4,6 +4,8 @@ import { GpsHandler } from "../handlers/GpsHandler";
 import { PermissionStatus } from "../handlers/PermissionStatus";
 import type { Coordinates, AppPermissionOptions} from "../assets/types";
 import { useWorld } from "../context";
+import { LoadGames } from "../handlers/ApiHandler";
+import { GetTutorialGameInfo } from "../handlers/Tutorial";
 
 export type LoadStatus = {
     map: boolean; 
@@ -20,7 +22,6 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
     const {world, setWorld} = useWorld(); 
     const [gps, setGps] = useState<Coordinates | undefined>(); 
     const [status, setStatus] = useState<AppPermissionOptions>('prompt'); 
-
     useEffect(() => {
         GpsHandler(setStatus, setGps)
     }, []); 
@@ -32,15 +33,18 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
             setWorld(pre => ({
                 ...pre,
                 player:{
-                    ...world.player,
+                    ...pre.player,
                     lat: gps.latitude,
                     lng: gps.longitude
                 }
             })); 
 
+            // Exit Load Page
+            LoadGames(setWorld, GetTutorialGameInfo(gps.latitude, gps.longitude)); 
             setLoading(false); 
         };
     }, [gps]); 
+
 
     return (
         <Backdrop

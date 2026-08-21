@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { InputTypes } from '../../assets/types';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
@@ -14,29 +14,45 @@ type Props = {
 
 
 const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => {
-	const videoRef = useRef<HTMLVideoElement>(null);
+	const videoRef = useRef<HTMLVideoElement | null>(null);
+	const streamRef = useRef<MediaStream | null>(null);
+    const [status, setStatus] = useState<string | undefined>(undefined)
 	// const [isModelLoading, setIsModelLoading] = useState(true);
+
+    const startVideo = async () => {
+        try {
+            streamRef.current = await navigator.mediaDevices.getUserMedia({
+                video: {facingMode: 'environment'}
+            });
+
+            if(videoRef.current){
+                videoRef.current.srcObject = streamRef.current; 
+            }
+        } catch (err) {
+            console.error("Fail to access webcam: ", err)
+        }
+    }; 
+
+    const stopVideo = () => {
+        console.log(msg, nope); 
+
+        if(streamRef.current){
+            streamRef.current.getTracks().forEach(t=> t.stop()); 
+            streamRef.current = null; 
+        }; 
+
+        if( videoRef.current){
+            videoRef.current.srcObject = null; 
+        }
+    }
 
 	useEffect(() => {
         if(inputType === 'detect'){
             let animationFrameId: number;
 
-            const startVideo = async () => {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { facingMode: 'environment' } 
-                    });
-
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream;
-                    }
-                } catch (err) {
-                    console.error("Error accessing webcam:", err);
-                }
-            };
-
             const runObjectDetection = async () => {
                 // Initialize TensorFlow backend and load the model
+                setStatus('loading model')
                 await tf.ready();
 
                 const model = await mobilenet.load();
@@ -51,6 +67,10 @@ const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => 
                         // check for match 
                         const seen: string =  Object.values(results).map(r => r.className).join(','); 
 
+                        if(results.length > 0){
+                            setStatus(results[0].className.split(',')[0])
+                        }
+                        
                         onSubmit(seen); 
                     }
                     // Loop the detection
@@ -70,38 +90,84 @@ const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => 
         }
 	}, [inputType]);
 
+    // Unmount 
+    useEffect(() => {
+        return () => {
+            stopVideo()
+        }
+    }, []); 
+
 	return (
-		<Box
-			sx={{
-					borderRadius: '5px',
-					p: '4px',
-					boxShadow: `0px 3px 10px ${true ? 'red' : 'rgba(255, 255, 255, 1)'}`,
-					background: 'rgba(255, 255, 255, 1)'
-			}}
-		>
-			<Typography 
-					variant='caption'
-					sx={{
-							pl: 1, 
-							alignContent: 'center',
-							fontFamily: 'system-ui',
-							textShadow: '0px 1px 5px rgba(0, 0, 0, 0.5)',
-							color: `${nope ? 'red' : '#000000e1'}`
-					}}
-			>
-				{`${msg}`}
-			</Typography>
-			<video
-				ref={videoRef}
-				autoPlay
-				muted
-				playsInline
-				width="100%"
-				height="100%"
-				style={{ borderRadius: '8px', border: '2px solid #333' }}
-			/>
-		</Box>
-		
+        <>
+            <style>
+                { `
+                    @keyframes scanAnimation 
+                    {
+                        0% { top: 2%;}
+                        50% { top: 90%;}
+                        100% {top: 2%;}
+                    }
+                `}
+            </style>
+
+            <Box
+                sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '100%',
+                    padding: '5px',
+                    overflow: 'hidden'
+                }}
+            >        
+            {/* THE SCANNING LINE */}
+            <Box
+                sx={{
+                    position: 'absolute',
+                    left: '5px',    
+                    right: '5px',       
+                    height: '5px',        
+                    background: '#00ff3376', 
+                    zIndex: 2,
+                    pointerEvents: 'none',
+                    animation: 'scanAnimation 10s ease-in-out infinite', 
+                }}
+            >
+                <Typography 
+                    sx={{   
+                        fontFamily: 'Courier New, monospace',   
+                        fontSize: '0.75rem',
+                        letterSpacing: '1px',
+                        color: '#f5faf6bf',
+                        pl: '10px'                   
+                    }}
+                > 
+                    {status}
+                </Typography> 
+            </Box>
+
+            <video
+                ref={videoRef}
+                autoPlay
+                muted
+                playsInline
+                style={{ 
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: '3px',
+                        boxShadow: '1px 1px 10px #00FF33',
+                        objectFit: 'cover',
+                        zIndex: 1
+                }}
+                
+            />
+            </Box>
+		</>
 	);
 };
 

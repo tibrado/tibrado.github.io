@@ -4,6 +4,7 @@ import TrailCard from '../animations/TrialCard';
 import GameCard from '../animations/GameCard';
 import { GetPlayers, LoadTrial } from '../handlers/ApiHandler';
 import { useWorld } from '../context';
+import { GetTrials } from '../handlers/Tutorial';
 
 type Props = {
     FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void;
@@ -26,13 +27,21 @@ export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
 
     const ValidateResponse = (response: string): boolean => {
         response = response.toLocaleLowerCase(); 
+        const responses: string[] = clue.responses.map(r => r.toLocaleLowerCase()); 
+
+        // check if response option is wildcard "-"
+        console.log(response)
+        if(responses.includes("-") && response.trim() !== ""){
+            response = "-";
+        }; 
 
         setNope(
             response === "" ? false :
-            !clue.responses.some(item => item.toLocaleLowerCase().startsWith(response))
+            !responses.some(item => item.startsWith(response))
         ); 
 
-        if (clue.responses.includes(response)) {
+        if (responses.includes(response)) {
+
             if(i >= world.trials.length - 1){ 
                 setWorld(pre => ({...pre, page: 'end'}));
             } else {
@@ -40,16 +49,17 @@ export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
                     world.trials[i + 1].location[p][1], 
                     world.trials[i + 1].location[p][0],
                     0
-                ); 
+                );
+
                 if(i === world.current.index){
                     setWorld(pre => ({
                         ...pre, 
-                        current: {index: world.current.index+1, path: clue.responses.indexOf(response)}, 
+                        current: {index: world.current.index+1, path: responses.indexOf(response)}, 
                         player: {
                             ...world.player,
                             score: world.player.score + calculate_score()
                         },
-                        paths: [...world.paths, clue.responses.indexOf(response)],
+                        paths: [...world.paths, responses.indexOf(response)],
                         worldTime: 0
                     })); 
                 }; 
@@ -67,7 +77,7 @@ export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
     const handleGameAccept = () => {
         const g = world.games?.hunts[world?.selected?.index ?? 0]; 
         if(g){
-            LoadTrial(setWorld, g, FocusOnPin)
+            LoadTrial(setWorld, g, GetTrials([world.player.lat, world.player.lng]), FocusOnPin)
                 .then(() => {
                     GetPlayers(world, setWorld);
                  }); 

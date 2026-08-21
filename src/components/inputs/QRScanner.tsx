@@ -47,6 +47,9 @@ const QRScanner: React.FC<Props> = ({onSubmit, msg = 'none', nope}) => {
                             else
                                 setScan(msg)
                         }
+                        else {
+                            onSubmit(code[0].rawValue)
+                        }
                     } catch (_) {
                         setScan('invalid QR')
                     }
