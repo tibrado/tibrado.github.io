@@ -6,7 +6,7 @@ import { GamePage } from '../../pages/GamePage';
 import { PlayerIcons, OtherIcons, type Coordinates } from '../../assets/types';
 import { useWorld } from '../../context';
 import { QuestLayer,TrialLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
-import { RotatingPin } from './pins/PinAnimations';
+import { RotatingPin, PulsingPin } from './pins/PinAnimations';
 
 const MAP_ZOOM = 16.5; 
 
@@ -23,10 +23,10 @@ export function GameMap() {
         mapRef.current?.flyTo({
             center: [lng, lat] ,
             duration: 2000, // Duration in milliseconds
-            zoom: MAP_ZOOM + zoom_offset,       // Optional: adjust zoom level on arrival
+            zoom: MAP_ZOOM + zoom_offset,
             essential: true
         });
-    }, []);  
+    }, []); 
 
     
     function onClickGamePin(id: number, lng: number, lat: number){
@@ -59,25 +59,34 @@ export function GameMap() {
         const map = e.target; 
         const iconName = e.id;
 
-
-        if(PlayerIcons.includes(iconName) || OtherIcons.includes(iconName)){
+        if(PlayerIcons.includes(iconName.replace('user-', '')) || OtherIcons.includes(iconName)){
             if(map.hasImage(iconName) || loadingImages.has(iconName)){
                 return; 
             };
+
             loadingImages.add(iconName); 
 
             try {
                 if(iconName == 'search'){
-                    map.addImage(iconName, RotatingPin(300, map, `other_icons/${iconName}.png`));
+                    map.addImage(
+                        iconName, 
+                        RotatingPin(300, map, `other_icons/${iconName}.png`)
+                    );
                 }
                 else if(OtherIcons.includes(iconName)){
                     const image = await map.loadImage(`other_icons/${iconName}.png`)
                     map.addImage(iconName, image.data);
                 } 
+                else if(iconName.includes('user-'))
+                    map.addImage(
+                        iconName, 
+                        PulsingPin(300, map, `player_icons/${iconName.replace('user-', '')}.png`)
+                    );
                 else{
-                    const image = await map.loadImage(`player_icons/${iconName}.png`)
+                    const image = await map.loadImage(`player_icons/${iconName.replace('user-', '')}.png`)
                     map.addImage(iconName, image.data);
                 }
+                
             } catch (error) {
                 console.error(`Failed to load map icon:`, error);
             }
@@ -100,6 +109,7 @@ export function GameMap() {
                         onClickGamePin(features[0].id as number, e.lngLat.lng, e.lngLat.lat)
                     }
                 }); 
+
                 map.on('click', 'scavenger-trial-layer', (e) => {
                     const features = e.features; 
 
@@ -205,10 +215,13 @@ export function GameMap() {
                     })); 
                 }}
             />
-
-            {world.selected?.mode == 'trial' ? <TrialLayer/> : <QuestLayer/>} 
-            <OtherPlayersLayer/>
+            
             <MainCharacterLayer/>
+            {world.selected?.mode == 'trial' ? <TrialLayer/> : <QuestLayer/>} 
+            
+            
+            <OtherPlayersLayer/>
+
 
             {popupCoord !== undefined && (
                 <Popup 

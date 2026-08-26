@@ -141,23 +141,21 @@ export function MainCharacterLayer() {
     // 2. Initial render returns an empty collection so the layer exists
     return (
         <Source id="mc-pin-source" type="geojson" data={{ type: "FeatureCollection", features: [] }}>
-            
-            {/* 1. PULSING BACKGROUND LAYER (Rendered first so it sits underneath) */}
             <Layer 
-                id="scavenger-mc-pulse-layer" 
+                id='scavenger-mc-pulse-layer'
                 type="circle" 
                 paint={{
-                'circle-radius': ['get', 'pulseRadius'], 
-                'circle-opacity': ['get', 'pulseOpacity'],
-                'circle-color': '#0f8fe8',
-                'circle-stroke-width': 0
+                    'circle-radius': ['get', 'pulseRadius'], 
+                    'circle-opacity': ['get', 'pulseOpacity'],
+                    'circle-color': '#198EC8',
+                    'circle-stroke-width': 0
                 }} 
             />
             <Layer 
                 id="scavenger-mc-layer" 
                 type="symbol" 
                 layout={{ 
-                    'icon-image': mc.icon as string, 
+                    'icon-image': `user-${mc.icon}`, 
                     'icon-size': 0.25,
                     'icon-allow-overlap': true, 
                 }}

@@ -8,7 +8,7 @@ import { Public } from '@mui/icons-material';
 type Props = {
     onStart: (name: string, icon: PlayerIcon) => void; 
 };
-export const StartPage: React.FC<Props> = ({ onStart}) => {
+export const StartPage: React.FC<Props> = ({onStart}) => {
     const [name, setName] = useState<string>('')
     const [icon, setIcon] = useState<string>('bear')
     
@@ -154,7 +154,10 @@ export const StartPage: React.FC<Props> = ({ onStart}) => {
 
             <CardActions disableSpacing>
                 <Button 
-                    onClick={() => onStart(name, icon as PlayerIcon)}
+                    onClick={() => {
+                        onStart(name, icon as PlayerIcon); 
+
+                    }}
                     variant="contained"
                     color='success'
                     size='small'

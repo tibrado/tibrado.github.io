@@ -13,7 +13,7 @@ type Props = {
 
 export const GamePage: React.FC<Props> = ({FocusOnPin, setPopupCoord}) => {
     const {world, setWorld} = useWorld(); 
-    const [nope, setNope] = useState<boolean>(false); 
+    const [nope, setNope] = useState<boolean>(false);
     const clue: Trials = world.trials[world?.selected?.index ?? 0]; 
     
     const i: number = world.selected!.index; 

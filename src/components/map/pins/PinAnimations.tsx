@@ -13,91 +13,103 @@ type MapLayerImageAnim = StyleImageInterface & {
  * @param imageUrl The URL path or imported asset string of your icon/pin image.
  */
 export function PulsingPin(size: number, map: Map, imageUrl: string): MapLayerImageAnim {
-  return {
-    width: size,
-    height: size,
-    data: new Uint8Array(size * size * 4),
-    context: null,
-    img: null,
+    return {
+        width: size,
+        height: size,
+        data: new Uint8Array(size * size * 4),
+        context: null,
+        img: null,
 
-    // Triggered once when the layer gets loaded by MapLibre
-    onAdd() {
-      const canvas = document.createElement('canvas');
-      canvas.width = this.width;
-      canvas.height = this.height;
-      this.context = canvas.getContext('2d');
+        // Triggered once when the layer gets loaded by MapLibre
+        onAdd() {
+            const canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
 
-      // Pre-initialize and cache the HTML image object
-      const img = new Image();
-      img.src = imageUrl;
-      
-      // Force a repaint once the asset finishes downloading
-      img.onload = () => {
-        map.triggerRepaint();
-      };
-      
-      this.img = img;
-    },
+            // Pre-initialize and cache the HTML image object
+            const img = new Image();
+            img.src = imageUrl;
 
-    // Triggered on every frame update loop
-    render() {
-      const context = this.context;
-      const img = this.img;
-      
-      // Safety check: Don't render until canvas context and image are fully ready
-      if (!context || !img || !img.complete) return false;
+        
+            // Force a repaint once the asset finishes downloading
+            img.onload = () => {
+                map.triggerRepaint();
+            };
+        
+            this.img = img;
+        },
 
-      const duration = 1500; // Animation cycle length in milliseconds
-      const t = (performance.now() % duration) / duration;
+        // Triggered on every frame update loop
+        render() {
+            const context = this.context;
+            const img = this.img;
+        
+            // Safety check: Don't render until canvas context and image are fully ready
+            if (!context || !img || !img.complete) return false;
 
-      // Define the fixed size of the central image pin (e.g., 50% of the total box size)
-      const imgSize = size * 0.5; 
-      const imgX = (this.width - imgSize) / 2;
-      const imgY = (this.height - imgSize) / 2;
+            const duration = 1500; // Animation cycle length in milliseconds
+            const t = (performance.now() % duration) / duration;
 
-      // Calculate base start radius (edge of the image) and max outer ring radius
-      const baseRadius = imgSize / 2;
-      const maxRadius = size / 2;
-      
-      // The wave starts at the image edge and expands out to the edge of the box boundary
-      const currentRadius = baseRadius + (maxRadius - baseRadius) * t;
+            context.clearRect(0, 0, this.width, this.height); 
 
-      // Clear the canvas rectangle from the last tick frame
-      context.clearRect(0, 0, this.width, this.height);
+            const md = this.width * 0.7; 
+            let dw = img.naturalWidth; 
+            let dh = img.naturalHeight; 
 
-      // --- 1. DRAW BACKGROUND PULSE EFFECT ---
-      context.save(); // Save context state before drawing alpha graphics
-      context.beginPath();
-      context.arc(
-        this.width / 2,
-        this.height / 2,
-        currentRadius,
-        0,
-        Math.PI * 2
-      );
-      // Fades out from a semi-transparent color to completely invisible
-      context.fillStyle = `rgba(15, 143, 232, ${1 - t})`;
-      context.fill();
-      context.restore();
+            if(dw > md || dh > md){
+                const r = Math.min(md / dw, md / dh); 
+                dw *= r; 
+                dh *= r; 
+            }; 
 
-      // --- 2. DRAW CENTRAL IMAGE ON TOP ---
-      context.drawImage(img, imgX, imgY, imgSize, imgSize);
+            // Define the fixed size of the central image pin (e.g., 50% of the total box size)
+            const imgX = (this.width - dw) / 2;
+            const imgY = (this.height - dh) / 2;
 
-      // Extract the canvas memory buffer to update MapLibre layer data
-      this.data = context.getImageData(
-        0,
-        0,
-        this.width,
-        this.height
-      ).data;
+            // Calculate base start radius (edge of the image) and max outer ring radius
+            const baseRadius = Math.max(dw, dh) / 2; 
+            const maxRadius = this.width / 2; 
+            
+            // The wave starts at the image edge and expands out to the edge of the box boundary
+            const currentRadius = baseRadius + (maxRadius - baseRadius) * t;
 
-      // Keep the browser refreshing the map space for smooth motion graphics
-      map.triggerRepaint();
+            // Clear the canvas rectangle from the last tick frame
+            // context.clearRect(0, 0, this.width, this.height);
 
-      return true;
-    }
-  };
-}
+            // --- 1. DRAW BACKGROUND PULSE EFFECT ---
+            context.save(); // Save context state before drawing alpha graphics
+            context.beginPath();
+            context.arc(
+                this.width / 2,
+                this.height / 2,
+                currentRadius,
+                0,
+                Math.PI * 2
+            );
+            // Fades out from a semi-transparent color to completely invisible
+            context.fillStyle = `rgba(15, 143, 232, ${1 - t})`;
+            context.fill();
+            context.restore();
+
+            // --- 2. DRAW CENTRAL IMAGE ON TOP ---
+            context.drawImage(img, imgX, imgY, dw, dh);
+
+            // Extract the canvas memory buffer to update MapLibre layer data
+            this.data = context.getImageData(
+                0,
+                0,
+                this.width,
+                this.height
+            ).data;
+
+            // Keep the browser refreshing the map space for smooth motion graphics
+            map.triggerRepaint();
+
+            return true;
+        }
+    };
+};
 
 /**
  * Creates an animated rotating effect around a custom image pin.

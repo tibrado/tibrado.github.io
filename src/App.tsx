@@ -47,7 +47,7 @@ export const App: React.FC = () => {
     /*
     document.addEventListener('click', () => {
         if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+        document.documentElement.requestFullscreen();ll;
         }
     }, { once: true });
     */
