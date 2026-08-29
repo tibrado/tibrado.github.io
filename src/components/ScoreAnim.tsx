@@ -44,7 +44,7 @@ export default function ScoreAnim({score, earn }: {score: number, earn: number})
     }, [play]);
 
     return (
-        true ? (
+        play ? (
         <Box
             sx={{
                 position: 'absolute', // Completely removes it from normal document flow
