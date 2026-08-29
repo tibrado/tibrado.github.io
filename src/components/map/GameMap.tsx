@@ -7,11 +7,13 @@ import { PlayerIcons, OtherIcons, type Coordinates } from '../../assets/types';
 import { useWorld } from '../../context';
 import { QuestLayer,TrialLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
 import { RotatingPin, PulsingPin } from './pins/PinAnimations';
+import ScoreAnim from '../ScoreAnim';
 
 const MAP_ZOOM = 16.5; 
 
 export function GameMap() {
     const {world, setWorld} = useWorld(); 
+    const [points, setPoints] = useState<number>(0); 
     const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
     
@@ -19,6 +21,7 @@ export function GameMap() {
     const mapRef = useRef<MapRef>(null);
     const geolocateRef = useRef<any>(null); 
     const myLayers = ['scavenger-mc-layer', 'scavenger-players-layer', 'scavenger-trial-layer', 'scavenger-game-layer']; 
+    
     const onPinFocus = useCallback((lng: number, lat: number, zoom_offset: number = 0) => {
         mapRef.current?.flyTo({
             center: [lng, lat] ,
@@ -95,151 +98,154 @@ export function GameMap() {
 
 
     return (
-        <Map
-            ref={mapRef}
-            attributionControl={false}
-            onLoad={(e) => {
-                const map = e.target; 
+        <>
+            <ScoreAnim score={world.player.score} earn={points} />
+            <Map
+                ref={mapRef}
+                attributionControl={false}
+                onLoad={(e) => {
+                    const map = e.target; 
 
-                map.on('styleimagemissing', handleMissingIcon)
-                map.on('click', 'scavenger-game-layer', (e) => {
-                    const features = e.features; 
+                    map.on('styleimagemissing', handleMissingIcon)
+                    map.on('click', 'scavenger-game-layer', (e) => {
+                        const features = e.features; 
 
-                    if(features){
-                        onClickGamePin(features[0].id as number, e.lngLat.lng, e.lngLat.lat)
-                    }
-                }); 
-
-                map.on('click', 'scavenger-trial-layer', (e) => {
-                    const features = e.features; 
-
-                    if(features){
-                        onClickTrialPin(
-                            features[0].properties.id as number,
-                            features[0].properties.path as number, 
-                            e.lngLat.lng, e.lngLat.lat
-                        )
-                    }
-                });
-
-                ['scavenger-game-layer','scavenger-trial-layer'].forEach( l => {
-                    map.on('mouseenter', l, () => {map.getCanvas().style.cursor = 'pointer'})
-                    map.on('mouseleave', l, () => {map.getCanvas().style.cursor = ''})
-                })
-                
-                // Remove other symbols 
-                const layers = map.getStyle().layers; 
-
-                layers.forEach((layer) => {
-                    if(layer.type === 'symbol' && !myLayers.includes(layer.id) ){
-                        // Remove the default icons
-                        if (map.getLayoutProperty(layer.id, 'icon-image')) {
-                            map.setLayoutProperty(layer.id, 'icon-image', '');
+                        if(features){
+                            onClickGamePin(features[0].id as number, e.lngLat.lng, e.lngLat.lat)
                         }
-                        /*
-                        // Optional: Remove default text labels (like city/street names)
-                        if (map.getLayoutProperty(layer.id, 'text-field')) {
-                            map.setLayoutProperty(layer.id, 'text-field', '');
-                        }
-                        */
-                    }
-                }); 
-                geolocateRef.current?.trigger(); 
-            }}
-            initialViewState={{
-                latitude: world.player.lat,
-                longitude: world.player.lng,
-                zoom: coord ? MAP_ZOOM : 1,
-                bearing: 0,
-                pitch: 0,
-            }}
-            
-            // Disable all interactions
-            doubleClickZoom={true}
-            dragPan={true}
-            dragRotate={true}
-            touchZoomRotate={true}
-            scrollZoom={true}
-            maxZoom={18}
-            minZoom={2}
-            mapStyle='https://tiles.openfreemap.org/styles/liberty'
-            style={{
-                height: '95dvh', 
-                width: '95dvw',
-                borderRadius: '10px',
-            }}
-            
-        >
-            {/* Custom Popup Styles */}
-            <style>
-                {`
-                    .maplibregl-popup-content {
-                        background: transparent !important;
-                        box-shadow: none !important;
-                        padding: 0 !important;
-                    }
-                    .maplibregl-popup-tip {
-                        display: none !important;
-                    }
-                `}
-            </style>
-
-            {/*User Location*/}
-            <GeolocateControl
-                ref={geolocateRef}
-                positionOptions={{
-                    enableHighAccuracy: false,
-                    maximumAge: 0,
-                    timeout: 10000 /* 10 sec */
-                }}
-                fitBoundsOptions={{
-                    maxZoom: MAP_ZOOM
-                }}
-                trackUserLocation={true}
-                showAccuracyCircle={false}
-                showUserLocation={false}
-                onGeolocate={(e) => {
-                    setCoord({
-                        longitude: e.coords.longitude, 
-                        latitude: e.coords.latitude, 
-                        accuracy: e.target?._accuracy
                     }); 
-                    
-                    setWorld(pre => ({
-                        ...pre, 
-                        player: {
-                            ...world.player,
-                            lat: e.coords.latitude,
-                            lng: e.coords.longitude
+
+                    map.on('click', 'scavenger-trial-layer', (e) => {
+                        const features = e.features; 
+
+                        if(features){
+                            onClickTrialPin(
+                                features[0].properties.id as number,
+                                features[0].properties.path as number, 
+                                e.lngLat.lng, e.lngLat.lat
+                            )
                         }
-                    })); 
+                    });
+
+                    ['scavenger-game-layer','scavenger-trial-layer'].forEach( l => {
+                        map.on('mouseenter', l, () => {map.getCanvas().style.cursor = 'pointer'})
+                        map.on('mouseleave', l, () => {map.getCanvas().style.cursor = ''})
+                    })
+                    
+                    // Remove other symbols 
+                    const layers = map.getStyle().layers; 
+
+                    layers.forEach((layer) => {
+                        if(layer.type === 'symbol' && !myLayers.includes(layer.id) ){
+                            // Remove the default icons
+                            if (map.getLayoutProperty(layer.id, 'icon-image')) {
+                                map.setLayoutProperty(layer.id, 'icon-image', '');
+                            }
+                            /*
+                            // Optional: Remove default text labels (like city/street names)
+                            if (map.getLayoutProperty(layer.id, 'text-field')) {
+                                map.setLayoutProperty(layer.id, 'text-field', '');
+                            }
+                            */
+                        }
+                    }); 
+                    geolocateRef.current?.trigger(); 
                 }}
-            />
-            
-            <MainCharacterLayer/>
-            {world.selected?.mode == 'trial' ? <TrialLayer/> : <QuestLayer/>} 
-            
-            
-            <OtherPlayersLayer/>
+                initialViewState={{
+                    latitude: world.player.lat,
+                    longitude: world.player.lng,
+                    zoom: coord ? MAP_ZOOM : 1,
+                    bearing: 0,
+                    pitch: 0,
+                }}
+                
+                // Disable all interactions
+                doubleClickZoom={true}
+                dragPan={true}
+                dragRotate={true}
+                touchZoomRotate={true}
+                scrollZoom={true}
+                maxZoom={18}
+                minZoom={2}
+                mapStyle='https://tiles.openfreemap.org/styles/liberty'
+                style={{
+                    height: '95dvh', 
+                    width: '95dvw',
+                    borderRadius: '10px',
+                }}
+                
+            >
+                {/* Custom Popup Styles */}
+                <style>
+                    {`
+                        .maplibregl-popup-content {
+                            background: transparent !important;
+                            box-shadow: none !important;
+                            padding: 0 !important;
+                        }
+                        .maplibregl-popup-tip {
+                            display: none !important;
+                        }
+                    `}
+                </style>
+
+                {/*User Location*/}
+                <GeolocateControl
+                    ref={geolocateRef}
+                    positionOptions={{
+                        enableHighAccuracy: false,
+                        maximumAge: 0,
+                        timeout: 10000 /* 10 sec */
+                    }}
+                    fitBoundsOptions={{
+                        maxZoom: MAP_ZOOM
+                    }}
+                    trackUserLocation={true}
+                    showAccuracyCircle={false}
+                    showUserLocation={false}
+                    onGeolocate={(e) => {
+                        setCoord({
+                            longitude: e.coords.longitude, 
+                            latitude: e.coords.latitude, 
+                            accuracy: e.target?._accuracy
+                        }); 
+                        
+                        setWorld(pre => ({
+                            ...pre, 
+                            player: {
+                                ...world.player,
+                                lat: e.coords.latitude,
+                                lng: e.coords.longitude
+                            }
+                        })); 
+                    }}
+                />
+                
+                <MainCharacterLayer/>
+                {world.selected?.mode == 'trial' ? <TrialLayer/> : <QuestLayer/>} 
+                
+                
+                <OtherPlayersLayer/>
 
 
-            {popupCoord !== undefined && (
-                <Popup 
-                    anchor='center'
-                    latitude={popupCoord.lat}
-                    longitude={popupCoord.lng}
-                    closeButton={false}
-                    style={{padding: 0, margin: 0, zIndex: 3}}
-                    onClose={() => setPopupCoord(undefined)}
-                >
-                    {
-                        true
-                        ? <GamePage FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord}/>
-                        : "You are not in range"
-                    }
-                </Popup>
-            )}
-        </Map>
+                {popupCoord !== undefined && (
+                    <Popup 
+                        anchor='center'
+                        latitude={popupCoord.lat}
+                        longitude={popupCoord.lng}
+                        closeButton={false}
+                        style={{padding: 0, margin: 0, zIndex: 3}}
+                        onClose={() => setPopupCoord(undefined)}
+                    >
+                        {
+                            true
+                            ? <GamePage FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord} setPoints={setPoints}/>
+                            : "You are not in range"
+                        }
+                    </Popup>
+                )}
+            </Map>
+        </>
     );
 }; 
 

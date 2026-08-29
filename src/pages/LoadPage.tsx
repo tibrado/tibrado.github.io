@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
+import { Box, CircularProgress, Typography, Backdrop} from '@mui/material';
 import { GpsHandler } from "../handlers/GpsHandler";
 import { PermissionStatus } from "../handlers/PermissionStatus";
 import type { Coordinates, AppPermissionOptions} from "../assets/types";
@@ -22,6 +22,7 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
     const {world, setWorld} = useWorld(); 
     const [gps, setGps] = useState<Coordinates | undefined>(); 
     const [status, setStatus] = useState<AppPermissionOptions>('prompt'); 
+
     useEffect(() => {
         GpsHandler(setStatus, setGps)
     }, []); 
@@ -66,7 +67,7 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
                     LOADING WORLD
                 </Typography>
                 {/* Gps Status*/}
-                <PermissionStatus what="GPS" status={status} prompt="looking for gps" denied="app gps access denied"/>
+                <PermissionStatus what="GPS" status={status} prompt="Make sure webpage have GPS access." denied="Access Denied. please allow access & refresh page"/>
             </Box>
         
         

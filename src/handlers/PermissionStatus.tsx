@@ -33,13 +33,18 @@ export const PermissionStatus: React.FC<Props> = ({ what, status, prompt, grante
         <Typography variant="caption" color="black" 
             sx={{ 
                 fontStyle: 'italic', 
+                fontSize: '10px',
                 opacity: 0.7,
                 display: 'inline-flex',
                 alignItems: 'center', 
-                gap: 0.5
+                gap: 0.5,
+                borderRadius: '2px',
+                pl: '5px',
+                pr: '10px',
+                bgcolor: '#fdfdfd'
             }}
         >
-            {ViewStatusIcon[status]} {what}{ViewStatusMsg[status] ? `: ${ViewStatusMsg[status]}` : ''}
+            {ViewStatusIcon[status]} {what} {ViewStatusMsg[status] ? `: ${ViewStatusMsg[status]}` : ''}
         </Typography>
     ); 
 }; 

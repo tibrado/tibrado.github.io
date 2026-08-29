@@ -1,23 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { InputTypes } from '../../assets/types';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import {Box, Typography} from '@mui/material'; 
 
 
 type Props = {
-    onSubmit: (text: string) => void; 
-    inputType: InputTypes;
-    msg?: string;
-    nope?: boolean; 
+    OnSubmit: (v: boolean, p: number) => void; 
+    responses: string[];
+    hint?: string; 
 }
 
 
-const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => {
+const ObjectClassifier: React.FC<Props> = ({OnSubmit, responses, hint}) => {
 	const videoRef = useRef<HTMLVideoElement | null>(null);
 	const streamRef = useRef<MediaStream | null>(null);
     const [status, setStatus] = useState<string | undefined>(undefined)
-	// const [isModelLoading, setIsModelLoading] = useState(true);
+    
+    const handleObjectDetection = (codes: string[]): boolean => {
+        if(codes.length < 0) return false; 
+        
+        // check for wild card
+        if(responses.includes("-")) return true;
+
+        codes = codes.map(c => c.toLocaleLowerCase());
+
+        const code_set = new Set(codes.flatMap(v => v.split(','))); 
+        console.log(hint); 
+        
+        return responses.some(v => code_set.has(v)); 
+    }; 
 
     const startVideo = async () => {
         try {
@@ -34,8 +45,6 @@ const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => 
     }; 
 
     const stopVideo = () => {
-        console.log(msg, nope); 
-
         if(streamRef.current){
             streamRef.current.getTracks().forEach(t=> t.stop()); 
             streamRef.current = null; 
@@ -46,49 +55,63 @@ const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => 
         }
     }
 
+    // Mount
 	useEffect(() => {
-        if(inputType === 'detect'){
-            let animationFrameId: number;
+        let animationFrameId: number;
+        let isMounted: boolean = true;
+        let activeStream: MediaStream | null = null; 
 
-            const runObjectDetection = async () => {
+        if(activeStream){
+            
+        }
+
+        const runObjectDetection = async () => {
+            try{
                 // Initialize TensorFlow backend and load the model
                 setStatus('loading model')
                 await tf.ready();
-
                 const model = await mobilenet.load();
                 
-                // setIsModelLoading(false);
+                if(!isMounted) return; 
+
+                // start video
+                if (videoRef.current && videoRef.current.srcObject){
+                    activeStream = videoRef.current.srcObject as MediaStream; 
+                }; 
 
                 const detectFrame = async () => {
+                    if(!isMounted) return; 
+
                     if (videoRef.current && videoRef.current.readyState === 4) {
                         // Classify the current video frame
                         const results: {className: string; probability: number}[] = await model.classify(videoRef.current);
-
-                        // check for match 
-                        const seen: string =  Object.values(results).map(r => r.className).join(','); 
-
-                        if(results.length > 0){
-                            setStatus(results[0].className.split(',')[0])
-                        }
+                        const seen: string[] = results.flatMap(v => v.className.toLocaleLowerCase().split(',')); 
                         
-                        onSubmit(seen); 
+                        if(handleObjectDetection(seen)){
+                            OnSubmit(true, 0);
+                        }
                     }
                     // Loop the detection
+
                     animationFrameId = requestAnimationFrame(detectFrame);
                 };
 
                 detectFrame();
-            };
+            } catch (error){
+                console.error('Model loading or detection failed:', error); 
+            }
+        };
 
-            startVideo();
-            runObjectDetection();
+        startVideo();
+        runObjectDetection();
 
-            // Cleanup when component unmounts
-            return () => {
-                cancelAnimationFrame(animationFrameId);
-            };
-        }
-	}, [inputType]);
+        // Cleanup when component unmounts
+        return () => {
+            isMounted = false;
+            cancelAnimationFrame(animationFrameId);
+            stopVideo();
+        };
+	}, []);
 
     // Unmount 
     useEffect(() => {
@@ -154,15 +177,15 @@ const ObjectClassifier: React.FC<Props> = ({onSubmit, inputType, msg, nope}) => 
                 muted
                 playsInline
                 style={{ 
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: '3px',
-                        boxShadow: '1px 1px 10px #00FF33',
-                        objectFit: 'cover',
-                        zIndex: 1
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: '3px',
+                    boxShadow: '1px 1px 10px #00FF33',
+                    objectFit: 'cover',
+                    zIndex: 1
                 }}
                 
             />

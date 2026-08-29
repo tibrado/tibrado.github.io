@@ -3,13 +3,50 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 import { Box, Typography } from '@mui/material';
 
 type Props = {
-    onSubmit: (text: string) => void; 
-    msg?: string;
-    nope?: boolean; 
+    OnSubmit: (v: boolean, p: number) => void; 
+    responses: string[]; 
+    hint?: string; 
 };
 
-const QRScanner: React.FC<Props> = ({onSubmit, msg = 'none', nope}) => {
-    const [scan, setScan] = useState<string>('find the qr code'); 
+const QRScanner: React.FC<Props> = ({OnSubmit, responses, hint}) => {
+    const [pass, setPass] = useState<boolean>(false);
+    
+    const validate = (code: string): [boolean, number] => {
+        if(code.trim() == "") return [false, 0]; 
+
+        code = code.toLocaleLowerCase(); 
+
+        // check for wild card
+        if(responses.includes("-")) {
+            return [true, responses.indexOf('-')]; 
+        }
+        
+        if(responses.includes(code)){
+            return [true, responses.indexOf(code)]
+        }
+        
+        return  [false, 0]
+    }; 
+
+    const handleScan = (rawValue: string): [boolean, number] => {
+        console.log(rawValue)
+        try {
+            // check if it's a url
+            const url = new URL(rawValue);
+
+            // is mine
+            if(url.protocol === 'http:' || url.protocol === 'https:'){
+                const _code = url.searchParams.get('gameCode') ?? undefined;
+
+                if(_code) return validate(_code);
+            }; 
+
+            return validate(rawValue);
+        } catch (error) {
+            // still check
+            return validate(rawValue);
+        }        
+    }; 
     
     return (
         <Box
@@ -26,33 +63,19 @@ const QRScanner: React.FC<Props> = ({onSubmit, msg = 'none', nope}) => {
                     pl: 1, 
                     fontFamily: 'system-ui',
                     textShadow: '0px 1px 5px rgba(0, 0, 0, 0.5)',
-                    color: `${nope ? 'red' : '#000000e1'}`
+                    color: `${pass ? 'red' : '#000000e1'}`
                 }}
             >
-                {scan == '' ? 'scan qr code' : scan}
+                {hint}
             </Typography>
             <Scanner
                 onScan={(code) => {
-                    try {
-                        const url = new URL(code[0].rawValue);
+                    const _pass = handleScan(code[0].rawValue); 
+                    setPass(_pass[0]); 
 
-                        if(url.protocol === 'http:' || url.protocol === 'https:'){
-                            // const _id = url.searchParams.get('gameId') ?? undefined;
-                            const _code = url.searchParams.get('gameCode') ?? undefined;
-
-                            if(_code){
-                                setScan(_code); 
-                                onSubmit(_code); 
-                            }
-                            else
-                                setScan(msg)
-                        }
-                        else {
-                            onSubmit(code[0].rawValue)
-                        }
-                    } catch (_) {
-                        setScan('invalid QR')
-                    }
+                    if(_pass){
+                        OnSubmit(_pass[0], _pass[1]); 
+                    };
                 }}
                 onError={(error) => console.error(error)}
                 styles={{

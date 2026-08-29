@@ -1,5 +1,6 @@
 import React, { type ReactNode } from "react";
-import {Menu, MenuItem, Box, Button, Avatar, Backdrop} from "@mui/material"; 
+import {Menu, MenuItem, Box, Button, Avatar, Backdrop, Grid, Typography} from "@mui/material"; 
+import {EmojiEventsOutlined} from '@mui/icons-material';
 import type { MenuOptions } from "../assets/types";
 import Timer from "./Timer";
 import LeaderBoard from './LeaderBoard';
@@ -21,36 +22,95 @@ function GameMenu() {
         <Box
             sx={{
                 zIndex: 1, 
-                top: 5,
-                left: 5, 
                 position: 'absolute', // Locks it relative to the container
-                width: '100px',
-                backgroundColor: 'rgba(248, 159, 6, 0)',
-                color: '#f32121'
+                width: '100%',
+                pointerEvents: 'none'
             }}
         >
-            <Button
-                onClick={(e) => setAnchorEl(e.currentTarget)}
-                startIcon={
-                    <Avatar 
-                        alt="UK" 
-                        src={`/player_icons/${world.player.icon}.png`}
+            <Grid container spacing={1}>
+                <Grid size={4} 
+                    sx={{
+                        display: 'flex', 
+                        justifyContent: 'left', 
+                        alignItems: 'center'
+                    }}
+                >
+                    <Button
+                        onClick={(e) => setAnchorEl(e.currentTarget)}
                         sx={{
-                            width: { xs: 40, md: 40, lg: 40 }, 
-                            height: { xs: 40, md: 40, lg: 40 },
-                            p: "5px", // Padding to keep the image away from the circle edge
-                            "& img": {
-                                objectFit: "contain", // Ensures the full PNG is visible
-                                width: "100%",        // Forces image to respect container width
-                                height: "100%",        // Forces image to respect container height
-                                filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5))" // Shadow follows PNG shape
-                            }
+                            pointerEvents: 'auto'
                         }}
+                        startIcon={
+                            <Avatar 
+                                alt="UK" 
+                                src={`/player_icons/${world.player.icon}.png`}
+                                sx={{
+                                    width: { xs: 40, md: 40, lg: 40 }, 
+                                    height: { xs: 40, md: 40, lg: 40 },
+                                    p: "5px", // Padding to keep the image away from the circle edge
+                                    "& img": {
+                                        objectFit: "contain", // Ensures the full PNG is visible
+                                        width: "100%",        // Forces image to respect container width
+                                        height: "100%",        // Forces image to respect container height
+                                        filter: "drop-shadow(0px 3px 10px rgba(15, 143, 232, 1))" // Shadow follows PNG shape
+                                    }
+                                }}
+                            />
+                        }
+                        children={
+                            <Box 
+                                sx={{ 
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    fontFamily: 'system-ui', 
+                                    color: '#0000007d', 
+                                    bgcolor: '#fdfdfd45',
+                                    borderRadius: '3px',
+                                    boxShadow: '2px 2px 5px #00000023',
+                                    p: '2px'
+                                }}
+                            >
+                                
+                                { world.id ? 
+                                    <>
+                                        <EmojiEventsOutlined sx={{fontSize: '15px', ml: '2px'}} /> 
+                                        <Typography 
+                                            sx={{ 
+                                                mb: '-3px', 
+                                                mr: '5px',
+                                                fontSize: '12px'
+                                            }}
+                                        > 
+                                            {world.player.score}
+                                        </Typography> 
+                                    </> : <></>
+                                }
+                            </Box>
+                                        
+                        }
                     />
-                }
-            >
-                {world.id ? <Timer/> : <></>}
-            </Button>
+                </Grid>
+
+                <Grid size={4} 
+                    sx={{
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center' 
+                    }} 
+                >
+                    {world.id ? <Timer/> : <></>}
+                </Grid>
+
+                <Grid size={4} 
+                    sx={{
+                        display: 'flex', 
+                        justifyContent: 'right', 
+                        alignItems: 'right' 
+                    }} 
+                >
+                </Grid>
+            </Grid>
+
 
             <Menu
                 id="menu"
@@ -84,7 +144,12 @@ function GameMenu() {
                         players: [],
                         worldTime: 0,
                         selected: {mode: 'game', index: 0, path: 0},
-                        current: {index: 0, path: 0}
+                        current: {index: 0, path: 0},
+                        player: {
+                            ...pre.player,
+                            score: 0
+                        }
+
                     }));
                 }}>Quit Game</MenuItem>
             </Menu>

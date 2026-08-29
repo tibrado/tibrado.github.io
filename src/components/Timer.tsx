@@ -1,5 +1,6 @@
 import { useEffect} from 'react'; 
-import {Typography } from '@mui/material';
+import {AccessAlarm} from '@mui/icons-material';
+import {Typography, Box } from '@mui/material';
 import { useWorld } from '../context';
 
 export default function Timer(){
@@ -31,8 +32,22 @@ export default function Timer(){
 
 
     return (
-        <Typography variant="subtitle2" color='#0000007d'>
-            {formatTime(world?.worldTime ?? 0)}
-        </Typography>
+        <Box
+            sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                fontFamily: 'system-ui', 
+                color: '#0000007d', 
+                bgcolor: '#fdfdfd45',
+                borderRadius: '3px',
+                boxShadow: '2px 2px 5px #00000023',
+                p: '3px'
+            }}
+        >
+            <AccessAlarm sx={{fontSize: '15px', ml: '2px'}}/>
+            <Typography sx={{fontSize: '12px', mb: '-5px'}}>
+                {formatTime(world?.worldTime ?? 0)}
+            </Typography>
+        </Box>
     );
 }; 

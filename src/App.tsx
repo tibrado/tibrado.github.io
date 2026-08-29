@@ -9,7 +9,6 @@ import { LoadWorldPage } from './pages/LoadPage';
 import GameMenu, {GameMenuItem} from './components/GameMenu';
 import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
-import CorrectAnswerBackdrop from './components/ScoreAnim';
 
 import { PhotoBooth } from './components/inputs/CameraInputHandler';
 
@@ -43,15 +42,6 @@ export const App: React.FC = () => {
         }
     }, [world?.player.score]); 
 
-    // Enter fullscreen on first click anywhere
-    /*
-    document.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();ll;
-        }
-    }, { once: true });
-    */
-
     // ------------------------------
     const Pages: Record<Page, ReactNode> = {
         start: <StartPage onStart={OnStart} />,
@@ -68,8 +58,6 @@ export const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
         <CssBaseline />
-
-        <CorrectAnswerBackdrop score={world.player.score} />
         {!TESTING ? 
         <Box>
             {loading ? <LoadWorldPage loading={loading} setLoading={setLoading}/> : <></>}
