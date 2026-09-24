@@ -1,50 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Typography, Backdrop} from '@mui/material';
+import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
 import { GpsHandler } from "../handlers/GpsHandler";
 import { PermissionStatus } from "../handlers/PermissionStatus";
-import type { Coordinates, AppPermissionOptions} from "../assets/types";
+import type { Coordinates, AppPermissionOptions } from "../assets/types";
 import { useWorld } from "../context";
 import { LoadGames } from "../handlers/ApiHandler";
 import { GetTutorialGameInfo } from "../handlers/Tutorial";
 
 export type LoadStatus = {
-    map: boolean; 
+    map: boolean;
     games: boolean;
     leaderboard: boolean;
 };
 
 
 type Props = {
-    loading: boolean; 
-    setLoading: (loading: boolean) => void; 
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
 };
-export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
-    const {world, setWorld} = useWorld(); 
-    const [gps, setGps] = useState<Coordinates | undefined>(); 
-    const [status, setStatus] = useState<AppPermissionOptions>('prompt'); 
+export const LoadWorldPage: React.FC<Props> = ({ loading, setLoading }) => {
+    const { world, setWorld } = useWorld();
+    const [gps, setGps] = useState<Coordinates | undefined>();
+    const [status, setStatus] = useState<AppPermissionOptions>('prompt');
 
     useEffect(() => {
         GpsHandler(setStatus, setGps)
-    }, []); 
-    
+    }, []);
+
     useEffect(() => {
         if (!gps) return;
 
-        if(gps && world){
+        if (gps && world) {
             setWorld(pre => ({
                 ...pre,
-                player:{
+                player: {
                     ...pre.player,
                     lat: gps.latitude,
                     lng: gps.longitude
                 }
-            })); 
+            }));
 
             // Exit Load Page
-            LoadGames(setWorld, GetTutorialGameInfo(gps.latitude, gps.longitude)); 
-            setLoading(false); 
+            LoadGames(setWorld, GetTutorialGameInfo(gps.latitude, gps.longitude));
+            setLoading(false);
         };
-    }, [gps]); 
+    }, [gps]);
 
 
     return (
@@ -55,26 +55,26 @@ export const LoadWorldPage: React.FC<Props> = ({loading, setLoading}) => {
                 backgroundImage: 'linear-gradient(180deg, hsla(230,59%,25%,1) 0%, hsla(359,73%,39%,1) 70%, hsla(32,97%,59%,1) 100%)',
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
-                color:'white',
+                color: 'white',
                 zIndex: (theme) => theme.zIndex.drawer + 1,
                 flexDirection: 'column',
             }}
         >
             {/* Decorative Icon or Logo */}
             <Box sx={{ mb: 4, textAlign: 'center' }}>
-                <CircularProgress size={60} enableTrackSlot  thickness={4} sx={{ color: '#ffffff' }} />
+                <CircularProgress size={60} enableTrackSlot thickness={4} sx={{ color: '#ffffff' }} />
                 <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
                     LOADING WORLD
                 </Typography>
                 {/* Gps Status*/}
-                <PermissionStatus what="GPS" status={status} prompt="Make sure webpage have GPS access." denied="Access Denied. please allow access & refresh page"/>
+                <PermissionStatus what="GPS" status={status} prompt="Make sure webpage have GPS access." denied="Access Denied. please allow access & refresh page" />
             </Box>
-        
-        
+
+
             <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
                 "Tip: Keep your eyes on the prize!"
             </Typography>
         </Backdrop>
     );
-   
+
 }; 

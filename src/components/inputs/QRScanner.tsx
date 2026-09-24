@@ -3,33 +3,41 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 import { Box, Typography } from '@mui/material';
 
 type Props = {
-    OnSubmit: (v: boolean, p: number) => void; 
-    responses: string[]; 
-    hint?: string; 
+    OnSubmit?: (v: boolean, p: number) => void; 
+    responses?: string[]; 
+    getValue?: (v: string) => void; 
 };
 
-const QRScanner: React.FC<Props> = ({OnSubmit, responses, hint}) => {
-    const [pass, setPass] = useState<boolean>(false);
+const QRScanner: React.FC<Props> = ({OnSubmit, responses, getValue}) => {
+    const [_, setPass] = useState<boolean>(false);
+    const [scan, setScan] = useState<string>("");
     
-    const validate = (code: string): [boolean, number] => {
-        if(code.trim() == "") return [false, 0]; 
-
-        code = code.toLocaleLowerCase(); 
-
-        // check for wild card
-        if(responses.includes("-")) {
-            return [true, responses.indexOf('-')]; 
-        }
-        
-        if(responses.includes(code)){
-            return [true, responses.indexOf(code)]
-        }
-        
-        return  [false, 0]
-    }; 
 
     const handleScan = (rawValue: string): [boolean, number] => {
-        console.log(rawValue)
+        setScan(rawValue); 
+
+        if(getValue) getValue(rawValue); 
+
+        if (!responses) return [false, 0]; 
+
+        // ----------
+        const validate = (code: string): [boolean, number] => {
+            if (code.trim() == "") return [false, 0];
+
+            code = code.toLocaleLowerCase();
+
+            // check for wild card
+            if (responses.includes("-")) {
+                return [true, responses.indexOf('-')];
+            }
+
+            if (responses.includes(code)) {
+                return [true, responses.indexOf(code)]
+            }
+
+            return [false, 0]
+        }; 
+    
         try {
             // check if it's a url
             const url = new URL(rawValue);
@@ -54,26 +62,35 @@ const QRScanner: React.FC<Props> = ({OnSubmit, responses, hint}) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: '100%',
-                height: '100%'
+                height: '100%',
             }}
         >
-            <Typography 
-                variant='caption'
-                sx={{
-                    pl: 1, 
-                    fontFamily: 'system-ui',
-                    textShadow: '0px 1px 5px rgba(0, 0, 0, 0.5)',
-                    color: `${pass ? 'red' : '#000000e1'}`
-                }}
-            >
-                {hint}
-            </Typography>
+
+            <Box sx={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    width: '75%',
+                    overflowX: 'auto',
+                    pl: 1
+                }}>
+                    <Typography
+                        variant='caption'
+                        noWrap
+                        sx={{
+                            fontFamily: 'system-ui',
+                            textShadow: '0px 1px 1px rgba(225, 240, 250, 0.5)',
+                        }}
+                    >
+                        {scan}
+                    </Typography>
+            </Box>
             <Scanner
+                
                 onScan={(code) => {
                     const _pass = handleScan(code[0].rawValue); 
                     setPass(_pass[0]); 
 
-                    if(_pass){
+                    if(OnSubmit){
                         OnSubmit(_pass[0], _pass[1]); 
                     };
                 }}

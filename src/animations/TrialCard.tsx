@@ -107,7 +107,6 @@ const TrailCard: React.FC<Props> = ({OnSubmit, transition, title, trial, path}) 
                                     },
                                 }}
                             />
-
                         </Box>
                     }
                 />

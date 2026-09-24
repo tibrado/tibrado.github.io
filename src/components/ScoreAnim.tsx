@@ -25,49 +25,49 @@ const floatUp = keyframes`
   }
 `;
 
-export default function ScoreAnim({score, earn }: {score: number, earn: number}): React.JSX.Element {
+export default function ScoreAnim({ score, earn }: { score: number, earn: number }): React.JSX.Element {
     const [play, setPlay] = useState<boolean>(false)
-    
+
     useEffect(() => {
-        if(earn > 0 && score > 0) { setPlay(true); }
-    }, [score]); 
+        if (earn > 0 && score > 0) { setPlay(true); }
+    }, [score]);
 
     // Automatically trigger close handler after the 1-second animation finishes
     useEffect(() => {
-    if (!play) return;
+        if (!play) return;
 
-    const timer = setTimeout(() => {
-        setPlay(false)
-    }, 1000); // Matches the 1s animation duration
+        const timer = setTimeout(() => {
+            setPlay(false)
+        }, 1000); // Matches the 1s animation duration
 
-    return () => clearTimeout(timer); // Clean up timer on unmount or if open changes
+        return () => clearTimeout(timer); // Clean up timer on unmount or if open changes
     }, [play]);
 
     return (
         play ? (
-        <Box
-            sx={{
-                position: 'absolute', // Completely removes it from normal document flow
-                top: '50%',          // Centers it vertically
-                left: '50%',         // Centers it horizontally
-                transform: 'translate(-50%, -50%)', // Keeps it perfectly aligned in the middle
-                zIndex: 10,
-                pointerEvents: 'none', // Prevents it from blocking clicks to underlying buttons    
-                animation: `${floatUp} 1s ease-in-out forwards`, // Duration changed to 1s
-            }}
-        >
-        
-            <Typography
-                variant="h3"
+            <Box
                 sx={{
-                    fontWeight: 'bold',
-                    color: '#4caf50',
-                    textShadow: '0px 0px 15px rgba(255, 255, 255, 0.6)',
+                    position: 'absolute', // Completely removes it from normal document flow
+                    top: '50%',          // Centers it vertically
+                    left: '50%',         // Centers it horizontally
+                    transform: 'translate(-50%, -50%)', // Keeps it perfectly aligned in the middle
+                    zIndex: 10,
+                    pointerEvents: 'none', // Prevents it from blocking clicks to underlying buttons    
+                    animation: `${floatUp} 1s ease-in-out forwards`, // Duration changed to 1s
                 }}
             >
-                {`+${earn}`}
-            </Typography>
-        </Box>
+
+                <Typography
+                    variant="h3"
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#4caf50',
+                        textShadow: '0px 0px 15px rgba(255, 255, 255, 0.6)',
+                    }}
+                >
+                    {`+${earn}`}
+                </Typography>
+            </Box>
         ) : <></>
     );
 }

@@ -19,7 +19,7 @@ export const GameClue: React.FC<Props> = ({OnSubmit, showClue, clue, responses, 
 
     const Inputs: Record<InputTypes, ReactElement> = {
         text: <TextInput OnSubmit={OnSubmit} responses={responses} hint={hint}/>,
-        scan: <QRScanner  OnSubmit={OnSubmit} responses={responses} hint={hint}/>,
+        scan: <QRScanner  OnSubmit={OnSubmit} responses={responses}/>,
         detect: <ObjectClassifier OnSubmit={OnSubmit}  responses={responses} hint={hint}/>
 
     };

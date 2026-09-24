@@ -22,7 +22,8 @@ const defaultWorld: World = {
     player: {game_id: '', date: new Date(Date.now()), uuid: '', name: 'default', score: 0, lat: 0, lng: 0, icon: 'bear' as PlayerIcon},
     players: [],
     gameType: undefined,
-    games: undefined
+    games: undefined,
+    creationMode: {active: false, location: {active: false, coordinates: undefined}, data: []}
 }; 
 // Provider
 export function WorldProvider({children}: {children: ReactNode}){

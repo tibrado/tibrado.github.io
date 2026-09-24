@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback} from 'react';
+import { useState, useRef, useCallback, useEffect} from 'react';
 import { Map, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre';
-import type { MapStyleImageMissingEvent } from 'maplibre-gl';
+import { type MapStyleImageMissingEvent, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { GamePage } from '../../pages/GamePage';
 import { PlayerIcons, OtherIcons, type Coordinates } from '../../assets/types';
@@ -31,8 +31,8 @@ export function GameMap() {
         });
     }, []); 
 
-    
     function onClickGamePin(id: number, lng: number, lat: number){
+        
         onPinFocus(lng, lat);
         setPopupCoord({lat: lat, lng: lng}); 
         setWorld(pre => ({
@@ -56,6 +56,44 @@ export function GameMap() {
            }
         })); 
     }; 
+
+    // ----------------------------------------------
+    const creationModeRef = useRef(world.creationMode); 
+
+    useEffect(() => {
+        creationModeRef.current = world.creationMode; 
+    }, [world.creationMode]);
+
+    function onCreationSelect(map: any, lng: number, lat: number) {
+        if (creationModeRef.current.location.active) {
+            setWorld(pre => ({
+                ...pre,
+                creationMode: {
+                    ...pre.creationMode,
+                    location: {
+                        active: false,
+                        coordinates: {
+                            latitude: lat,
+                            longitude: lng
+                        }
+                    }
+                },
+                selected: {
+                    mode: 'creation',
+                    index: 0,
+                    path: 0
+                }
+            }));
+
+            new Marker({ color: '#ff0101' })
+                .setLngLat([lng, lat])
+                .addTo(map);
+
+            onPinFocus(lng, lat);
+            setPopupCoord({ lat: lat, lng: lng }); 
+        }
+    };
+
 
     // ---------------------------------------------------
     const handleMissingIcon = async (e: MapStyleImageMissingEvent) => {
@@ -95,8 +133,7 @@ export function GameMap() {
             }
         }
     };
-
-
+    
     return (
         <>
             <ScoreAnim score={world.player.score} earn={points} />
@@ -106,18 +143,19 @@ export function GameMap() {
                 onLoad={(e) => {
                     const map = e.target; 
 
+                    // in creation mode
+                    map.on('click', (e) => {onCreationSelect(map, e.lngLat.lng, e.lngLat.lat)}); 
                     map.on('styleimagemissing', handleMissingIcon)
                     map.on('click', 'scavenger-game-layer', (e) => {
-                        const features = e.features; 
+                        const features = e.features;
 
                         if(features){
-                            onClickGamePin(features[0].id as number, e.lngLat.lng, e.lngLat.lat)
+                            onClickGamePin(features[0].properties.id as number, e.lngLat.lng, e.lngLat.lat)
                         }
                     }); 
 
                     map.on('click', 'scavenger-trial-layer', (e) => {
                         const features = e.features; 
-
                         if(features){
                             onClickTrialPin(
                                 features[0].properties.id as number,

@@ -7,6 +7,7 @@ import Done from './pages/DonePage';
 import { PostPlayer, GetPlayers } from './handlers/ApiHandler';
 import { LoadWorldPage } from './pages/LoadPage';
 import GameMenu, {GameMenuItem} from './components/GameMenu';
+import GameCreationMode from './components/GameCreationMode';
 import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
 
@@ -49,6 +50,7 @@ export const App: React.FC = () => {
             <Box sx={{position: 'relative'}}>
                 <GameMenu/>
                 <GameMap/> 
+                <GameCreationMode/>
             </Box>
         : <>World does not exists.</>,
         end: <Done />
@@ -68,8 +70,10 @@ export const App: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'transparent',
-                p: 1
+                backgroundColor:'transparent',
+                border: world.creationMode.active ? `3px red solid` : undefined,
+                p: 1,
+                borderRadius: '10px'
             }}>
                 {Pages[world ? world.page : 'start']}
             </Paper>

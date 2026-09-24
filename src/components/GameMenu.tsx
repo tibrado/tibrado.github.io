@@ -1,17 +1,17 @@
+import { EmojiEventsOutlined } from '@mui/icons-material';
+import { Avatar, Backdrop, Box, Button, Grid, Menu, MenuItem, Typography } from "@mui/material";
 import React, { type ReactNode } from "react";
-import {Menu, MenuItem, Box, Button, Avatar, Backdrop, Grid, Typography} from "@mui/material"; 
-import {EmojiEventsOutlined} from '@mui/icons-material';
 import type { MenuOptions } from "../assets/types";
-import Timer from "./Timer";
-import LeaderBoard from './LeaderBoard';
 import { useWorld } from "../context";
+import LeaderBoard from './LeaderBoard';
+import Timer from "./Timer";
 
 //--------------------------------------------------------------------------------//
 function GameMenu() {
-    const {world, setWorld} = useWorld(); 
+    const { world, setWorld } = useWorld();
 
-    if(!world) return; 
-    
+    if (!world) return;
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClose = () => {
@@ -21,17 +21,17 @@ function GameMenu() {
     return (
         <Box
             sx={{
-                zIndex: 1, 
+                zIndex: 1,
                 position: 'absolute', // Locks it relative to the container
                 width: '100%',
                 pointerEvents: 'none'
             }}
         >
             <Grid container spacing={1}>
-                <Grid size={4} 
+                <Grid size={4}
                     sx={{
-                        display: 'flex', 
-                        justifyContent: 'left', 
+                        display: 'flex',
+                        justifyContent: 'left',
                         alignItems: 'center'
                     }}
                 >
@@ -41,11 +41,11 @@ function GameMenu() {
                             pointerEvents: 'auto'
                         }}
                         startIcon={
-                            <Avatar 
-                                alt="UK" 
+                            <Avatar
+                                alt="UK"
                                 src={`/player_icons/${world.player.icon}.png`}
                                 sx={{
-                                    width: { xs: 40, md: 40, lg: 40 }, 
+                                    width: { xs: 40, md: 40, lg: 40 },
                                     height: { xs: 40, md: 40, lg: 40 },
                                     p: "5px", // Padding to keep the image away from the circle edge
                                     "& img": {
@@ -58,55 +58,55 @@ function GameMenu() {
                             />
                         }
                         children={
-                            <Box 
-                                sx={{ 
-                                    display: "flex", 
-                                    alignItems: "center", 
-                                    fontFamily: 'system-ui', 
-                                    color: '#0000007d', 
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    fontFamily: 'system-ui',
+                                    color: '#0000007d',
                                     bgcolor: '#fdfdfd45',
                                     borderRadius: '3px',
                                     boxShadow: '2px 2px 5px #00000023',
                                     p: '2px'
                                 }}
                             >
-                                
-                                { world.id ? 
+
+                                {world.id ?
                                     <>
-                                        <EmojiEventsOutlined sx={{fontSize: '15px', ml: '2px'}} /> 
-                                        <Typography 
-                                            sx={{ 
-                                                mb: '-3px', 
+                                        <EmojiEventsOutlined sx={{ fontSize: '15px', ml: '2px' }} />
+                                        <Typography
+                                            sx={{
+                                                mb: '-3px',
                                                 mr: '5px',
                                                 fontSize: '12px'
                                             }}
-                                        > 
+                                        >
                                             {world.player.score}
-                                        </Typography> 
+                                        </Typography>
                                     </> : <></>
                                 }
                             </Box>
-                                        
+
                         }
                     />
                 </Grid>
 
-                <Grid size={4} 
+                <Grid size={4}
                     sx={{
-                        display: 'flex', 
-                        justifyContent: 'center', 
-                        alignItems: 'center' 
-                    }} 
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
                 >
-                    {world.id ? <Timer/> : <></>}
+                    {world.id ? <Timer /> : <></>}
                 </Grid>
 
-                <Grid size={4} 
+                <Grid size={4}
                     sx={{
-                        display: 'flex', 
-                        justifyContent: 'right', 
-                        alignItems: 'right' 
-                    }} 
+                        display: 'flex',
+                        justifyContent: 'right',
+                        alignItems: 'right'
+                    }}
                 >
                 </Grid>
             </Grid>
@@ -128,23 +128,24 @@ function GameMenu() {
             >
                 {/*OLeader Board */}
                 <MenuItem onClick={() => {
-                    handleClose(); 
+                    handleClose();
                     setWorld(pre => ({
                         ...pre,
                         menu: 'leaderBoard'
                     }));
                 }
                 }>Leaderboard</MenuItem>
+
                 <MenuItem onClick={() => {
-                    handleClose(); 
-                    setWorld( pre => ({
-                        ...pre, 
+                    handleClose();
+                    setWorld(pre => ({
+                        ...pre,
                         id: undefined,
                         trials: [],
                         players: [],
                         worldTime: 0,
-                        selected: {mode: 'game', index: 0, path: 0},
-                        current: {index: 0, path: 0},
+                        selected: { mode: 'game', index: 0, path: 0 },
+                        current: { index: 0, path: 0 },
                         player: {
                             ...pre.player,
                             score: 0
@@ -152,31 +153,58 @@ function GameMenu() {
 
                     }));
                 }}>Quit Game</MenuItem>
+
+                {/*
+                <MenuItem onClick={() => {
+                    handleClose();
+                    setWorld(pre => ({
+                        ...pre,
+                        id: undefined,
+                        trials: [],
+                        players: [],
+                        worldTime: 0,
+                        selected: { mode: 'game', index: 0, path: 0 },
+                        current: { index: 0, path: 0 },
+                        player: {
+                            ...pre.player,
+                            score: 0
+                        }
+
+                    }));
+                }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox checked={false} onChange={undefined} name="antoine" />
+                        }
+                        label="Quester"
+                    />
+                </MenuItem>
+                */}
             </Menu>
-            
+
         </Box>
     )
 
-}; 
+};
 
 export default GameMenu;
 
 //------------------------------------Menu Backdrop--------------------------------------------//
-export function GameMenuItem(){
-    const {world, setWorld} = useWorld(); 
+export function GameMenuItem() {
+    const { world, setWorld } = useWorld();
 
-    if(!world?.menu) return; 
+    if (!world?.menu) return;
 
     const handleClose = () => {
-        setWorld(pre => ({...pre, menu: 'none'})); 
-    }; 
+        setWorld(pre => ({ ...pre, menu: 'none' }));
+    };
 
     const Menus: Record<MenuOptions, ReactNode> = {
         none: <></>,
-        leaderBoard: <LeaderBoard/> 
+        leaderBoard: <LeaderBoard />
     };
 
-    return(
+    return (
         <Backdrop
             sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
             open={world?.menu != 'none'}

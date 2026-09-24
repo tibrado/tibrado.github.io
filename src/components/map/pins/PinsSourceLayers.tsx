@@ -15,11 +15,12 @@ export function QuestLayer() {
                 "features": []
             };
         };
-
+        
         const features = games.map((h, i) => ({
             "type": "Feature" as const, // Cast to literal type for TypeScript safety
             "id": `game_pin_${i}`,
             "properties": {
+                "id": i, 
                 "title": h.title,
                 "type": h.type,
                 "in_range": true,

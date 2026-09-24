@@ -4,11 +4,15 @@ import { Button, Card, CardActions, CardContent, CardHeader, TextField,
     Avatar, Grid
 } from '@mui/material';
 import { Public } from '@mui/icons-material';
+import { useWorld } from '../context';
 
 type Props = {
     onStart: (name: string, icon: PlayerIcon) => void; 
 };
 export const StartPage: React.FC<Props> = ({onStart}) => {
+    const {setWorld } = useWorld();
+
+    const [count, setCount] = useState<number>(0); 
     const [name, setName] = useState<string>('')
     const [icon, setIcon] = useState<string>('bear')
     
@@ -50,6 +54,17 @@ export const StartPage: React.FC<Props> = ({onStart}) => {
                                 key={`selected_icon`}
                                 variant="square"
                                 src={`/player_icons/${icon}.png`}
+                                onClick={() => {
+                                    if (count == 10) {
+                                        setWorld(pre => ({
+                                            ...pre,
+                                            creationMode: {
+                                                ...pre.creationMode,
+                                                active: true
+                                            }
+                                        }));
+                                    }
+                                    setCount(count + 1)}}
                                 sx={{
                                     borderRadius: '10%',
                                     width: 120, 
@@ -58,7 +73,7 @@ export const StartPage: React.FC<Props> = ({onStart}) => {
                                     mb: 0, // Added margin bottom to separate from text
                                     "& img": {
                                         objectFit: "contain",
-                                        filter: "drop-shadow(0px 10px 3px rgba(0, 0, 0, 0.5))"
+                                        filter: `drop-shadow(0px 10px 3px ${ count < 10 ? 'rgba(0, 0, 0, 0.5)' : ''})`
                                     },
                                     zIndex: 5
                                 }}
