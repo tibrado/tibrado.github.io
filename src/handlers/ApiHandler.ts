@@ -113,6 +113,7 @@ export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, tutorial
             }; 
             
             const raw: any = await response.json(); 
+            console.log(Array.isArray(raw.clues) , raw)
             _trails = Array.isArray(raw.clues)
                 ? raw.clues.map((c: any) => ({
                     hintIcon: c.hintIcon,
@@ -144,6 +145,7 @@ export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, tutorial
         })); 
 
         // Fly to first pin 
+        console.log(_trails)
         const loc = _trails[0].location[0]; 
         FocusOnPin(loc[1], loc[0], 1.5); 
 
