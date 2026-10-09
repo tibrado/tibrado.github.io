@@ -1,6 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
 import {Box, Card, CardContent, CardActions} from '@mui/material'; 
 
+/*
+#ebe0f4
+#ccafe3
+#b68ed7
+#62548b
+
+#a0a0c5
+#cbb9da
+#5e3e7a
+#313160
+
+*/
 export const PhotoBooth: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasBgRef = useRef<HTMLCanvasElement | null>(null);
@@ -99,10 +111,10 @@ export const PhotoBooth: React.FC = () => {
 
         // 2. Draw the branding icon overlay (Bottom Right)
         if (brandingIcon && brandingIcon.complete) {
-        const iconSize = 60;
-        const xPos = canvas.width - iconSize - 20;
-        const yPos = canvas.height - iconSize - 20;
-        ctx.drawImage(brandingIcon, xPos, yPos, iconSize, iconSize);
+            const iconSize = 60;
+            const xPos = canvas.width - iconSize - 20;
+            const yPos = canvas.height - iconSize - 20;
+            ctx.drawImage(brandingIcon, xPos, yPos, iconSize, iconSize);
         }
 
         // 3. Draw text layer directly onto the canvas matrix (Bottom Left)

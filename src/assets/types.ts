@@ -12,49 +12,47 @@ export const PlayerIcons: string[] = ['bear', 'buffalo', 'chick', 'chicken', 'co
     'moose', 'narwhal', 'owl', 'panda', 'parrot', 'penguin', 'pig', 'rabbit', 'rhino',
     'sloth', 'snake', 'walrus', 'whale', 'zebra'
 ];
-export const OtherIcons: string[] = ['quest', 'search'];
+export const OtherIcons: string[] = ['quest', 'search', 'locked'];
 export type MapMode = 'game' | 'trial' | 'creation';
-export type GameType = 'Fire' | 'Water' | 'Earth' | 'Air' | 'Spirit' | 'Ether';
+export type ClueLocks = undefined | 'time' | 'distance' | 'clue'; 
+export type GameType = 'scavenger_hunt' | 'murder_mystery';
 export type MenuOptions = 'none' | 'leaderBoard';
-export const Team: Record<GameType, string> = {
-    Fire: 'red',
-    Water: 'blue',
-    Earth: 'brown',
-    Air: 'gray',
-    Spirit: 'white',
-    Ether: 'purple'
+
+export const Color: Record<string, string> = { // Shade 400 -> https://mui.com/material-ui/customization/color/
+    'red': '#ef5350',
+    'blue': '#42a5f5',
+    'green': '#66bb6a'
 };
 
 export type AppPermissionOptions = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'error';
 //------------------------------------GAME LIST---------------------------------------------//
-export type GameInfo = {
-    coord: [number, number]; // lat, lng 
-    description: string;
+export type GameData = {
+    uuid: string;
     title: string;
+    description: string;
     type: GameType;
+    location: LatLng; 
 };
+
+export type ObjectiveData = {
+    clue: string[];
+    hint: string[];
+    solution: string[]; // three options: 1. Connect
+    inputType: InputTypes[];
+    location: LatLng[];
+};
+
 export type UserSelection = {
     mode: MapMode;
     index: number;
     path?: number;
-};
-export type Games = {
-    hunts: GameInfo[];
+    lock?: boolean; 
 };
 
 //------------------------------------------------------------------------------------------//
 //------------------------------------ Load Status -----------------------------------------//
 //------------------------------------------------------------------------------------------//
 //------------------------------------CLUE OBJECT-------------------------------------------//
-export type Trials = {
-    hintIcon: HintIconTypes[];
-    text: string[];
-    hint: string[];
-    responses: string[]; // three options: 1. Connect
-    location: [number, number][];
-    inputType: InputTypes[];
-    path_selected?: number;
-};
 
 export type Location = {
     coordinates: [number, number];
@@ -67,26 +65,33 @@ export type NewGameData = {
     value?: string,
     description?: string,
     type?: InputTypes | GameType,
-    coordinates?: Coordinates
+    coordinates?: LatLng
 };
 
 export type World = {
-    id: string | undefined;
+    uuid: string | undefined;
     description: string;
     current: { index: number, path: number },
     page: Page;
     title: string;
     date: Date;
     gameType?: GameType;
-    trials: Trials[];
     paths: number[];
     worldTime: number;
     player: Player;
     players: Player[];
-    games: Games | undefined;
+    games: GameData[];
+    objectives: ObjectiveData[];
     menu?: MenuOptions;
     selected?: UserSelection;
-    creationMode: {active: boolean, location: {active: boolean, coordinates?: Coordinates}, data: NewGameData[]}
+    creationMode: {
+        active: boolean,
+        location: {
+            active: boolean, LatLng?: LatLng
+        }, 
+        data: NewGameData[],
+        edit?: number
+    }
 };
 //------------------------------------------------------------------------------------------//
 export type Player = {
@@ -94,14 +99,13 @@ export type Player = {
     date: Date;
     name: string;
     score: number;
-    lat: number;
-    lng: number;
+    location: LatLng; 
     icon: PlayerIcon;
     uuid: string;
 };
 // "game_id","date","name","score","lat","long","uuid"
 //------------------------------------------------------------------------------------------//
-export type Coordinates = {
+export type LatLng = {
     latitude: number;
     longitude: number;
     accuracy?: number;

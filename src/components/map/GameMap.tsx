@@ -3,9 +3,9 @@ import { Map, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre
 import { type MapStyleImageMissingEvent, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { GamePage } from '../../pages/GamePage';
-import { PlayerIcons, OtherIcons, type Coordinates } from '../../assets/types';
+import { PlayerIcons, OtherIcons } from '../../assets/types';
 import { useWorld } from '../../context';
-import { QuestLayer,TrialLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
+import { QuestLayer,ObjectiveLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
 import { RotatingPin, PulsingPin } from './pins/PinAnimations';
 import ScoreAnim from '../ScoreAnim';
 
@@ -14,7 +14,6 @@ const MAP_ZOOM = 16.5;
 export function GameMap() {
     const {world, setWorld} = useWorld(); 
     const [points, setPoints] = useState<number>(0); 
-    const [coord, setCoord] = useState<Coordinates | undefined>(undefined); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
     
     const loadingImages = new Set<string>(); 
@@ -39,30 +38,55 @@ export function GameMap() {
             ...pre, 
            selected: {
                 mode: 'game',
-                index: id
+                index: id,
+                lock: undefined
            }
         })); 
     }; 
     
-    function onClickTrialPin(id: number, path: number, lng: number, lat: number){
+    function onClickTrialPin(id: number, path: number, lock: boolean, lng: number, lat: number){
         onPinFocus(lng, lat, 1.5);
         setPopupCoord({lat: lat, lng: lng}); 
         setWorld(pre => ({
             ...pre, 
-           selected: {
+            selected: {
                 mode: 'trial',
                 index: id,
-                path: path
-           }
+                path: path,
+                lock: lock
+            }
         })); 
     }; 
 
     // ----------------------------------------------
     const creationModeRef = useRef(world.creationMode); 
 
+    // Edit
+    useEffect(() => {
+        if (world.creationMode.edit !== undefined){
+            const v = world.creationMode
+            .data[world.creationMode.edit].coordinates; 
+
+            if (v) {
+                onPinFocus(v.longitude, v.latitude)
+                setPopupCoord({lat: v.latitude, lng: v.longitude})
+            }
+        };
+    }, [world.creationMode.edit]); 
+
     useEffect(() => {
         creationModeRef.current = world.creationMode; 
     }, [world.creationMode]);
+
+    // On data added
+    let marker: Marker | null = null;  
+
+    useEffect(() => {
+        if(world.creationMode.data.length > 0){
+            marker = null; 
+        }
+    }, [world.creationMode.data])
+
 
     function onCreationSelect(map: any, lng: number, lat: number) {
         if (creationModeRef.current.location.active) {
@@ -72,7 +96,7 @@ export function GameMap() {
                     ...pre.creationMode,
                     location: {
                         active: false,
-                        coordinates: {
+                        LatLng: {
                             latitude: lat,
                             longitude: lng
                         }
@@ -85,13 +109,16 @@ export function GameMap() {
                 }
             }));
 
-            new Marker({ color: '#ff0101' })
+            if(marker)
+                marker.remove(); 
+
+            marker = new Marker({ color: '#ff0101' })
                 .setLngLat([lng, lat])
                 .addTo(map);
 
             onPinFocus(lng, lat);
             setPopupCoord({ lat: lat, lng: lng }); 
-        }
+        }; 
     };
 
 
@@ -118,11 +145,12 @@ export function GameMap() {
                     const image = await map.loadImage(`other_icons/${iconName}.png`)
                     map.addImage(iconName, image.data);
                 } 
-                else if(iconName.includes('user-'))
+                else if(iconName.includes('user-')){
                     map.addImage(
                         iconName, 
                         PulsingPin(300, map, `player_icons/${iconName.replace('user-', '')}.png`)
                     );
+                }
                 else{
                     const image = await map.loadImage(`player_icons/${iconName.replace('user-', '')}.png`)
                     map.addImage(iconName, image.data);
@@ -153,13 +181,15 @@ export function GameMap() {
                             onClickGamePin(features[0].properties.id as number, e.lngLat.lng, e.lngLat.lat)
                         }
                     }); 
-
+                    // map.setPaintProperty('ctracts', 'fill-color', ["step", ["number", ["feature-state", "lmi"], 0], "#FFFFFF", 1, "#FFB6C1", 3, "#FAFAD2"])
                     map.on('click', 'scavenger-trial-layer', (e) => {
                         const features = e.features; 
                         if(features){
+                            const prop = features[0].properties; 
                             onClickTrialPin(
-                                features[0].properties.id as number,
-                                features[0].properties.path as number, 
+                                prop.id as number,
+                                prop.path as number, 
+                                prop.locked as boolean,
                                 e.lngLat.lng, e.lngLat.lat
                             )
                         }
@@ -186,15 +216,8 @@ export function GameMap() {
                             }
                             */
                         }
-                    }); 
+                    });
                     geolocateRef.current?.trigger(); 
-                }}
-                initialViewState={{
-                    latitude: world.player.lat,
-                    longitude: world.player.lng,
-                    zoom: coord ? MAP_ZOOM : 1,
-                    bearing: 0,
-                    pitch: 0,
                 }}
                 
                 // Disable all interactions
@@ -209,7 +232,7 @@ export function GameMap() {
                 style={{
                     height: '95dvh', 
                     width: '95dvw',
-                    borderRadius: '10px',
+                    borderRadius: '5px',
                 }}
                 
             >
@@ -242,25 +265,23 @@ export function GameMap() {
                     showAccuracyCircle={false}
                     showUserLocation={false}
                     onGeolocate={(e) => {
-                        setCoord({
-                            longitude: e.coords.longitude, 
-                            latitude: e.coords.latitude, 
-                            accuracy: e.target?._accuracy
-                        }); 
-                        
                         setWorld(pre => ({
                             ...pre, 
                             player: {
                                 ...world.player,
-                                lat: e.coords.latitude,
-                                lng: e.coords.longitude
+                                location: {
+                                    latitude: e.coords.latitude,
+                                    longitude: e.coords.longitude,
+                                    accuracy: e.coords.accuracy
+                                },
                             }
                         })); 
                     }}
                 />
                 
                 <MainCharacterLayer/>
-                {world.selected?.mode == 'trial' ? <TrialLayer/> : <QuestLayer/>} 
+
+                {world.selected?.mode == 'trial' ? <ObjectiveLayer/>: <QuestLayer/>} 
                 
                 
                 <OtherPlayersLayer/>
@@ -273,10 +294,19 @@ export function GameMap() {
                         longitude={popupCoord.lng}
                         closeButton={false}
                         style={{padding: 0, margin: 0, zIndex: 3}}
-                        onClose={() => setPopupCoord(undefined)}
+                        onClose={() => {
+                            setPopupCoord(undefined); 
+                            setWorld(pre => ({
+                                ...pre,
+                                creationMode: {
+                                    ...pre.creationMode,
+                                    edit: undefined
+                                }
+                            }));
+                        }}
                     >
                         {
-                            true
+                            world.selected?.lock ?? true
                             ? <GamePage FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord} setPoints={setPoints}/>
                             : "You are not in range"
                         }

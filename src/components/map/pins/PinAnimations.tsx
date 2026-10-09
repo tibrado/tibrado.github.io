@@ -1,4 +1,5 @@
 import type { StyleImageInterface, Map } from 'maplibre-gl';
+import { Color } from '../../../assets/types';
 
 // Define a type that combines MapLibre's interface with our custom context tracking
 type MapLayerImageAnim = StyleImageInterface & {
@@ -25,7 +26,7 @@ export function PulsingPin(size: number, map: Map, imageUrl: string): MapLayerIm
             const canvas = document.createElement('canvas');
             canvas.width = this.width;
             canvas.height = this.height;
-            this.context = canvas.getContext('2d');
+            this.context = canvas.getContext('2d', {willReadFrequently: true});
 
             // Pre-initialize and cache the HTML image object
             const img = new Image();
@@ -102,7 +103,7 @@ export function PulsingPin(size: number, map: Map, imageUrl: string): MapLayerIm
                 this.width,
                 this.height
             ).data;
-
+            
             // Keep the browser refreshing the map space for smooth motion graphics
             map.triggerRepaint();
 
@@ -137,7 +138,7 @@ export function RotatingPin(size: number, map: Map, imageUrl: string): MapLayerI
             const canvas = document.createElement('canvas');
             canvas.width = this.width;
             canvas.height = this.height;
-            this.context = canvas.getContext('2d');
+            this.context = canvas.getContext('2d', { willReadFrequently: true });
 
             this.img = new Image();
             this.img.src = imageUrl;
@@ -163,13 +164,21 @@ export function RotatingPin(size: number, map: Map, imageUrl: string): MapLayerI
 
             // 3. Draw the colored bounce area background
             const padding = 80; 
-            ctx.fillStyle = '#00000010';
-            ctx.fillRect(
-                padding, 
-                padding, 
-                this.width - (padding * 2), 
-                this.height - (padding * 2)
+
+            ctx.fillStyle = '#00000063'; 
+            ctx.strokeStyle = Color.red;
+            ctx.lineWidth = 5; 
+            ctx.roundRect(
+                padding,
+                padding,
+                this.width - (padding * 2),
+                this.height - (padding * 2),
+                5
             );
+
+            ctx.fill()
+            ctx.stroke()
+
             // Update positions using current speed vectors
             posX += speedX;
             posY += speedY;

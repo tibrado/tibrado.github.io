@@ -28,7 +28,7 @@ export const StartPage: React.FC<Props> = ({onStart}) => {
                 display: 'flex',
                 flexDirection: 'column',
                 flexGrow: 1,
-                overflow: 'hidden' // Keeps the "screen" contained
+                overflow: 'hidden', // Keeps the "screen" contained,
             }}
         >
             <CardHeader

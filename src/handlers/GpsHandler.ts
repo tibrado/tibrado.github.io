@@ -1,6 +1,6 @@
-import type { Coordinates, AppPermissionOptions } from "../assets/types";
+import type { LatLng, AppPermissionOptions } from "../assets/types";
 
-export function GpsHandler(setStatus: (s: AppPermissionOptions) => void, setGps: (c: Coordinates) => void) {
+export function GpsHandler(setStatus: (s: AppPermissionOptions) => void, setGps: (c: LatLng) => void) {
     if(!navigator.geolocation){
         setStatus('unsupported'); 
         return; 

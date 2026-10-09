@@ -1,9 +1,9 @@
 import React, { type ReactNode } from 'react';
 import type { MapMode } from '../assets/types';
-import TrailCard from '../animations/TrialCard';
+import ObjectiveCard from '../animations/ObjectiveCard';
 import GameCard from '../animations/GameCard';
 import CreationCard from '../animations/CreationCard';
-import { GetPlayers, LoadTrial } from '../handlers/ApiHandler';
+import { GetPlayers, GetObjectives } from '../handlers/ApiHandler';
 import { useWorld } from '../context';
 import { GetTrials } from '../handlers/Tutorial';
 
@@ -19,7 +19,6 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
     const i: number = world.selected!.index;
     const p: number = world.selected!.path ?? 0;
 
-
     const OnSubmit = (valid: boolean, new_path: number) => {
         if (!valid || !setPoints) return;
 
@@ -29,12 +28,12 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
         };
 
         // end trial
-        if (i >= world.trials.length - 1) {
+        if (i >= world.objectives.length - 1) {
             setWorld(pre => ({ ...pre, page: 'end' }));
         } else {
             FocusOnPin(
-                world.trials[i + 1].location[p][1],
-                world.trials[i + 1].location[p][0],
+                world.objectives[i + 1].location[p].longitude,
+                world.objectives[i + 1].location[p].latitude,
                 0
             );
 
@@ -63,10 +62,10 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
     };
 
     const handleGameAccept = () => {
-        const g = world.games?.hunts[world?.selected?.index ?? 0];
+        const g = world.games[world?.selected?.index ?? 0];
         
         if (g) {
-            LoadTrial(setWorld, g, GetTrials([world.player.lat, world.player.lng]), FocusOnPin)
+            GetObjectives(setWorld, g, GetTrials(world.player.location), FocusOnPin)
                 .then(() => {
                     GetPlayers(world, setWorld);
                 });
@@ -76,14 +75,14 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
     };
 
     const DisplayCard: Record<MapMode, ReactNode> = {
-        game: world.games ? <GameCard transition={world!.selected!.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games?.hunts[i] ?? ''} /> : <></>,
+        game: world.games ? <GameCard transition={world!.selected!.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games[i] ?? ''} /> : <></>,
         creation: world.games ? <CreationCard transition={world!.selected!.mode === 'creation'} close={handleCancel}/> : <></>,
-        trial: world.trials.length > i ?
-            <TrailCard
+        trial: world.objectives.length > i ?
+            <ObjectiveCard
                 OnSubmit={OnSubmit}
                 transition={true}
                 title={world.title}
-                trial={world.trials[i]}
+                trial={world.objectives[i]}
                 path={p}
             /> : <></>
     };

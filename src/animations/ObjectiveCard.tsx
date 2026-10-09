@@ -1,5 +1,5 @@
 import {/*ReportProblem,*/ QuestionAnswer, Quiz, QrCodeScanner, LocalSee} from "@mui/icons-material";
-import type { Trials, InputTypes} from "../assets/types";
+import type { ObjectiveData, InputTypes} from "../assets/types";
 import { GameClue } from "../components/map/GameClue";
 import BaseCard from "./BaseCard";
 import { Box, Slide, Typography, IconButton } from "@mui/material";
@@ -8,12 +8,12 @@ import { useState, type ReactElement } from "react";
 type Props = {
     OnSubmit: (v: boolean, p: number) => void; 
     transition: boolean;
-    trial: Trials;
+    trial: ObjectiveData;
     path: number; 
     title: string;
 }; 
 
-const TrailCard: React.FC<Props> = ({OnSubmit, transition, title, trial, path}) => {
+const ObjectiveCard: React.FC<Props> = ({OnSubmit, transition, title, trial, path}) => {
     const [showClue, setShowClue] = useState<boolean>(true); 
 
     const Icons: Record<InputTypes, ReactElement> = {
@@ -69,8 +69,8 @@ const TrailCard: React.FC<Props> = ({OnSubmit, transition, title, trial, path}) 
                         <GameClue 
                             OnSubmit={OnSubmit}
                             showClue={showClue}
-                            clue={trial.text[path]}
-                            responses={trial.responses.map(r => r.toLocaleLowerCase())}
+                            clue={trial.clue[path]}
+                            responses={trial.solution.map(r => r.toLocaleLowerCase())}
                             inputType={trial.inputType[path]}
                             hint={`${trial.hint[path]}`}
                         />
@@ -115,4 +115,4 @@ const TrailCard: React.FC<Props> = ({OnSubmit, transition, title, trial, path}) 
     ); 
 }; 
 
-export default TrailCard; 
+export default ObjectiveCard; 

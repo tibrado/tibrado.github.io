@@ -10,20 +10,28 @@ const WorldContext = createContext<WorldContextType | undefined>(undefined);
 
 // Default World
 const defaultWorld: World = {
-    id: undefined, 
+    uuid: undefined, 
     description: '',
     current: {index: 0, path: 0},
     page: 'start',
     title: '',
     date: new Date(),
-    trials:[],
+    objectives:[],
     paths: [],
     worldTime: 0,
-    player: {game_id: '', date: new Date(Date.now()), uuid: '', name: 'default', score: 0, lat: 0, lng: 0, icon: 'bear' as PlayerIcon},
+    player: {
+        game_id: '', 
+        date: new Date(Date.now()), 
+        uuid: '', 
+        name: 'default', 
+        score: 0, 
+        location: {latitude: 0, longitude: 0}, 
+        icon: 'bear' as PlayerIcon
+    },
     players: [],
     gameType: undefined,
-    games: undefined,
-    creationMode: {active: false, location: {active: false, coordinates: undefined}, data: []}
+    games: [],
+    creationMode: {active: false, location: {active: false, LatLng: undefined}, data: []}
 }; 
 // Provider
 export function WorldProvider({children}: {children: ReactNode}){

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
 import { GpsHandler } from "../handlers/GpsHandler";
 import { PermissionStatus } from "../handlers/PermissionStatus";
-import type { Coordinates, AppPermissionOptions } from "../assets/types";
+import type { LatLng, AppPermissionOptions } from "../assets/types";
 import { useWorld } from "../context";
-import { LoadGames } from "../handlers/ApiHandler";
+import { GetGames } from "../handlers/ApiHandler";
 import { GetTutorialGameInfo } from "../handlers/Tutorial";
 
 export type LoadStatus = {
@@ -20,7 +20,7 @@ type Props = {
 };
 export const LoadWorldPage: React.FC<Props> = ({ loading, setLoading }) => {
     const { world, setWorld } = useWorld();
-    const [gps, setGps] = useState<Coordinates | undefined>();
+    const [gps, setGps] = useState<LatLng | undefined>();
     const [status, setStatus] = useState<AppPermissionOptions>('prompt');
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export const LoadWorldPage: React.FC<Props> = ({ loading, setLoading }) => {
             }));
 
             // Exit Load Page
-            LoadGames(setWorld, GetTutorialGameInfo(gps.latitude, gps.longitude));
+            GetGames(setWorld, GetTutorialGameInfo(gps.latitude, gps.longitude), world.player.location);
             setLoading(false);
         };
     }, [gps]);

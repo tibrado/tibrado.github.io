@@ -1,14 +1,14 @@
 import {useMemo, useEffect} from 'react'; 
 import { Source, Layer, useMap} from 'react-map-gl/maplibre';
 import { useWorld } from '../../../context';
-import { get_distance } from '../../../handlers/DistanceHandlers';
+import { get_distance, in_range } from '../../../handlers/DistanceHandlers';
+import type { LatLng } from '../../../assets/types';
 
 export function QuestLayer() {
     const { world } = useWorld();
 
     const geoJsonData = useMemo(() => {
-        const games = world?.games?.hunts; 
-
+        const games = world.games; 
         if(!Array.isArray(games)){
             return {
                 "type": "FeatureCollection" as const,
@@ -25,11 +25,11 @@ export function QuestLayer() {
                 "type": h.type,
                 "in_range": true,
                 "description": h.description,
-                "distance_meters": get_distance({latitude: h.coord[0], longitude: h.coord[1]}, {latitude: world.player.lat, longitude: world.player.lng}, true)
+                "distance_meters": get_distance(h.location, world.player.location, true)
             },
             "geometry": {
                 "type": "Point" as const,
-                "coordinates": [h.coord[1], h.coord[0]]
+                "coordinates": [h.location.longitude, h.location.latitude]
             }
         }));
     
@@ -37,7 +37,7 @@ export function QuestLayer() {
             "type": "FeatureCollection" as const,
             "features": features
         };
-    }, [world?.games?.hunts]);
+    }, [world.games]);
   
     return (
         <Source id="game-pins-source" type="geojson" data={geoJsonData}>
@@ -54,13 +54,19 @@ export function QuestLayer() {
     );
 };
 
-export function TrialLayer() {
+export function ObjectiveLayer() {
     const { world } = useWorld();
 
     const geoJsonData = useMemo(() => {
-        const trials = world?.trials
+        const trials = world?.objectives
         const i = world.current.index;
         const p = world.current.path; 
+        const can_solve = (id: number, path: number, coord: LatLng ): boolean => {
+            return in_range(
+                world.player.location,
+                coord
+            ) && (id == i && path == p); 
+        }; 
 
         if(!Array.isArray(trials)){
             return {
@@ -70,20 +76,20 @@ export function TrialLayer() {
         };
 
         const features = trials.flatMap((t, id) => (
-            t.text.flatMap((text, path) => ({
+            t.clue.flatMap((text, path) => ({
                 "type": "Feature" as const, // Cast to literal type for TypeScript safety
                 "id": `trial_pin_${id}_${path}`,
                 "properties": {
                     "id": id,
                     "path": path,
                     "active": id == i && path == p,
-                    "in_range": true,
+                    "locked": can_solve(id, path, t.location[path]),
                     "text": text,
-                    "distance_meters": get_distance({latitude: t.location[path][0], longitude: t.location[path][1]}, {latitude: world.player.lat, longitude: world.player.lng}, true)
+                    "distance_meters": get_distance(t.location[path], world.player.location, true)
                 },
                 "geometry": {
                     "type": "Point" as const,
-                    "coordinates": [t.location[path][1], t.location[path][0]]
+                    "coordinates": [t.location[path].longitude, t.location[path].latitude]
                 }
 
             })))
@@ -93,20 +99,22 @@ export function TrialLayer() {
             "type": "FeatureCollection" as const,
             "features": features.flat()
         };
-    }, [world?.trials, world.current]);
+    }, [world?.objectives, world.current]);
   
     return (
         <Source id="trial-pin-source" type="geojson" data={geoJsonData}>
-            <Layer 
-                id="scavenger-trial-layer" 
-                type="symbol" 
-                filter={['==', ['get', 'active'], true]}
-                layout={{ 
-                    'icon-image': 'search', 
-                    'icon-size': 0.4,
-                    'icon-allow-overlap': true, 
-                }}
-            />
+            {
+                <Layer 
+                    id="scavenger-trial-layer" 
+                    type="symbol" 
+                    filter={['==', ['get', 'active'], true]}
+                    layout={{ 
+                        'icon-image': ['case', ['get', 'locked'], 'search', 'locked'], 
+                        'icon-size': 0.4,
+                        'icon-allow-overlap': true, 
+                    }}
+                />
+            }
         </Source>
     );
 };
@@ -122,6 +130,7 @@ export function MainCharacterLayer() {
         if (!map) return;
 
         const source = map.getSource('mc-pin-source') as maplibregl.GeoJSONSource;
+
         if (source) {
             // Directly push the new coordinates to the GPU
             source.setData({
@@ -132,26 +141,26 @@ export function MainCharacterLayer() {
                     "properties": mc,
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [mc.lng, mc.lat]
+                        "coordinates": [mc.location.longitude, mc.location.latitude]
                     }
                 }]
             });
         }
-    }, [mc.lng, mc.lat, map]); // Only runs when coordinates change
+    }, [mc.location.latitude, mc.location.longitude, map]); // Only runs when coordinates change
 
     // 2. Initial render returns an empty collection so the layer exists
     return (
         <Source id="mc-pin-source" type="geojson" data={{ type: "FeatureCollection", features: [] }}>
-            <Layer 
+            {/*<Layer 
                 id='scavenger-mc-pulse-layer'
                 type="circle" 
                 paint={{
-                    'circle-radius': ['get', 'pulseRadius'], 
-                    'circle-opacity': ['get', 'pulseOpacity'],
+                    'circle-radius': ['coalesce', ['get', 'pulseRadius'], 0], 
+                    'circle-opacity': ['coalesce', ['get', 'pulseOpacity'], 0],
                     'circle-color': '#198EC8',
                     'circle-stroke-width': 0
                 }} 
-            />
+            />*/}
             <Layer 
                 id="scavenger-mc-layer" 
                 type="symbol" 
@@ -185,7 +194,7 @@ export function OtherPlayersLayer() {
                     "properties": p,
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [p.lng, p.lat]
+                        "coordinates": [p.location.longitude, p.location.latitude]
                     }
                 }))
             });
@@ -207,44 +216,3 @@ export function OtherPlayersLayer() {
         </Source>
     );
 }
-/*}
-            <Layer
-                id='the-scavenger-test'
-                type='symbol'
-                layout={{
-                    'icon-image': "cow",
-                    'icon-size': 0.20
-                }}
-            />
-
-            <Layer 
-            id="the-scavenger" 
-            type="symbol" 
-            layout={{ 
-                'icon-image': 'quest', 
-                'icon-size': [
-                    'interpolate',
-                    ['linear'],                  // Smoothly blend values between steps
-                    ['get', 'distance_meters'],  // 1. Get the current distance value
-                    0,   .3,
-                    0.25,   0.25,
-                    0.5,   0.2,
-                    0.75,   0.3,
-                    1,   0.1
-                ],
-                'icon-allow-overlap': true, 
-            }}
-            
-            paint={{
-              'icon-opacity': [
-                    'interpolate',
-                    ['linear'],                  // Smoothly blend values between steps
-                    ['get', 'distance_meters'],  // 1. Get the current distance value
-                    0.25,   1,
-                    0.5,   1,
-                    0.75,   1,
-                    1,   1
-                ]
-            }}
-        />
-*/

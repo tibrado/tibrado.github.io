@@ -1,5 +1,5 @@
 import { CheckCircle, QuestionAnswer, QrCodeScanner, LocalSee, Close } from "@mui/icons-material";
-import type { GameType, InputTypes} from "../assets/types";
+import { type GameType, type InputTypes as InputType, Color} from "../assets/types";
 import BaseCard from "./BaseCard";
 import {
     IconButton, Typography, Zoom, Box, Grid, TextField,
@@ -17,33 +17,53 @@ type Props = {
 
 const CreationCard: React.FC<Props> = ({ transition, close }) => {
     const {world, setWorld } = useWorld();
-        
     const [description, setDescription] = useState<string | undefined>();
-    const [value, setValue] = useState<string | undefined>();
-    const [typeValue, setTypeValue] = useState < InputTypes | GameType | undefined>();
-    
+    const [value, setValue] = useState<string>('');
+    const [gameTypeValue, setGameTypeValue] = useState<GameType>('scavenger_hunt');
+    const [inputTypeValue, setInputTypeValue] = useState<InputType>('text');
     const [openInput, setOpenInput] = useState<boolean>(false);
+    const [gameTypeSelect, setGameTypeSelect] = useState<number>(0);
+    const [inputTypeSelect, setInputTypeSelect] = useState<number>(0);
+
+
+    const gameTypes: GameType[] = ['scavenger_hunt', 'murder_mystery'];
+    const inputTypes: InputType[] = ['text', 'scan'];
+    const edit: boolean = world.creationMode.edit != undefined;
 
     const valid = (): boolean => {
-        return value == undefined || description == undefined || typeValue == undefined;
+        return value == '' || description == undefined;
     };
 
     const save = () => {
         if(!valid()){
+            let temp = world.creationMode.data; 
+            if(edit){
+                const i = world.creationMode.edit ?? 0; 
+
+                temp[i].value = value; 
+                temp[i].description = description;
+                temp[i].type = i == 0 ? gameTypeValue : inputTypeValue;
+                // temp[i].coordinates = world.creationMode.location.LatLng
+            }
+            else{
+                temp = [
+                    ...temp,
+                    {
+                        value: value,
+                        description: description,
+                        type: world.creationMode.data.length == 0 ? gameTypeValue : inputTypeValue,
+                        coordinates: world.creationMode.location.LatLng
+                    }
+                ];
+            }
+
             setWorld(pre => (
                 {   
                     ...pre, 
                     creationMode: {
                         ...pre.creationMode,
-                        data: [
-                            ...pre.creationMode.data, 
-                            {
-                                value: value,
-                                description: description,
-                                type: typeValue,
-                                coordinates: world.creationMode.location.coordinates
-                            }
-                        ]
+                        data: temp,
+                        edit: undefined
                     }
                 }
             ));
@@ -51,52 +71,33 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
         }; 
     }; 
 
-    useEffect(() => {
-        if(value != undefined){
-            setOpenInput(false)
-        }
-    }, [value]); 
-
-
     const startContentForm = () => {
-        const [iconSelected, setIconSelected] = useState<number>(0);
-        // Handle Icons
-        /*
-        const Icons: Record<GameType, any> = {
-            Earth: undefined,
-            Fire: undefined,
-            Water: undefined,
-            Air: undefined,
-            Spirit: undefined,
-            Ether: undefined
-        };
-        */
-
-        const iconOptions: GameType[] = ['Air', 'Earth', 'Water', 'Fire', 'Ether', 'Spirit'];
-
-
         return (
             <Box sx={{ flexFlow: 1, width: '100%' }}>
                 <Grid container columnSpacing={3} sx={{ bgcolor: 'transparent' }}>
                     <Grid size={12} sx={{ m: '2px', pt: '10px' }}>
-                        <TextField size="small" label="Game Title" variant="outlined" fullWidth onChange={(e) => setValue(e.target.value)}/>
+                        <TextField size="small" label="Game Title" variant="outlined" fullWidth onChange={(e) => setValue(e.target.value)}
+                            value={value}    
+                        />
                     </Grid>
                     <Grid size={12} sx={{ m: '2px', pt: '10px' }}>
-                        <TextField size='small' label="Description" variant="outlined" multiline rows={4} fullWidth onChange={(e) => setDescription(e.target.value)} />
+                        <TextField size='small' label="Description" variant="outlined" multiline rows={4} fullWidth onChange={(e) => setDescription(e.target.value)} 
+                            value={description}    
+                        />
                     </Grid>
                     <Grid size={12} sx={{ m: '2px', height: '50px', pt: '10px' }}>
                         <FormControl size='small' fullWidth>
                             <InputLabel>Reward</InputLabel>
                             <Select
-                                value={iconSelected}
+                                value={gameTypeSelect}
                                 label="Reward"
                                 onChange={(e) => {
-                                    setIconSelected(e.target.value); 
-                                    setTypeValue(iconOptions[e.target.value]); 
+                                    setGameTypeSelect(e.target.value); 
+                                    setGameTypeValue(gameTypes[e.target.value]); 
                                 }}
                             >
                                 {
-                                    [...iconOptions, ' other'].map((io, i) => {
+                                    gameTypes.map((io, i) => {
                                         return (
                                             <MenuItem value={i}>
                                                 {io}
@@ -112,18 +113,13 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
         );
     };
 
-
     const clueContentForm = () => {
-        const [select, setSelected] = useState<number>(0);
-
-        const icons: Record<InputTypes, ReactElement> = {
+        const icons: Record<InputType, ReactElement> = {
             text: <QuestionAnswer/>,
             scan: <QrCodeScanner/>,
             detect: <LocalSee/>
         };
-
-        const options: InputTypes[] = ['text', 'scan'];
-        const scan: boolean = options[select] == 'scan'; 
+        const scan: boolean = inputTypes[inputTypeSelect] == 'scan'; 
 
         return (
             <Box sx={{ flexFlow: 1, width: '100%' }}>
@@ -132,7 +128,9 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
                         openInput ?
                             <Grid size={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: '5px', mt: '15px' }}>
                                 <Box sx={{ height: '100%', width: '100%' }}>
-                                    <QRScanner getValue={setValue} />
+                                    <QRScanner 
+                                        getValue={setValue} 
+                                    />
                                 </Box>
                             </Grid>
                         :
@@ -141,15 +139,15 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
                                 <FormControl size='small' fullWidth>
                                     <InputLabel>Response Type</InputLabel>
                                     <Select
-                                        value={select}
+                                        value={inputTypeSelect}
                                         label="Response Type"
                                         onChange={(e) => {
-                                            setSelected(e.target.value);
-                                            setTypeValue(options[e.target.value - 1]); 
+                                            setInputTypeSelect(e.target.value);
+                                            setInputTypeValue(inputTypes[e.target.value]); 
                                         }}
                                     >
                                         {
-                                            [undefined, ...options].map((o, i) => {
+                                            inputTypes.map((o, i) => {
                                                 return (
                                                     <MenuItem value={i}>
                                                         {o}
@@ -162,43 +160,44 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
                             </Grid>
 
                             <Grid size={12} sx={{ m: '2px', pt: '10px' }}>
-                                <TextField size='small' label="Clue" variant="outlined" multiline rows={4} fullWidth onChange={(e) => setDescription(e.target.value)} />
+                                <TextField size='small' label="Clue" variant="outlined" multiline rows={4} fullWidth onChange={(e) => setDescription(e.target.value)} 
+                                    defaultValue={description}
+                                />
                             </Grid>
                             
                             {
-                                select != 0 ? 
                                 <Grid container columnSpacing={1} size={12} sx={{ m: '2px', height: '50px', pt: '10px' }}>
-                                        <Grid size={scan ? 12: 9.5}> 
+                                    <Grid size={scan ? 9.5: 12}> 
                                         <TextField size="small" label="Answer"  defaultValue={value} fullWidth 
                                             onChange={(e) => setValue(e.target.value)}
                                             variant={"outlined"}
-                                            disabled={!scan}
+                                            disabled={scan}
                                             slotProps={{ 
                                                 inputLabel: { shrink: value != undefined } 
                                             }} 
                                             sx={{
-                                                bgcolor: `${scan ? undefined : 'lightgray'}`
+                                                bgcolor: `${scan ? 'lightgray' : undefined}`
                                             }}
                                             
                                         />
                                     </Grid>
                                     {
-                                        !scan ? 
+                                        scan ? 
                                             <Grid size={2}>
                                                 <IconButton
                                                     onClick={() => setOpenInput(true)}
                                                     color='primary'
-                                                    children={icons[options[select - 1]]}
+                                                    children={icons[inputTypes[inputTypeSelect]]}
                                                     sx={{
                                                         borderRadius: '5px',
-                                                        boxShadow: '1px 1px 5px #1976d2',
+                                                        boxShadow: `1px 1px 5px ${Color.blue}`,
 
                                                     }}
                                                 /> 
                                             </Grid>
                                         : <></>
                                     }
-                                </Grid> : <></>
+                                </Grid>
                             }
                         </>
                     }    
@@ -207,6 +206,41 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
         );
     };
 
+    const getForm = () => {
+        if(!edit){
+           return world.creationMode.data.length == 0
+                ? startContentForm()
+                : clueContentForm()
+        }
+
+        return world.creationMode.edit == 0
+            ? startContentForm()
+            : clueContentForm()
+    };
+
+    useEffect(() => {
+        if (value != undefined) {
+            setOpenInput(false)
+        }
+    }, [value]); 
+
+    useEffect(() => {
+        if(world.creationMode.edit != undefined){
+            const data = world.creationMode.data[world.creationMode.edit]
+
+            setValue(data.value ?? '');
+            setDescription(data.description); 
+
+            if(world.creationMode.edit == 0){
+                setGameTypeSelect(gameTypes.indexOf(data.type as GameType));
+                setGameTypeValue(data.type as GameType);
+            }
+            else {
+                setInputTypeSelect(inputTypes.indexOf(data.type as InputType));
+                setInputTypeValue(data.type as InputType);
+            }
+        };
+    }, [world.creationMode.edit])
 
     return (
         <Zoom in={transition} style={{ transitionDelay: transition ? '0s' : '5s' }}>
@@ -227,7 +261,7 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
                         // 3. Subtle border to define the edges
                         border: '2px solid rgba(255, 255, 255, 0.1)',
                         // 4. Soft shadow for depth
-                        boxShadow: '0 8px 32px 0 rgba(253, 3, 3, 0.2)',
+                        boxShadow: `0 0px 10px ${Color.red}`,
                         color: '#000000ff',
                     }}
 
@@ -264,11 +298,7 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
                             }}
                         >{`please fill out hunt details`}</Typography>
                     }
-                    content={
-                        world.creationMode.data.length == 0 
-                        ? startContentForm()
-                        : clueContentForm()
-                    }
+                    content={getForm()}
                     actions={
                         <Box sx={{
                             width: '100%',

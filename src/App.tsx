@@ -19,16 +19,27 @@ const TESTING: boolean = false;
 export const App: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false); 
     const {world, setWorld} = useWorld(); 
-
+ 
     const OnStart = (name: string, icon: PlayerIcon) => {
         const params = new URLSearchParams(window.location.search); 
         const _id = params.get('gameId') ?? undefined;
 
         setWorld(pre => ({
             ...pre,
-            id: _id,
+            uuid: _id,
             page: 'game',
-            player: {game_id: _id ?? '', date: new Date(Date.now()), uuid: uuid(), name: name, score: 0, lat: 0, lng: 0, icon: icon as PlayerIcon}
+            player: {
+                game_id: _id ?? '', 
+                date: new Date(Date.now()), 
+                uuid: uuid(), 
+                name: name, 
+                score: 0, 
+                location: {
+                    latitude: 0,
+                    longitude: 0
+                },
+                icon: icon as PlayerIcon
+            }
         })); 
         setLoading(true); 
     }; 
@@ -71,9 +82,10 @@ export const App: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor:'transparent',
-                border: world.creationMode.active ? `3px red solid` : undefined,
-                p: 1,
-                borderRadius: '10px'
+                border: world.creationMode.active && world.page != 'start' ? '1px solid #b2102f' : undefined, // #b2102f
+                boxShadow: world.creationMode.active && world.page != 'start' ? `0px 0px 10px #b2102f` : undefined,
+                borderRadius: '5px',
+                p: world.page == 'start' ? 1 : 0
             }}>
                 {Pages[world ? world.page : 'start']}
             </Paper>

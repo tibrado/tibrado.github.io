@@ -1,5 +1,5 @@
 import { CheckCircle, Cancel  } from "@mui/icons-material";
-import type { GameInfo } from "../assets/types";
+import type { GameData } from "../assets/types";
 import BaseCard from "./BaseCard";
 import { IconButton, Typography, Zoom, Box } from "@mui/material";
 import ReactMarkdown from 'react-markdown';
@@ -8,7 +8,7 @@ import remarkGfm from 'remark-gfm';
 
 type Props = {
     transition: boolean;
-    info: GameInfo;
+    info: GameData;
     accept: () => void; 
     cancel: () => void; 
 }; 

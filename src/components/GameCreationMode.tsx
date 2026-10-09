@@ -1,13 +1,18 @@
 import { Error, AddCircle, QuestionAnswer, DoneAll, QrCodeScanner, LocalSee } from '@mui/icons-material';
 import {Box, Typography, Stepper,StepLabel,StepContent,Step, IconButton} from "@mui/material";
 import { useWorld } from "../context";
-import type { GameInfo, GameType, InputTypes, Trials } from '../assets/types';
-
+import { type GameData, type GameType, type InputTypes, type ObjectiveData, Color } from '../assets/types';
+import { Notification } from './helpers/Notification';
+import { useState } from 'react';
+import { PostGame } from '../handlers/ApiHandler';
 //--------------------------------------------------------------------------------//
+
 function GameCreationMode() {
     const { world, setWorld } = useWorld();
 
     if (!world) return;
+
+    const [openAlert, setOpenAlert] = useState<boolean>(false); 
 
     const getIcon: any = (i: number, it: InputTypes | GameType) => {
         if (i === 0) return Error;
@@ -16,16 +21,12 @@ function GameCreationMode() {
             text: QuestionAnswer,
             scan: QrCodeScanner,
             detect: LocalSee,
-            Fire: undefined,
-            Water: undefined,
-            Earth: undefined,
-            Air: undefined,
-            Spirit: undefined,
-            Ether: undefined
+            scavenger_hunt: undefined,
+            murder_mystery: undefined,
         };
 
         return Icons[it]
-    }
+    };
 
     const handleAdd = () => {
         setWorld(pre => ({
@@ -37,29 +38,30 @@ function GameCreationMode() {
                 }
             }
         }));
+
+        setOpenAlert(true); 
     };
 
     const handleDone = () => {
         // convert to ga
-        const game = world.creationMode.data[0]; 
-        
-        const _info: GameInfo = {
-            coord: [game!.coordinates!.latitude, game!.coordinates!.longitude],
-            description: game.description ?? 'none',
-            title: game.value ?? 'none',
-            type: game.type as GameType
+        const data = world.creationMode.data[0]; 
+        const game: GameData = {
+            uuid: 'none',
+            location: data.coordinates!,
+            description: data.description ?? 'none',
+            title: data.value ?? 'none',
+            type: data.type as GameType
         }; 
 
-        // Trials 
-        const _trials: Trials[] = []; 
+        // Objective
+        const objectives: ObjectiveData[] = []; 
         world.creationMode.data.slice(1).map((d, _) => {
-            _trials.push(
+            objectives.push(
                 {
-                    hintIcon: ['walk'],
-                    text: [d.description ?? ''],
+                    clue: [d.description ?? ''],
                     hint: [''],
-                    responses: [d.value ?? 'error'],
-                    location: [[d.coordinates!.latitude, d.coordinates!.longitude]],
+                    solution: [d.value ?? 'error'],
+                    location: [d.coordinates!],
                     inputType: [d.type as InputTypes]
 
                 }
@@ -67,11 +69,13 @@ function GameCreationMode() {
         }); 
 
         // post then clear
+        PostGame(game, objectives); 
+        /*
         handleCopy(
-            `${JSON.stringify(_info)}\n\n\n${JSON.stringify(_trials)}`
+            `${JSON.stringify(_info)}\n\n\n${JSON.stringify(objectives)}`
         ); 
 
-        /*
+    
         setWorld(pre => ({
             ...pre,
             creationMode: {
@@ -87,58 +91,45 @@ function GameCreationMode() {
         */
     }; 
 
-    const handleClick = (i: number) => {
-        if (i === world.creationMode.data.length - 1){
-            /*
-            setSteps([
-                ...steps,
-                {
-                    label: 'new',
-                    inputType: 'text' as InputTypes,
-                    description: 'none'
-                }
-            ]); */
-            console.log('select location on map')
-            setWorld(pre => ({
-                ...pre,
-                creationMode: {
-                    ...pre.creationMode,
-                    location: {
-                        active: true,
-                        coordinates: undefined
-                    }
-                }
-            }));
-        }  else {
-            // console.log(steps)
-        }
-    };
-
-    const handleCopy = async (text: string) => {
-        try {
-            // Use the modern asynchronous Clipboard API
-            await navigator.clipboard.writeText(text);
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-        }
+    const onSelect = (i: number) => {
+        setWorld(pre => ({
+            ...pre,
+            creationMode: {
+                ...pre.creationMode,
+                edit: i
+            }
+        }));
     };
 
     return (
         <>
             {
                 world.creationMode.active ? <>
+                    <Notification 
+                        open={openAlert} 
+                        setOpen={setOpenAlert} 
+                        msg={'select location on map to place pin'}
+                        variant={'filled'}
+                        severity={'error'}
+                    />
                     <Box
                         sx={{
                             zIndex: 1,
                             position: 'absolute', // Locks it relative to the container
-                            height: '90%',
+                            height: '80%',
                             width: '30px',
                             pointerEvents: 'auto',
-                            bottom: '0px',
+                            bottom: '10%',
                             ml: '8px',
                             mb: '5px',
-                            bgcolor: 'rgba(15, 142, 232, 0.15)',
-                            boxShadow: '0px 1px 5px rgba(15, 142, 232, 0.71)',
+
+                            // 1. Semi-transparent background
+                            backgroundColor: 'rgba(255, 255, 255, 0.26)',
+
+                            // 2. The "Frosted" effect
+                            backdropFilter: 'blur(12px) saturate(180%)',
+                            WebkitBackdropFilter: 'blur(12px) saturate(180%)', // Safari support
+                            boxShadow: `0px 0px 2px ${Color.red}`,
                             borderRadius: '5px',
                             overflowY: 'auto',
                             // --- Cross-Browser Scrollbar Hiding ---
@@ -156,14 +147,14 @@ function GameCreationMode() {
                                 world.creationMode.data.map((s, i) => (
                                     <Step key={`step_${i}`}>
                                         <StepLabel
-                                            onClick={() => handleClick(i)}
+                                            onClick={() => onSelect(i)}
                                             slots={{ stepIcon: getIcon(i, s.type) }}
                                             slotProps={{
                                                 stepIcon: {
                                                     sx: {
                                                         fontSize: '30px',
                                                         color: '#d37d1b',
-                                                        p: `${i == 0 ? '0' : '5'}px`,
+                                                        p: `${i == 0 || i == world.creationMode.data.length - 1 ? '0' : '5'}px`,
                                                     }
                                                 }
                                             }}
@@ -177,40 +168,44 @@ function GameCreationMode() {
                                     </Step>
                                 ))
                             }
-
-                            <Step>
-                                <StepLabel
-                                    onClick={() => handleAdd()}
-                                    slots={{ stepIcon: AddCircle }}
-                                    slotProps={{
-                                        stepIcon: {
-                                            sx: {
-                                                fontSize: '30px',
-                                                color: '#d37d1b',
-                                            }
-                                        }
-                                    }}
-                                />
-                            </Step>
                         </Stepper>
                     </Box>
                     <Box sx={{position: 'absolute', right: '10px', bottom: '6px'}}>
                         <IconButton
-                            onClick={() => handleDone()}
+                            onClick={() => handleAdd()}
                             color='success'
                             size='small'
-                            children={<DoneAll sx={{ color: '#f4f5f4'}}/>}
+                            disabled={world.creationMode.location.active}
+                            children={<AddCircle sx={{ color: '#f4f5f4'}}/>}
                             sx={{
                                 borderRadius: '5px',
                                 boxShadow: '2px 2px 3px #02000080',
-                                bgcolor: '#4caf50'
+                                bgcolor: Color.blue
                             }}
                         /> 
+                    </Box>
+
+                    <Box sx={{ position: 'absolute', left: '5px', bottom: '6px' }}>
+                        <IconButton
+                            title='yes'
+                            onClick={() => handleDone()}
+                            color='success'
+                            size='small'
+                            disabled={world.creationMode.location.active}
+                            children={<DoneAll 
+                                sx={{ color: '#f4f5f4' }} 
+                            />}
+                            sx={{
+                                borderRadius: '5px',
+                                boxShadow: '2px 2px 3px #02000080',
+                                bgcolor: Color.green
+                            }}
+                        />
                     </Box>
                 </> : <></>
             }
         </>
-    )
+    ); 
 };
 
 export default GameCreationMode;

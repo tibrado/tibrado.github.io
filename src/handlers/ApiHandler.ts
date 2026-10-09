@@ -1,13 +1,15 @@
-import type { Player, Games, GameInfo, Trials, World } from "../assets/types";
+import type { Player, GameData, ObjectiveData, World, LatLng } from "../assets/types";
+import { v4 as uuid } from 'uuid';
 
-const API = "https://script.google.com/macros/s/AKfycbwKSyiEJjPm5TIU_JmgQdMFBB9sOPQGUGlNsfGrbG2ig-kh4OJ7_j_HsonZT_63U7rp/exec"; 
-const FEEDBACK_API = "https://script.google.com/macros/s/AKfycby7rRHQ-nFOTnz-wZku7o4SBV-AQMWmUqpwOcIV_2mxy2qcOiywKLXwf-qKh_jISiDS/exec"; 
-const GAMES_API = "https://raw.githubusercontent.com/tibrado/regnevacs/refs/heads/main/games.json"; 
-const TRIAL_API = "https://raw.githubusercontent.com/tibrado/regnevacs/refs/heads/main/"; 
+const APIs: Record<string, string> = {
+    'GAME': 'https://script.google.com/macros/s/AKfycbzQnicq4YKQrpcaHB0M8LhmyvU_UCeg25uoTMXNgB5c67JUmmMU9iTCqUxzlVrtuv5zoA/exec',
+    'FEEDBACK': 'https://script.google.com/macros/s/AKfycby7rRHQ-nFOTnz-wZku7o4SBV-AQMWmUqpwOcIV_2mxy2qcOiywKLXwf-qKh_jISiDS/exec',
+    'PLAYER': 'https://script.google.com/macros/s/AKfycbwKSyiEJjPm5TIU_JmgQdMFBB9sOPQGUGlNsfGrbG2ig-kh4OJ7_j_HsonZT_63U7rp/exec'
+};
 
 export async function GetPlayers(world: World, setWorld: Function): Promise<boolean> {
     try{
-        const response = await fetch(`${API}?game_id=${world.id}`); 
+        const response = await fetch(`${APIs.PLAYER}?game_id=${world.uuid}`); 
 
         if(!response.ok){
             throw new Error("fail to access api")
@@ -34,7 +36,6 @@ export async function GetPlayers(world: World, setWorld: Function): Promise<bool
 
         return false; 
     } catch (e) {
-        
         //return undefined; 
         throw new Error(`Fail to get player: ${e}`); 
     }
@@ -42,8 +43,7 @@ export async function GetPlayers(world: World, setWorld: Function): Promise<bool
 
 export async function PostPlayer(player: Player): Promise<string | undefined> {
     try{
-
-        const response = await fetch(API, {
+        const response = await fetch(APIs.PLAYER, {
             method: 'POST',
             body: JSON.stringify(player)
         }); 
@@ -57,108 +57,10 @@ export async function PostPlayer(player: Player): Promise<string | undefined> {
     }
 }; 
 
-export async function LoadGames(setWorld: Function, tutorial: GameInfo): Promise<boolean>{
-    try{
-        const response = await fetch(GAMES_API); 
-        
-        if(!response.ok){
-            throw new Error("fail to load games")
-        }; 
-        
-        const raw: any = await response.json(); 
-        const hunts = Array.isArray(raw.hunts) ? raw.hunts : []; 
-
-        const games: Games = {
-            ...(raw as Partial<Games>),
-            hunts: hunts.map((r: GameInfo) => ({
-                    coord: r.coord,
-                    description: r.description,
-                    title: r.title,
-                    type: r.type
-                })
-            )
-        }; 
-
-        // Add tutorial 
-        games.hunts = [...[tutorial], ...games.hunts]; 
-
-        setWorld((pre: World) => ({
-            ...pre,
-            games: games,
-            paths: [0]
-        })); 
-
-        return true; 
-    } catch (e) {
-        throw new Error(`Fail to get player: ${e}`); 
-    }
-
-}; 
-
-export async function LoadTrial(setWorld: Function, gameInfo: GameInfo, tutorial: Trials[], FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void): Promise<boolean>{
-    try{
-        const id = `${gameInfo.coord}`.replace(',', ''); 
-        let _trails = []; 
-        
-        // Add tutorial
-        if( gameInfo.title == "I Want to Scavenger!"){
-            _trails = tutorial;
-        } 
-        else
-        {
-            const response = await fetch(`${TRIAL_API}${id}.json`); 
-            
-            if(!response.ok){
-                throw new Error("did not find trial")
-            }; 
-            
-            const raw: any = await response.json(); 
-            console.log(Array.isArray(raw.clues) , raw)
-            _trails = Array.isArray(raw.clues)
-                ? raw.clues.map((c: any) => ({
-                    hintIcon: c.hintIcon,
-                    hint: c.hint,
-                    text: c.text,
-                    responses: c.responses,
-                    inputType: c.inputType,
-                    location: c.location
-                })
-            ) as Trials[]: []; 
-        };
-            
-        setWorld((pre: World) => ({
-            ...pre,
-            id: id,
-            trials: _trails,
-            title: gameInfo.title,
-            gameType: gameInfo.type,
-            paths: [0],
-            player: {
-                ...pre.player,
-                game_id: id
-            },
-            selected: {
-                mode: 'trial',
-                index: 0,
-                path: 0
-            }
-        })); 
-
-        // Fly to first pin 
-        console.log(_trails)
-        const loc = _trails[0].location[0]; 
-        FocusOnPin(loc[1], loc[0], 1.5); 
-
-        return true; 
-    } catch (e) {
-        throw new Error(`fail to load trail: ${e}`); 
-    }    
-}; 
-
 export async function PostFeedback(feedback: string, rating: number): Promise<string | undefined> {
     try{
 
-        const response = await fetch(FEEDBACK_API, {
+        const response = await fetch(APIs.FEEDBACK, {
             method: 'POST',
             body: JSON.stringify({
                 feedback: feedback,
@@ -174,3 +76,95 @@ export async function PostFeedback(feedback: string, rating: number): Promise<st
         throw new Error(`Fail to get player: ${e}`); 
     }
 }; 
+
+// Google Sheets -> Get Objectives 
+export async function GetObjectives(setWorld: Function, game: GameData, objectives: ObjectiveData[], FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void): Promise<boolean> {
+    // try {
+        let data: ObjectiveData[] = [];
+
+        if (game.uuid == 'tutorial') {
+            data = objectives;
+        }
+        else {
+            const response = await fetch(`${APIs.GAME}?what=${'objective'}&uuid=${game.uuid}`);
+
+            if (!response.ok) {
+                throw new Error(`Fail to load games data`);
+            };
+
+            const raw: any = await response.json();
+
+            data = Array.isArray(raw) ? raw as ObjectiveData[] : [];
+
+        };
+
+        setWorld((pre: World) => ({
+            ...pre,
+            id: game.uuid,
+            objectives: data,
+            title: game.title,
+            gameType: game.type,
+            paths: [0],
+            player: {
+                ...pre.player,
+                game_id: game.uuid
+            },
+            selected: {
+                mode: 'trial',
+                index: 0,
+                path: 0
+            }
+        }));
+
+        const loc: LatLng = objectives[0].location[0];
+        FocusOnPin(loc.longitude, loc.latitude, 1.5);
+
+        return true;
+    /*} catch (e) {
+        throw new Error(`Fail to get player: ${e}`);
+    }*/
+};
+export async function GetGames(setWorld: Function, tutorial: GameData, location: LatLng): Promise<boolean> {
+    try {
+        // fetch(`${API}?game_id=${world.id}`)
+        const response = await fetch(`${APIs.GAME}?type=${'game'}&location=${location}`);
+
+        if (!response.ok) {
+            throw new Error(`Fail to load games data`); 
+        };
+
+        const raw: any = await response.json();
+        const data = Array.isArray(raw) ? raw as GameData[]: [];
+
+        setWorld((pre: World) => ({
+            ...pre,
+            games: [...[tutorial], ...data],
+            paths: [0]
+        })); 
+        
+        return true;
+    } catch (e) {
+        throw new Error(`Fail to get player: ${e}`);
+    }
+};
+export async function PostGame(gameData: GameData, objectiveData: ObjectiveData[]): Promise<string | undefined> {
+    try {
+        gameData.uuid = uuid();
+
+        const response = await fetch(APIs.GAME, {
+            method: 'POST',
+            body: JSON.stringify({
+                game: gameData,
+                objectives: objectiveData
+            })
+        });
+        console.log("Done --> ", response); 
+        if (!response.ok) {
+            throw new Error("fail to post score")
+        };
+
+        return undefined;
+    } catch (e) {
+        throw new Error(`Post Game: ${e}`);
+    }
+};

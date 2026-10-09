@@ -1,4 +1,4 @@
-import type { Trials, GameInfo } from "../assets/types";
+import type { ObjectiveData, GameData, LatLng } from "../assets/types";
 
 /*
 Tutorial 
@@ -9,43 +9,43 @@ Tutorial
 */
 
 
-export const GetTutorialGameInfo = (lat: number, lng: number): GameInfo => {
+export const GetTutorialGameInfo = (lat: number, lng: number): GameData => {
     
     return {
-        coord: [lat, lng],
+        uuid: 'tutorial',
+        location: {
+            latitude: lat, 
+            longitude: lng
+        },
         description: `Imagine Pokémon GO, but instead of catching digital monsters, you are hunting for real-world items, secret codes, and hidden answers. **Scavenger HQ** turns your entire neighborhood into a giant treasure hunt. To play, you will use your phone to solve riddles and find items in three cool ways.`,
         title: "I Want to Scavenger!",
-        type: "Fire"
-    } as GameInfo; 
+        type: "scavenger_hunt"
+    } as GameData; 
 }; 
 
 
-export const GetTrials = (location: [number, number]): Trials[] => {
-    
+export const GetTrials = (location: LatLng): ObjectiveData[] => {
     return [
         {
-            hintIcon: ["here"],
             inputType: ["text"],
             hint: [`Typing Clues (Text Input)`],
-            text: [`Sometimes, the game will give you a riddle. You have to type the exact answer to unlock the next level. Select the chat icon 🗪 on the bottom left and type **yes** to proceed to the next clue.`],
-            responses: ["yes"],
+            clue: [`Sometimes, the game will give you a riddle. You have to type the exact answer to unlock the next level. Select the chat icon 🗪 on the bottom left and type **yes** to proceed to the next clue.`],
+            solution: ["yes"],
             location: [location]
         }, 
         {
-            hintIcon: ["here"],
             inputType: ["scan"],
             hint: ["Scanning Secret Codes (QR Codes)"],
-            text: [`*Congratulation you have earned some points*. \n\n High-tech treasure hunters look for QR codes. These look like pixelated square stickers hidden on park benches, trees, or signposts. Select the QR icon 𖣯 on the bottom left and scan any **QR Codes** near you.`],
-            responses: ["-"],
+            clue: [`*Congratulation you have earned some points*. \n\n High-tech treasure hunters look for QR codes. These look like pixelated square stickers hidden on park benches, trees, or signposts. Select the QR icon 𖣯 on the bottom left and scan any **QR Codes** near you.`],
+            solution: ["-"],
             location: [location]
         }, 
         {
-            hintIcon: ["here"],
             inputType: ["detect"],
             hint: ["Finding Real Objects (Object Detection)"],
-            text: [`This is where the game gets magical. The game uses your camera like artificial intelligence "eyes" to recognize real-world objects.`],
-            responses: ["-"],
+            clue: [`This is where the game gets magical. The game uses your camera like artificial intelligence "eyes" to recognize real-world objects.`],
+            solution: ["-"],
             location: [location]
         }, 
-    ] as Trials[];
+    ] as ObjectiveData[];
 }

@@ -71,7 +71,7 @@ function GameMenu() {
                                 }}
                             >
 
-                                {world.id ?
+                                {world.uuid ?
                                     <>
                                         <EmojiEventsOutlined sx={{ fontSize: '15px', ml: '2px' }} />
                                         <Typography
@@ -98,7 +98,7 @@ function GameMenu() {
                         alignItems: 'center'
                     }}
                 >
-                    {world.id ? <Timer /> : <></>}
+                    {world.uuid ? <Timer /> : <></>}
                 </Grid>
 
                 <Grid size={4}
@@ -140,8 +140,32 @@ function GameMenu() {
                     handleClose();
                     setWorld(pre => ({
                         ...pre,
-                        id: undefined,
-                        trials: [],
+                        uuid: undefined,
+                        objectives: [],
+                        players: [],
+                        worldTime: 0,
+                        selected: { mode: 'game', index: 0, path: 0 },
+                        current: { index: 0, path: 0 },
+                        player: {
+                            ...pre.player,
+                            score: 0
+                        },
+                        creationMode: {
+                            ...pre.creationMode,
+                            active: !world.creationMode.active,
+                            data: [],
+                            edit: undefined
+                        }
+
+                    }));
+                }}>Creation</MenuItem>
+
+                <MenuItem onClick={() => {
+                    handleClose();
+                    setWorld(pre => ({
+                        ...pre,
+                        uuid: undefined,
+                        objectives: [],
                         players: [],
                         worldTime: 0,
                         selected: { mode: 'game', index: 0, path: 0 },

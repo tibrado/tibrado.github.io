@@ -9,7 +9,7 @@ export default function Timer(){
     useEffect(() => {
         let interval: number | undefined; 
 
-        if(world?.id){
+        if(world?.uuid){
             interval = window.setInterval(() => {
                 setWorld(pre => ({...pre, worldTime: pre.worldTime + 1})); 
             }, 1000); 
@@ -19,7 +19,7 @@ export default function Timer(){
         }; 
 
         return () =>  window.clearInterval(interval); 
-    }, [world?.id]); 
+    }, [world?.uuid]); 
     
     // formate time 
     const formatTime = (seconds: number) => {
