@@ -87,7 +87,7 @@ export async function GetObjectives(setWorld: Function, game: GameData, objectiv
         }
         else {
             const response = await fetch(`${APIs.GAME}?what=${'objective'}&uuid=${game.uuid}`);
-
+            
             if (!response.ok) {
                 throw new Error(`Fail to load games data`);
             };
