@@ -46,7 +46,7 @@ export function QuestLayer() {
                 type="symbol" 
                 layout={{ 
                     'icon-image': 'quest', 
-                    'icon-size': 0.56,
+                    'icon-size': 0.9,
                     'icon-allow-overlap': true, 
                 }}
             />

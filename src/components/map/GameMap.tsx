@@ -8,6 +8,9 @@ import { useWorld } from '../../context';
 import { QuestLayer,ObjectiveLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
 import { RotatingPin, PulsingPin } from './pins/PinAnimations';
 import ScoreAnim from '../ScoreAnim';
+import { loadPin } from './pins/MapLoader';
+import BasePin from './pins/BasePin';
+import { component_to_image } from '../helpers/component_to_image';
 
 const MAP_ZOOM = 16.5; 
 
@@ -142,8 +145,8 @@ export function GameMap() {
                     );
                 }
                 else if(OtherIcons.includes(iconName)){
-                    const image = await map.loadImage(`other_icons/${iconName}.png`)
-                    map.addImage(iconName, image.data);
+                    const image =  await component_to_image(<BasePin size={40} imgUrl={'/other_icons/quest1.png'}/>, 40) // await map.loadImage(`other_icons/${iconName}.png`) //
+                    map.addImage(iconName, image);
                 } 
                 else if(iconName.includes('user-')){
                     map.addImage(
@@ -170,7 +173,7 @@ export function GameMap() {
                 attributionControl={false}
                 onLoad={(e) => {
                     const map = e.target; 
-
+                    loadPin(map); 
                     // in creation mode
                     map.on('click', (e) => {onCreationSelect(map, e.lngLat.lng, e.lngLat.lat)}); 
                     map.on('styleimagemissing', handleMissingIcon)
@@ -228,6 +231,7 @@ export function GameMap() {
                 scrollZoom={true}
                 maxZoom={18}
                 minZoom={2}
+                pitch={60}
                 mapStyle='https://tiles.openfreemap.org/styles/liberty'
                 style={{
                     height: '95dvh', 

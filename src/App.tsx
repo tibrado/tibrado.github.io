@@ -12,6 +12,11 @@ import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
 
 import { PhotoBooth } from './components/inputs/CameraInputHandler';
+import BasePin from './components/map/pins/BasePin';
+
+
+
+
 
 const theme = createTheme();
 const TESTING: boolean = false; 
