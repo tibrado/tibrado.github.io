@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography, Backdrop } from '@mui/material';
 import { GpsHandler } from "../handlers/GpsHandler";
-import { PermissionStatus } from "../handlers/PermissionStatus";
 import type { LatLng, AppPermissionOptions } from "../assets/types";
 import { useWorld } from "../context";
 import { GetGames } from "../handlers/ApiHandler";
 import { GetTutorialGameInfo } from "../handlers/Tutorial";
+import Dialog from "../components/Dialog";
 
 export type LoadStatus = {
     map: boolean;
@@ -21,29 +21,51 @@ type Props = {
 export const LoadWorldPage: React.FC<Props> = ({ loading, setLoading }) => {
     const { world, setWorld } = useWorld();
     const [gps, setGps] = useState<LatLng | undefined>();
+    const [gpsFail, setGpsFail] = useState<boolean>(false);
     const [status, setStatus] = useState<AppPermissionOptions>('prompt');
 
+    const noGps: boolean = (status === 'denied' || 'error' || 'unsupported') && gpsFail;
+
+    function updatePlayerGPS(lat: number, lng: number){
+        setWorld(pre => ({
+            ...pre,
+            player: {
+                ...pre.player,
+                location: {
+                    ...pre.player.location,
+                    latitude: lat,
+                    longitude: lng,
+                    noGps: noGps
+                },
+            }
+        }));
+
+        // Exit Load Page
+        GetGames(
+            setWorld, 
+            GetTutorialGameInfo(lat, lng), 
+            {latitude: lat, longitude: lng}
+        );
+
+        setLoading(false);
+    };
+
     useEffect(() => {
-        GpsHandler(setStatus, setGps)
+        GpsHandler(setStatus, setGps); 
+
+        const timer = setTimeout(() => {
+            setGpsFail(true)
+        }, 10000); 
+
+        return () => clearTimeout(timer); 
     }, []);
 
     useEffect(() => {
         if (!gps) return;
 
         if (gps && world) {
-            setWorld(pre => ({
-                ...pre,
-                player: {
-                    ...pre.player,
-                    lat: gps.latitude,
-                    lng: gps.longitude
-                }
-            }));
-
-            // Exit Load Page
-            GetGames(setWorld, GetTutorialGameInfo(gps.latitude, gps.longitude), world.player.location);
-            setLoading(false);
-        };
+            updatePlayerGPS(gps.latitude, gps.longitude);
+        }
     }, [gps]);
 
 
@@ -59,22 +81,28 @@ export const LoadWorldPage: React.FC<Props> = ({ loading, setLoading }) => {
                 zIndex: (theme) => theme.zIndex.drawer + 1,
                 flexDirection: 'column',
             }}
-        >
-            {/* Decorative Icon or Logo */}
-            <Box sx={{ mb: 4, textAlign: 'center' }}>
-                <CircularProgress size={60} enableTrackSlot thickness={4} sx={{ color: '#ffffff' }} />
-                <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
-                    LOADING WORLD
+        >{
+            noGps
+            ? <Dialog 
+                title={`GPS ACCESS ${status.toLocaleUpperCase()}`} 
+                message={"Some game features require location services. A full experience cannot be guaranteed without GPS enabled."} 
+                handleResponse={() => updatePlayerGPS(0, 0)} 
+                trueText="Accept" 
+            />
+            : <>
+                <Box sx={{ mb: 4, textAlign: 'center' }}>
+                    <CircularProgress size={60} enableTrackSlot thickness={4} sx={{ color: '#ffffff' }} />
+                    <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', letterSpacing: 2 }}>
+                        LOADING WORLD
+                    </Typography>
+                </Box>
+
+
+                <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
+                    "Tip: Keep your eyes on the prize!"
                 </Typography>
-                {/* Gps Status*/}
-                <PermissionStatus what="GPS" status={status} prompt="Make sure webpage have GPS access." denied="Access Denied. please allow access & refresh page" />
-            </Box>
-
-
-            <Typography variant="caption" sx={{ mt: 10, fontStyle: 'italic', opacity: 0.5 }}>
-                "Tip: Keep your eyes on the prize!"
-            </Typography>
-        </Backdrop>
+            </>
+        }</Backdrop>
     );
 
 }; 

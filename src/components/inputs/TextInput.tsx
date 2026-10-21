@@ -24,7 +24,7 @@ const TextInput: React.FC<Props> = ({OnSubmit, responses, hint}) => {
     return(
         <TextField
             id="input-with-icon-textfield"
-            label={'code'}
+            label={'type response here'}
             helperText={hint}
             variant="filled"
             multiline

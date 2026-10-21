@@ -3,16 +3,13 @@ import { Box, CssBaseline, Paper, ThemeProvider, createTheme } from '@mui/materi
 import { StartPage } from './pages/StartPage';
 import {GameMap} from './components/map/GameMap';
 import type { Page, PlayerIcon } from './assets/types';
-import Done from './pages/DonePage';
-import { PostPlayer, GetPlayers } from './handlers/ApiHandler';
+import FeedbackPage from './pages/FeedbackPage';
+import { PostPlayer } from './handlers/ApiHandler';
 import { LoadWorldPage } from './pages/LoadPage';
 import GameMenu, {GameMenuItem} from './components/GameMenu';
 import GameCreationMode from './components/GameCreationMode';
 import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
-
-import { PhotoBooth } from './components/inputs/CameraInputHandler';
-import BasePin from './components/map/pins/BasePin';
 
 
 
@@ -34,7 +31,7 @@ export const App: React.FC = () => {
             uuid: _id,
             page: 'game',
             player: {
-                game_id: _id ?? '', 
+                game_uuid: _id ?? '', 
                 date: new Date(Date.now()), 
                 uuid: uuid(), 
                 name: name, 
@@ -43,6 +40,7 @@ export const App: React.FC = () => {
                     latitude: 0,
                     longitude: 0
                 },
+                gps_active: true,
                 icon: icon as PlayerIcon
             }
         })); 
@@ -53,8 +51,7 @@ export const App: React.FC = () => {
     useEffect(() => {
         if(world){
             if(world.player.score > 0){
-                PostPlayer(world.player); 
-                GetPlayers(world, setWorld)
+                PostPlayer(world, setWorld); 
             }
         }
     }, [world?.player.score]); 
@@ -69,7 +66,7 @@ export const App: React.FC = () => {
                 <GameCreationMode/>
             </Box>
         : <>World does not exists.</>,
-        end: <Done />
+        feedback: <FeedbackPage />
     };
 
     // ---------------------------------
@@ -95,7 +92,9 @@ export const App: React.FC = () => {
                 {Pages[world ? world.page : 'start']}
             </Paper>
         </Box> : <>
-        <Paper elevation={0} sx={{
+            <FeedbackPage/>
+        
+            {/*Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',
                 display: 'flex',
@@ -105,7 +104,7 @@ export const App: React.FC = () => {
                 p: 1
             }}>
                 <PhotoBooth/>
-            </Paper>
+            </Paper> */ }
         </>}
         </ThemeProvider>
     );

@@ -1,5 +1,6 @@
-import { EmojiEventsOutlined } from '@mui/icons-material';
-import { Avatar, Backdrop, Box, Button, Grid, Menu, MenuItem, Typography } from "@mui/material";
+import { EmojiEventsOutlined, BarChartOutlined, ExitToApp, FeedbackOutlined } from '@mui/icons-material';
+import { Avatar, Backdrop, Box, Button, Grid, Menu, MenuItem, Typography, Divider
+} from "@mui/material";
 import React, { type ReactNode } from "react";
 import type { MenuOptions } from "../assets/types";
 import { useWorld } from "../context";
@@ -14,8 +15,35 @@ function GameMenu() {
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+
+    // const functions 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const socials = (img_name: string, link: string) => {
+        return (
+            <Button
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                    p: 0,
+                    m: 0,
+                    minWidth: 0,          // Removes default MUI button minimum width
+                    width: 35,            // Matches Avatar size
+                    height: 35,           // Matches Avatar size
+                    borderRadius: 0,      // Keeps hover effect square to match "square" Avatar
+                }}
+            >
+                <Avatar
+                    alt={img_name}
+                    src={`/${img_name}.png`}
+                    variant="square"
+                    sx={{ p: '5px', width: 35, height: 35 }}
+                />
+            </Button>
+        );
     };
 
     return (
@@ -125,85 +153,69 @@ function GameMenu() {
                     vertical: 'top',
                     horizontal: 'left',
                 }}
+                sx={{
+                    mt: 1
+                }}
             >
-                {/*OLeader Board */}
-                <MenuItem onClick={() => {
-                    handleClose();
-                    setWorld(pre => ({
-                        ...pre,
-                        menu: 'leaderBoard'
-                    }));
+                <Typography align='center' variant='subtitle1' fontWeight={'bold'}>
+                    Menu
+                </Typography>
+
+                <Divider />
+                
+                { // Leader Board
+                    world.uuid && <MenuItem 
+                        onClick={() => {
+                            handleClose();
+                            setWorld(pre => ({
+                                ...pre,
+                                menu: 'leaderBoard'
+                            }));
+                        }}
+                    >
+                        <BarChartOutlined fontSize='small' />Leaderboard
+                    </MenuItem>
                 }
-                }>Leaderboard</MenuItem>
+                
+                { // Quit Game
+                    world.uuid && <MenuItem onClick={() => {
+                        handleClose();
+                        setWorld(pre => ({
+                            ...pre,
+                            uuid: undefined,
+                            objectives: [],
+                            players: [],
+                            worldTime: 0,
+                            selected: { mode: 'game', index: 0, path: 0 },
+                            current: { index: 0, path: 0 },
+                            player: {
+                                ...pre.player,
+                                score: 0
+                            }
 
+                        }));
+                    }}>
+                        <ExitToApp fontSize='small' /> Quit Game
+                    </MenuItem> 
+                }
                 <MenuItem onClick={() => {
                     handleClose();
                     setWorld(pre => ({
                         ...pre,
-                        uuid: undefined,
-                        objectives: [],
-                        players: [],
-                        worldTime: 0,
-                        selected: { mode: 'game', index: 0, path: 0 },
-                        current: { index: 0, path: 0 },
-                        player: {
-                            ...pre.player,
-                            score: 0
-                        },
-                        creationMode: {
-                            ...pre.creationMode,
-                            active: !world.creationMode.active,
-                            data: [],
-                            edit: undefined
-                        }
-
-                    }));
-                }}>Creation</MenuItem>
-
-                <MenuItem onClick={() => {
-                    handleClose();
-                    setWorld(pre => ({
-                        ...pre,
-                        uuid: undefined,
-                        objectives: [],
-                        players: [],
-                        worldTime: 0,
-                        selected: { mode: 'game', index: 0, path: 0 },
-                        current: { index: 0, path: 0 },
-                        player: {
-                            ...pre.player,
-                            score: 0
-                        }
-
-                    }));
-                }}>Quit Game</MenuItem>
-
-                {/*
-                <MenuItem onClick={() => {
-                    handleClose();
-                    setWorld(pre => ({
-                        ...pre,
-                        id: undefined,
-                        trials: [],
-                        players: [],
-                        worldTime: 0,
-                        selected: { mode: 'game', index: 0, path: 0 },
-                        current: { index: 0, path: 0 },
-                        player: {
-                            ...pre.player,
-                            score: 0
-                        }
+                        page: 'feedback'
 
                     }));
                 }}>
-                    <FormControlLabel
-                        control={
-                            <Checkbox checked={false} onChange={undefined} name="antoine" />
-                        }
-                        label="Quester"
-                    />
+                    <FeedbackOutlined fontSize='small' /> Feedback
                 </MenuItem>
-                */}
+
+                <Divider/>
+
+                <Grid container sx={{p: 0}}>
+                    <Grid size={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{socials('reddit', 'https://www.reddit.com/r/ScavengerHQ/')}</Grid>
+                    <Grid size={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{socials('patreon', 'https://www.patreon.com/c/ScavengerHQ')}</Grid>
+                    <Grid size={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{socials('instagram', 'https://www.instagram.com/scavenger.hq/?hl=en')}</Grid>
+                </Grid>
             </Menu>
 
         </Box>

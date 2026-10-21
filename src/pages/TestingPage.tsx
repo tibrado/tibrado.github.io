@@ -13,9 +13,9 @@ const loc: LatLng = {
     latitude: 0,
     longitude: 0
 }
-const P1: Player = { game_id: '0',date: new Date(0),name: 'my name is',score: 1, location: loc, icon: 'buffalo',uuid: '0'}
-const P2: Player = { game_id: '0', date: new Date(0), name: 'p2', score: 1, location: loc,icon: 'buffalo',uuid: '1'}
-const P3: Player = { game_id: '0', date: new Date(0), name: 'p3', score: 1, location: loc,icon: 'buffalo',uuid: '2'}
+const P1: Player = { game_uuid: '0',date: new Date(0),name: 'my name is',score: 1, location: loc, icon: 'buffalo',uuid: '0'}
+const P2: Player = { game_uuid: '0', date: new Date(0), name: 'p2', score: 1, location: loc,icon: 'buffalo',uuid: '1'}
+const P3: Player = { game_uuid: '0', date: new Date(0), name: 'p3', score: 1, location: loc,icon: 'buffalo',uuid: '2'}
 
 export const LeaderBoardCard: React.FC<Props> = ({players}) => {
     players = [P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3,P1, P2, P3]; 

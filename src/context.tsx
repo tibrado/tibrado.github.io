@@ -20,7 +20,7 @@ const defaultWorld: World = {
     paths: [],
     worldTime: 0,
     player: {
-        game_id: '', 
+        game_uuid: '', 
         date: new Date(Date.now()), 
         uuid: '', 
         name: 'default', 

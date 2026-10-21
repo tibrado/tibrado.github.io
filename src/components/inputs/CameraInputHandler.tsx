@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import {Box, Card, CardContent, CardActions} from '@mui/material'; 
+import { } from '../PhotoBoth';
 
 /*
 #ebe0f4
@@ -245,6 +246,10 @@ export const PhotoBooth: React.FC = () => {
 
     return (
         <Box>
+            {
+                false ?
+                    <></>
+            :
             <Card
                 sx={{
                     p: 0, m:0, display: 'flex', flexDirection: "column",
@@ -361,6 +366,7 @@ export const PhotoBooth: React.FC = () => {
 
                 </CardActions>
             </Card>
+        }
         </Box>
     );
 };

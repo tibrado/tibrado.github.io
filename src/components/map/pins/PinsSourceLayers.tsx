@@ -184,6 +184,7 @@ export function OtherPlayersLayer() {
         if (!map) return;
 
         const source = map.getSource('players-pin-source') as maplibregl.GeoJSONSource;
+        
         if (source) {
             // Directly push the new coordinates to the GPU
             source.setData({

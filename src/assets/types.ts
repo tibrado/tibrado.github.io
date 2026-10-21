@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------//
 export type HintIconTypes = 'internet' | 'walk' | 'drive' | 'here' | 'think';
-export type Page = 'start' | 'game' | 'end';
+export type Page = 'start' | 'game' | 'feedback';
 export type InputTypes = 'text' | 'scan' | 'detect';
 export type LocationType = 'start' | 'point';
 export type PlayerIcon = 'bear' | 'buffalo' | 'chick' | 'chicken' | 'cow' | 'crocodile' | 'dog' |
@@ -95,7 +95,7 @@ export type World = {
 };
 //------------------------------------------------------------------------------------------//
 export type Player = {
-    game_id: string;
+    game_uuid: string;
     date: Date;
     name: string;
     score: number;
@@ -109,6 +109,7 @@ export type LatLng = {
     latitude: number;
     longitude: number;
     accuracy?: number;
+    noGps?: boolean;
 };
 //------------------------------------------------------------------------------------------//
 //------------------------------------------------------------------------------------------//

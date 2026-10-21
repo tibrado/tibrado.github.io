@@ -8,6 +8,7 @@ type Props = {
     open: boolean; 
     setOpen: (v: boolean) => void; 
 }; 
+
 export const Notification: React.FC<Props> = ({msg, severity, variant, open, setOpen}) => {
 
     const handleClose = () => {
@@ -48,3 +49,4 @@ export const Notification: React.FC<Props> = ({msg, severity, variant, open, set
         </Snackbar>
     );
 }; 
+

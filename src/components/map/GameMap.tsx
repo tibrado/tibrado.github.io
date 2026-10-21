@@ -11,7 +11,6 @@ import ScoreAnim from '../ScoreAnim';
 import { loadPin } from './pins/MapLoader';
 import BasePin from './pins/BasePin';
 import { component_to_image } from '../helpers/component_to_image';
-
 const MAP_ZOOM = 16.5; 
 
 export function GameMap() {
@@ -24,17 +23,15 @@ export function GameMap() {
     const geolocateRef = useRef<any>(null); 
     const myLayers = ['scavenger-mc-layer', 'scavenger-players-layer', 'scavenger-trial-layer', 'scavenger-game-layer']; 
     
-    const onPinFocus = useCallback((lng: number, lat: number, zoom_offset: number = 0) => {
+    const onPinFocus = useCallback((lng: number, lat: number) => {
         mapRef.current?.flyTo({
             center: [lng, lat] ,
-            duration: 2000, // Duration in milliseconds
-            zoom: MAP_ZOOM + zoom_offset,
+            zoom: MAP_ZOOM,
             essential: true
         });
     }, []); 
 
     function onClickGamePin(id: number, lng: number, lat: number){
-        
         onPinFocus(lng, lat);
         setPopupCoord({lat: lat, lng: lng}); 
         setWorld(pre => ({
@@ -48,7 +45,7 @@ export function GameMap() {
     }; 
     
     function onClickTrialPin(id: number, path: number, lock: boolean, lng: number, lat: number){
-        onPinFocus(lng, lat, 1.5);
+        onPinFocus(lng, lat);
         setPopupCoord({lat: lat, lng: lng}); 
         setWorld(pre => ({
             ...pre, 
@@ -223,15 +220,21 @@ export function GameMap() {
                     geolocateRef.current?.trigger(); 
                 }}
                 
+                // Start zoom
+                initialViewState={{
+                    longitude: -117.161087,
+                    latitude: 32.715736, 
+                    zoom: 12
+                }}
                 // Disable all interactions
                 doubleClickZoom={true}
                 dragPan={true}
                 dragRotate={true}
                 touchZoomRotate={true}
                 scrollZoom={true}
-                maxZoom={18}
-                minZoom={2}
-                pitch={60}
+                maxZoom={20}
+                minZoom={5}
+                pitch={30}
                 mapStyle='https://tiles.openfreemap.org/styles/liberty'
                 style={{
                     height: '95dvh', 
@@ -269,6 +272,7 @@ export function GameMap() {
                     showAccuracyCircle={false}
                     showUserLocation={false}
                     onGeolocate={(e) => {
+                        console.log('Player location -> ',e.coords)
                         setWorld(pre => ({
                             ...pre, 
                             player: {

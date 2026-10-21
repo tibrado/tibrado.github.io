@@ -3,6 +3,7 @@ import { Card, CardHeader, CardContent, CardActions, type SxProps, type Theme } 
 
 type CardProps = {
     style?: SxProps<Theme>;
+    contentStyle?: SxProps<Theme>;
     headerAction?: ReactNode;
     header?: ReactNode;
     subheader?: ReactNode;
@@ -10,8 +11,19 @@ type CardProps = {
     actions?: ReactNode;
     avatar?: ReactNode;
 };
-    
-const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actions, avatar,headerAction }) => {
+  
+const content_style = {
+    p: 0, m: 0,
+    display: 'flex',
+    justifyContent: 'left',
+    alignItems: 'center',
+    height: '250px',
+    width: '100%',
+    flexDirection: "column",
+    fontSize: '14px'
+}; 
+
+const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actions, avatar,headerAction, contentStyle=content_style }) => {
     return(
         <Card sx={style}>
             <CardHeader
@@ -23,16 +35,7 @@ const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actio
             />
         
             <CardContent 
-                sx={{
-                    p: 0, m:0, 
-                    display: 'flex', 
-                    justifyContent: 'left',
-                    alignItems: 'center',
-                    height:'250px',  
-                    width: '100%',
-                    flexDirection: "column", 
-                    fontSize: '14px'
-                }}
+                sx={contentStyle}
             >
                 {content}
             </CardContent>

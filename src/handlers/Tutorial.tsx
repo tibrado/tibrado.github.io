@@ -24,7 +24,7 @@ export const GetTutorialGameInfo = (lat: number, lng: number): GameData => {
 }; 
 
 
-export const GetTrials = (location: LatLng): ObjectiveData[] => {
+export const GetTutorialObjData = (location: LatLng): ObjectiveData[] => {
     return [
         {
             inputType: ["text"],

@@ -3,12 +3,12 @@ import type { MapMode } from '../assets/types';
 import ObjectiveCard from '../animations/ObjectiveCard';
 import GameCard from '../animations/GameCard';
 import CreationCard from '../animations/CreationCard';
-import { GetPlayers, GetObjectives } from '../handlers/ApiHandler';
+import { GetObjectives } from '../handlers/ApiHandler';
 import { useWorld } from '../context';
-import { GetTrials } from '../handlers/Tutorial';
+import { GetTutorialObjData } from '../handlers/Tutorial';
 
 type Props = {
-    FocusOnPin: (lng: number, lat: number, zoom_offset: number) => void;
+    FocusOnPin: (lng: number, lat: number) => void;
     setPopupCoord: (coord: { lat: number, lng: number } | undefined) => void;
     setPoints?: (v: number) => void;
 };
@@ -29,12 +29,11 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
 
         // end trial
         if (i >= world.objectives.length - 1) {
-            setWorld(pre => ({ ...pre, page: 'end' }));
+            setWorld(pre => ({ ...pre, page: 'feedback' }));
         } else {
             FocusOnPin(
                 world.objectives[i + 1].location[p].longitude,
-                world.objectives[i + 1].location[p].latitude,
-                0
+                world.objectives[i + 1].location[p].latitude
             );
 
 
@@ -65,11 +64,22 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
         const g = world.games[world?.selected?.index ?? 0];
         
         if (g) {
-            GetObjectives(setWorld, g, GetTrials(world.player.location), FocusOnPin)
-                .then(() => {
-                    GetPlayers(world, setWorld);
-                });
+            GetObjectives(setWorld, g, GetTutorialObjData(world.player.location), FocusOnPin)
         };
+
+        if(world.player.location.noGps){
+            setWorld(pre => ({
+                ...pre,
+                player: {
+                    ...pre.player,
+                    location: {
+                        ...pre.player.location,
+                        latitude: g.location.latitude,
+                        longitude: g.location.longitude
+                    }
+                }
+            }));
+        }; 
 
         setPopupCoord(undefined);
     };
