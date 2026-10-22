@@ -3,19 +3,20 @@ import { Map, Popup, GeolocateControl, type MapRef } from 'react-map-gl/maplibre
 import { type MapStyleImageMissingEvent, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { GamePage } from '../../pages/GamePage';
-import { PlayerIcons, OtherIcons } from '../../assets/types';
+import { PlayerIcons, OtherIcons, Color } from '../../assets/types';
 import { useWorld } from '../../context';
 import { QuestLayer,ObjectiveLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
 import { RotatingPin, PulsingPin } from './pins/PinAnimations';
 import ScoreAnim from '../ScoreAnim';
-import { loadPin } from './pins/MapLoader';
-import BasePin from './pins/BasePin';
-import { component_to_image } from '../helpers/component_to_image';
+import { LoadPin as LoadPin } from './pins/MapLoader';
+import { Notification } from '../helpers/Notification';
+
 const MAP_ZOOM = 16.5; 
 
 export function GameMap() {
     const {world, setWorld} = useWorld(); 
-    const [points, setPoints] = useState<number>(0); 
+    const [points, setPoints] = useState<number>(0);
+    const [openAlert, setOpenAlert] = useState<boolean>(false); 
     const [popupCoord, setPopupCoord] = useState<{lat: number, lng: number} | undefined>(undefined); 
     
     const loadingImages = new Set<string>(); 
@@ -56,6 +57,9 @@ export function GameMap() {
                 lock: lock
             }
         })); 
+        
+        setOpenAlert(!lock); 
+        
     }; 
 
     // ----------------------------------------------
@@ -141,10 +145,6 @@ export function GameMap() {
                         RotatingPin(300, map, `other_icons/${iconName}.png`)
                     );
                 }
-                else if(OtherIcons.includes(iconName)){
-                    const image =  await component_to_image(<BasePin size={40} imgUrl={'/other_icons/quest1.png'}/>, 40) // await map.loadImage(`other_icons/${iconName}.png`) //
-                    map.addImage(iconName, image);
-                } 
                 else if(iconName.includes('user-')){
                     map.addImage(
                         iconName, 
@@ -164,13 +164,25 @@ export function GameMap() {
     
     return (
         <>
+            <Notification
+                open={openAlert}
+                setOpen={setOpenAlert}
+                msg={'You are not in range'}
+                variant={'filled'}
+                severity={'error'}
+            />
             <ScoreAnim score={world.player.score} earn={points} />
             <Map
                 ref={mapRef}
                 attributionControl={false}
                 onLoad={(e) => {
                     const map = e.target; 
-                    loadPin(map); 
+
+                    // Load main icons 
+                    LoadPin(map, 'scavenger_hunt', Color.blue, 'base');
+                    LoadPin(map, 'search', Color.green, 'black box');
+                    LoadPin(map, 'locked', Color.red, 'black box');
+
                     // in creation mode
                     map.on('click', (e) => {onCreationSelect(map, e.lngLat.lng, e.lngLat.lat)}); 
                     map.on('styleimagemissing', handleMissingIcon)
@@ -286,13 +298,15 @@ export function GameMap() {
                         })); 
                     }}
                 />
-                
-                <MainCharacterLayer/>
-
-                {world.selected?.mode == 'trial' ? <ObjectiveLayer/>: <QuestLayer/>} 
-                
-                
-                <OtherPlayersLayer/>
+                {
+                    world.creationMode.active 
+                    ? null
+                    : <>
+                        <MainCharacterLayer />
+                        {world.selected?.mode == 'trial' ? <ObjectiveLayer /> : <QuestLayer />}
+                        <OtherPlayersLayer />
+                    </>
+                }
 
 
                 {popupCoord !== undefined && (
@@ -315,8 +329,9 @@ export function GameMap() {
                     >
                         {
                             world.selected?.lock ?? true
-                            ? <GamePage FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord} setPoints={setPoints}/>
-                            : "You are not in range"
+                                ?   <GamePage FocusOnPin={onPinFocus} setPopupCoord={setPopupCoord} setPoints={setPoints}/>
+                                :  <></>
+
                         }
                     </Popup>
                 )}

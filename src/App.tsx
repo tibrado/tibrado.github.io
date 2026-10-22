@@ -10,7 +10,7 @@ import GameMenu, {GameMenuItem} from './components/GameMenu';
 import GameCreationMode from './components/GameCreationMode';
 import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
-
+import BlackBoxPin from './components/map/pins/BlackBoxPin';
 
 
 
@@ -92,8 +92,7 @@ export const App: React.FC = () => {
                 {Pages[world ? world.page : 'start']}
             </Paper>
         </Box> : <>
-            <FeedbackPage/>
-        
+            <BlackBoxPin />
             {/*Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',

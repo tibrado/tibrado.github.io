@@ -1,4 +1,4 @@
-import { EmojiEventsOutlined, BarChartOutlined, ExitToApp, FeedbackOutlined } from '@mui/icons-material';
+import { EmojiEventsOutlined } from '@mui/icons-material';
 import { Avatar, Backdrop, Box, Button, Grid, Menu, MenuItem, Typography, Divider
 } from "@mui/material";
 import React, { type ReactNode } from "react";
@@ -15,8 +15,22 @@ function GameMenu() {
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const menuItemSx = {
+        fontFamily: '"Inter", "Roboto", "Helvetica", sans-serif, sys',
+        fontSize: '0.9rem',
+        color: '#1a1a1a',
+        letterSpacing: '0.05em',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease-in-out',
+        opacity: 0.75,
+        // Subtle offset and full clarity on hover
+        '&:hover': {
+            opacity: 1,
+            transform: 'translateX(4px)',
+        }
+    };
 
-    // const functions 
+    // const functions
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -139,7 +153,6 @@ function GameMenu() {
                 </Grid>
             </Grid>
 
-
             <Menu
                 id="menu"
                 anchorEl={anchorEl}
@@ -172,41 +185,73 @@ function GameMenu() {
                                 menu: 'leaderBoard'
                             }));
                         }}
+                        sx={{minHeight: '35px' }}
                     >
-                        <BarChartOutlined fontSize='small' />Leaderboard
+                        <Typography sx={menuItemSx}>Leaderboard</Typography>
                     </MenuItem>
                 }
                 
                 { // Quit Game
-                    world.uuid && <MenuItem onClick={() => {
+                    world.uuid && <MenuItem 
+                        onClick={() => {
+                            handleClose();
+                            setWorld(pre => ({
+                                ...pre,
+                                uuid: undefined,
+                                objectives: [],
+                                players: [],
+                                worldTime: 0,
+                                selected: { mode: 'game', index: 0, path: 0 },
+                                current: { index: 0, path: 0 },
+                                player: {
+                                    ...pre.player,
+                                    score: 0
+                                }
+
+                            }));
+                        }}
+                        sx={{minHeight: '35px' }}
+                    >
+                        <Typography sx={menuItemSx}>Quit Game</Typography>
+                    </MenuItem> 
+                }
+
+                { // Create a game
+                    !world.uuid && <MenuItem 
+                        onClick={() => {
+                            handleClose();
+                            setWorld(pre => ({
+                                ...pre,
+                                creationMode: {
+                                    ...pre.creationMode,
+                                    active: !world.creationMode.active
+                                }
+                            }));
+                        }}
+                        sx={{minHeight: '35px' }}
+                    >
+                        <Typography sx={menuItemSx}>
+                            {   world.creationMode.active ? 
+                                'Exit game creation' : 'Create a game'
+                            }
+                            
+                        </Typography>
+                    </MenuItem>
+                }
+
+                <MenuItem 
+                    onClick={() => {
                         handleClose();
                         setWorld(pre => ({
                             ...pre,
-                            uuid: undefined,
-                            objectives: [],
-                            players: [],
-                            worldTime: 0,
-                            selected: { mode: 'game', index: 0, path: 0 },
-                            current: { index: 0, path: 0 },
-                            player: {
-                                ...pre.player,
-                                score: 0
-                            }
+                            page: 'feedback'
 
                         }));
-                    }}>
-                        <ExitToApp fontSize='small' /> Quit Game
-                    </MenuItem> 
-                }
-                <MenuItem onClick={() => {
-                    handleClose();
-                    setWorld(pre => ({
-                        ...pre,
-                        page: 'feedback'
+                    }}
 
-                    }));
-                }}>
-                    <FeedbackOutlined fontSize='small' /> Feedback
+                    sx={{minHeight: '35px' }}
+                >
+                    <Typography sx={menuItemSx}>Feedback</Typography>
                 </MenuItem>
 
                 <Divider/>

@@ -45,7 +45,7 @@ export function QuestLayer() {
                 id="scavenger-game-layer" 
                 type="symbol" 
                 layout={{ 
-                    'icon-image': 'quest', 
+                    'icon-image': 'scavenger_hunt', 
                     'icon-size': 0.9,
                     'icon-allow-overlap': true, 
                 }}
@@ -110,7 +110,7 @@ export function ObjectiveLayer() {
                     filter={['==', ['get', 'active'], true]}
                     layout={{ 
                         'icon-image': ['case', ['get', 'locked'], 'search', 'locked'], 
-                        'icon-size': 0.4,
+                        'icon-size': 0.9,
                         'icon-allow-overlap': true, 
                     }}
                 />
