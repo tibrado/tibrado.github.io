@@ -21,7 +21,9 @@ export type MenuOptions = 'none' | 'leaderBoard';
 export const Color: Record<string, string> = { // Shade 400 -> https://mui.com/material-ui/customization/color/
     'red': '#ef5350',
     'blue': '#42a5f5',
-    'green': '#66bb6a'
+    'green': '#66bb6a',
+    'gold': '#ffc107',
+    'gold2': '#ffad33'
 };
 
 export type AppPermissionOptions = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'error';
@@ -36,6 +38,8 @@ export type GameData = {
 
 export type ObjectiveData = {
     clue: string[];
+    image: string[];
+    video: string[];
     hint: string[];
     solution: string[]; // three options: 1. Connect
     inputType: InputTypes[];

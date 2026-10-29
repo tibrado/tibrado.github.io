@@ -10,13 +10,10 @@ import GameMenu, {GameMenuItem} from './components/GameMenu';
 import GameCreationMode from './components/GameCreationMode';
 import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
-import BlackBoxPin from './components/map/pins/BlackBoxPin';
-
-
-
-
+import { RewardTradingCard } from './handlers/EndGameHandler';
+import { PhotoBooth } from './components/inputs/CameraInputHandler';
 const theme = createTheme();
-const TESTING: boolean = false; 
+const TESTING: boolean = true; 
 
 export const App: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false); 
@@ -91,8 +88,10 @@ export const App: React.FC = () => {
             }}>
                 {Pages[world ? world.page : 'start']}
             </Paper>
-        </Box> : <>
-            <BlackBoxPin />
+        </Box> : 
+        <>
+
+            <RewardTradingCard/>
             {/*Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',

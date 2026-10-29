@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import {Box, Card, CardContent, CardActions} from '@mui/material'; 
-import { } from '../PhotoBoth';
 
 /*
 #ebe0f4

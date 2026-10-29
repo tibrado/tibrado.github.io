@@ -26,10 +26,11 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                         padding: 1,
                         borderRadius: '5px',
                         // 1. Semi-transparent background
-                        backgroundColor: 'rgba(255, 255, 255, 0.15)', 
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
                         // 2. The "Frosted" effect
                         backdropFilter: 'blur(12px) saturate(180%)',
                         WebkitBackdropFilter: 'blur(12px) saturate(180%)', // Safari support
+
                         // 3. Subtle border to define the edges
                         border: '2px solid rgba(255, 255, 255, 0.1)',
                         // 4. Soft shadow for depth
@@ -38,10 +39,10 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                     }}
 
                     header={
-                        <Typography 
+                        <Typography
                             sx={{
                                 color: '#000000ff',
-                                alignContent: 'center',   
+                                alignContent: 'center',
                                 fontFamily: 'system-ui',
                                 fontSize: '15px',
                                 fontWeight: 'bold',
@@ -51,7 +52,7 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                         </Typography>
                     }
                     subheader={
-                        <Typography 
+                        <Typography
                             sx={{
                                 color: 'rgb(82, 82, 82)',
                                 alignContent: 'center',
@@ -62,39 +63,39 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                         >{`${info.type}`}</Typography>
                     }
                     content={
-                        <ReactMarkdown
-                            remarkPlugins={[remarkGfm]} 
-                            rehypePlugins={[rehypeRaw]}
-                            
-                        >{info.description}</ReactMarkdown>
-                    }
-                    actions={
-                        <Box sx={{
-                            width:'100%',
-                            display: 'flex',
-                            gap: 1,
-                            justifyContent: 'space-between'
-                        }}>
-                            <IconButton 
-                                onClick={cancel}
-                                color='error'
-                                size='small'
-                                children={<Cancel/>}
-                                sx={{
-                                    boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
-                                }}
-                            />
-                            <IconButton 
-                                onClick={accept}
-                                color='success'
-                                size='small'
-                                children={<CheckCircle />}
-                                sx={{
-                                    boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
-                                }}
+                        <Box sx={{height: '100%', width: '100%', p: 0, m: 0, overflowY: 'auto', fontSize: '12px'}}> 
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                rehypePlugins={[rehypeRaw]}
+                                children={info.description}
                             />
                         </Box>
                     }
+                    actions={
+                        <Box sx={{
+                        width: '100%',
+                        display: 'flex',
+                        gap: 1,
+                        justifyContent: 'space-between'
+                    }}>
+                        <IconButton
+                            onClick={cancel}
+                            color='error'
+                            size='small'
+                            children={<Cancel />}
+                            sx={{
+                                boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
+                            }} />
+                        <IconButton
+                            onClick={accept}
+                            color='success'
+                            size='small'
+                            children={<CheckCircle />}
+                            sx={{
+                                boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
+                            }} />
+                        </Box>
+                    }                
                 />
             </Box>
         </Zoom>

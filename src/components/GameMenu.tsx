@@ -207,7 +207,6 @@ function GameMenu() {
                                     ...pre.player,
                                     score: 0
                                 }
-
                             }));
                         }}
                         sx={{minHeight: '35px' }}

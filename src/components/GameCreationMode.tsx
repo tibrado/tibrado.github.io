@@ -59,6 +59,8 @@ function GameCreationMode() {
             objectives.push(
                 {
                     clue: [d.description ?? ''],
+                    image: [],
+                    video: [],
                     hint: [''],
                     solution: [d.value ?? 'error'],
                     location: [d.coordinates!],
