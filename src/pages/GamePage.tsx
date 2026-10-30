@@ -29,7 +29,10 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
 
         // end trial
         if (i >= world.objectives.length - 1) {
-            console.log('game is done now show something')
+            setWorld(pre => ({
+                ...pre,
+                reward: true
+            })); 
         } else {
             FocusOnPin(
                 world.objectives[i + 1].location[p].longitude,

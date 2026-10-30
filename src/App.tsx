@@ -92,6 +92,7 @@ export const App: React.FC = () => {
             </Paper>
         </Box> : 
         <>
+            <RewardTradingCard/>
             {/*Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',

@@ -171,7 +171,9 @@ export function GameMap() {
                 variant={'filled'}
                 severity={'error'}
             />
+
             <ScoreAnim score={world.player.score} earn={points} />
+
             <Map
                 ref={mapRef}
                 attributionControl={false}

@@ -18,7 +18,7 @@ export const GetTutorialGameInfo = (lat: number, lng: number): GameData => {
             longitude: lng
         },
         description: `Imagine Pokémon GO, but instead of catching digital monsters, you are hunting for real-world items, secret codes, and hidden answers. **Scavenger HQ** turns your entire neighborhood into a giant treasure hunt. To play, you will use your phone to solve riddles and find items in three cool ways.`,
-        title: "I Want to Scavenger!",
+        title: "I Want to Scavenge!",
         type: "scavenger_hunt"
     } as GameData; 
 }; 
