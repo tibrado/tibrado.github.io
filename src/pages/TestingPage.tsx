@@ -120,7 +120,7 @@ export const LeaderBoardCard: React.FC<Props> = ({players}) => {
 
 
 // --------------------------------------------------------------------
-import { Cancel, Language } from '@mui/icons-material';
+import { Language } from '@mui/icons-material';
 type PropCard = {}
 export const RewardCard: React.FC<PropCard> = ({}) => {
     return (

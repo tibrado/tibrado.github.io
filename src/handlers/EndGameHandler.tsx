@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toJpeg } from 'html-to-image';
 import { Card, CardContent,Typography, Box,Avatar,Rating,Backdrop,IconButton} from '@mui/material';
-import {EmojiEvents, BarChart, CameraAlt, Download, Close,Cancel } from '@mui/icons-material';
+import {EmojiEvents, BarChart, CameraAlt, Download,Cancel } from '@mui/icons-material';
 import { Color } from '../assets/types';
 import { useWorld } from '../context';
 import Dialog from '../components/Dialog';

@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { Card, CardHeader, CardContent, CardActions, CardMedia, type SxProps, type Theme } from '@mui/material';
+import { Card, CardHeader, CardContent, CardActions, type SxProps, type Theme } from '@mui/material';
 
 type CardProps = {
     style?: SxProps<Theme>;
