@@ -252,7 +252,20 @@ function GameMenu() {
                 >
                     <Typography sx={menuItemSx}>Feedback</Typography>
                 </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        handleClose();
+                        setWorld(pre => ({
+                            ...pre,
+                            reward: !pre.reward
 
+                        }));
+                    }}
+
+                    sx={{ minHeight: '35px' }}
+                >
+                    <Typography sx={menuItemSx}>Test Reward</Typography>
+                </MenuItem>
                 <Divider/>
 
                 <Grid container sx={{p: 0}}>

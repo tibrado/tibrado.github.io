@@ -78,6 +78,7 @@ export type World = {
     current: { index: number, path: number },
     page: Page;
     title: string;
+    reward?: boolean; 
     date: Date;
     gameType?: GameType;
     paths: number[];

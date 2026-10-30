@@ -15,6 +15,7 @@ const defaultWorld: World = {
     current: {index: 0, path: 0},
     page: 'start',
     title: '',
+    reward: false,
     date: new Date(),
     objectives:[],
     paths: [],

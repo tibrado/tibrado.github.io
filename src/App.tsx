@@ -11,9 +11,10 @@ import GameCreationMode from './components/GameCreationMode';
 import { v4 as uuid } from 'uuid';
 import { useWorld } from './context';
 import { RewardTradingCard } from './handlers/EndGameHandler';
-import { PhotoBooth } from './components/inputs/CameraInputHandler';
+
 const theme = createTheme();
-const TESTING: boolean = true; 
+
+const TESTING: boolean = false; 
 
 export const App: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false); 
@@ -59,6 +60,7 @@ export const App: React.FC = () => {
         game: world ? 
             <Box sx={{position: 'relative'}}>
                 <GameMenu/>
+                <RewardTradingCard />
                 <GameMap/> 
                 <GameCreationMode/>
             </Box>
@@ -90,8 +92,6 @@ export const App: React.FC = () => {
             </Paper>
         </Box> : 
         <>
-
-            <RewardTradingCard/>
             {/*Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',
