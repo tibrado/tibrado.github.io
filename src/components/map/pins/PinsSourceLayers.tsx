@@ -25,7 +25,8 @@ export function QuestLayer() {
                 "type": h.type,
                 "in_range": true,
                 "description": h.description,
-                "distance_meters": get_distance(h.location, world.player.location, true)
+                "distance_meters": get_distance(h.location, world.player.location, true),
+                "gameType": h.type
             },
             "geometry": {
                 "type": "Point" as const,
@@ -45,7 +46,7 @@ export function QuestLayer() {
                 id="scavenger-game-layer" 
                 type="symbol" 
                 layout={{ 
-                    'icon-image': 'scavenger_hunt', 
+                    'icon-image': ['get', 'gameType'],
                     'icon-size': 0.9,
                     'icon-allow-overlap': true, 
                 }}

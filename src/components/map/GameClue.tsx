@@ -86,7 +86,7 @@ export const GameClue: React.FC<Props> = ({OnSubmit, showClue, clue, image, vide
                 <Box 
                     sx={{
                         display: 'flex',
-                        flexDirection: 'row',
+                        flexDirection: 'column',
                         justifyContent: 'right',
                         alignItems: 'left',
                         alignSelf: 'center',

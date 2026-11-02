@@ -29,6 +29,9 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
         objs[index].done = true
         setPoints(points);
 
+        // check if p is in index 
+        p = objs[i].clue.length >= p ? p : 0; 
+
         setWorld(pre => ({
             ...pre,
             current: { index: i, path: p },
@@ -48,13 +51,14 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
     }; 
 
     const score_treasure = (new_path: number) => {
+        const i = world.objectives.length <= index ? index + 1 : index; 
         FocusOnPin(
-            world.objectives[index + 1].location[path].longitude,
-            world.objectives[index + 1].location[path].latitude
+            world.objectives[i].location[path].longitude,
+            world.objectives[i].location[path].latitude
         );
 
         scorer(
-            index + 1, // next objective
+            i, // next objective
             new_path 
         ); 
     }; 
