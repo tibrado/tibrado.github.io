@@ -14,7 +14,7 @@ import { RewardTradingCard } from './handlers/EndGameHandler';
 
 const theme = createTheme();
 
-const TESTING: boolean = false; 
+const TESTING: boolean = true; 
 
 export const App: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false); 

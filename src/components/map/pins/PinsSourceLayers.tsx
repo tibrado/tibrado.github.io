@@ -2,7 +2,7 @@ import {useMemo, useEffect} from 'react';
 import { Source, Layer, useMap} from 'react-map-gl/maplibre';
 import { useWorld } from '../../../context';
 import { get_distance, in_range } from '../../../handlers/DistanceHandlers';
-import type { LatLng } from '../../../assets/types';
+import type { GameType, LatLng } from '../../../assets/types';
 
 export function QuestLayer() {
     const { world } = useWorld();
@@ -54,71 +54,9 @@ export function QuestLayer() {
     );
 };
 
-export function ObjectiveLayer() {
-    const { world } = useWorld();
 
-    const geoJsonData = useMemo(() => {
-        const trials = world?.objectives
-        const i = world.current.index;
-        const p = world.current.path; 
-        const can_solve = (id: number, path: number, coord: LatLng ): boolean => {
-            return in_range(
-                world.player.location,
-                coord
-            ) && (id == i && path == p); 
-        }; 
 
-        if(!Array.isArray(trials)){
-            return {
-                "type": "FeatureCollection" as const,
-                "features": []
-            };
-        };
-
-        const features = trials.flatMap((t, id) => (
-            t.clue.flatMap((text, path) => ({
-                "type": "Feature" as const, // Cast to literal type for TypeScript safety
-                "id": `trial_pin_${id}_${path}`,
-                "properties": {
-                    "id": id,
-                    "path": path,
-                    "active": id == i && path == p,
-                    "locked": can_solve(id, path, t.location[path]),
-                    "text": text,
-                    "distance_meters": get_distance(t.location[path], world.player.location, true)
-                },
-                "geometry": {
-                    "type": "Point" as const,
-                    "coordinates": [t.location[path].longitude, t.location[path].latitude]
-                }
-
-            })))
-        );
-        
-        return {
-            "type": "FeatureCollection" as const,
-            "features": features.flat()
-        };
-    }, [world?.objectives, world.current]);
-  
-    return (
-        <Source id="trial-pin-source" type="geojson" data={geoJsonData}>
-            {
-                <Layer 
-                    id="scavenger-trial-layer" 
-                    type="symbol" 
-                    filter={['==', ['get', 'active'], true]}
-                    layout={{ 
-                        'icon-image': ['case', ['get', 'locked'], 'search', 'locked'], 
-                        'icon-size': 0.9,
-                        'icon-allow-overlap': true, 
-                    }}
-                />
-            }
-        </Source>
-    );
-};
-
+// Player Types Layers 
 export function MainCharacterLayer() {
     const { world } = useWorld();
     const { current: map } = useMap(); // Gets the raw map instance
@@ -172,7 +110,7 @@ export function MainCharacterLayer() {
             />
         </Source>
     );
-}
+};
 
 export function OtherPlayersLayer() {
     const { world } = useWorld();
@@ -216,4 +154,154 @@ export function OtherPlayersLayer() {
             />
         </Source>
     );
-}
+};
+
+// Game Layer Types
+export function GetGameTypeLayer() {
+    const { world } = useWorld();
+
+    if(!world) return; 
+    if(!world.gameType) return; 
+
+    const gameTypeRecord: Record<GameType, any> = {
+        scavenger_hunt: <TreasureHuntLayer />,
+        murder_mystery: undefined,
+        treasure_hunt: <TreasureHuntLayer/>
+    }; 
+
+    return gameTypeRecord[world.gameType]; 
+}; 
+
+export function TreasureHuntLayer() {
+    const { world } = useWorld();
+
+    const geoJsonData = useMemo(() => {
+        const trials = world?.objectives
+        const i = world.current.index;
+        const p = world.current.path;
+        const can_solve = (id: number, path: number, coord: LatLng): boolean => {
+            return in_range(
+                world.player.location,
+                coord
+            ) && (id == i && path == p);
+        };
+
+        if (!Array.isArray(trials)) {
+            return {
+                "type": "FeatureCollection" as const,
+                "features": []
+            };
+        };
+
+        const features = trials.flatMap((t, id) => (
+            t.clue.flatMap((text, path) => ({
+                "type": "Feature" as const, // Cast to literal type for TypeScript safety
+                "id": `trial_pin_${id}_${path}`,
+                "properties": {
+                    "id": id,
+                    "path": path,
+                    "active": id == i && path == p,
+                    "locked": can_solve(id, path, t.location[path]),
+                    "text": text,
+                    "distance_meters": get_distance(t.location[path], world.player.location, true)
+                },
+                "geometry": {
+                    "type": "Point" as const,
+                    "coordinates": [t.location[path].longitude, t.location[path].latitude]
+                }
+
+            })))
+        );
+
+        return {
+            "type": "FeatureCollection" as const,
+            "features": features.flat()
+        };
+    }, [world?.objectives, world.current]);
+
+    return (
+        <Source id="trial-pin-source" type="geojson" data={geoJsonData}>
+            {
+                <Layer
+                    id="scavenger-trial-layer"
+                    type="symbol"
+                    filter={['==', ['get', 'active'], true]}
+                    layout={{
+                        'icon-image': ['case', ['get', 'locked'], 'search', 'locked'],
+                        'icon-size': 0.4,
+                        'icon-allow-overlap': true,
+                    }}
+                />
+            }
+        </Source>
+    );
+};
+export function ScavengerLayer() {
+    const { world } = useWorld();
+
+    const geoJsonData = useMemo(() => {
+        const trials = world?.objectives
+        const p = 0;
+        const can_solve = (path: number, coord: LatLng): boolean => {
+            return in_range(
+                world.player.location,
+                coord
+            ) && (path == p);
+        };
+
+        if (!Array.isArray(trials)) {
+            return {
+                "type": "FeatureCollection" as const,
+                "features": []
+            };
+        };
+
+        const features = trials.flatMap((t, id) => (
+            t.clue.flatMap((text, path) => ({
+                "type": "Feature" as const, // Cast to literal type for TypeScript safety
+                "id": `trial_pin_${id}_${path}`,
+                "properties": {
+                    "id": id,
+                    "path": path,
+                    "active": path == p,
+                    "locked": can_solve(path, t.location[path]),
+                    "pass": t.done ?? false,
+                    "text": text,
+                    "distance_meters": get_distance(t.location[path], world.player.location, true)
+                },
+                "geometry": {
+                    "type": "Point" as const,
+                    "coordinates": [t.location[path].longitude, t.location[path].latitude]
+                }
+
+            })))
+        );
+
+        return {
+            "type": "FeatureCollection" as const,
+            "features": features.flat()
+        };
+    }, [world?.objectives, world.current]);
+
+    return (
+        <Source id="trial-pin-source" type="geojson" data={geoJsonData}>
+            {
+                <Layer
+                    id="scavenger-trial-layer"
+                    type="symbol"
+                    filter={['==', ['get', 'active'], true]}
+                    layout={{
+                        'icon-image': [
+                            'case', 
+                            ['==', ['get', 'pass'], true], 'done',
+                            ['==', ['get', 'locked'], true], 'search',
+                            'locked'
+                        ],
+                        'icon-size': ['case', ['get', 'pass'], 0.2, 0.35],
+                        'icon-allow-overlap': true,
+                    }}
+                />
+            }
+        </Source>
+    );
+};

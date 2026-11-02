@@ -5,7 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { GamePage } from '../../pages/GamePage';
 import { PlayerIcons, OtherIcons, Color } from '../../assets/types';
 import { useWorld } from '../../context';
-import { QuestLayer,ObjectiveLayer, MainCharacterLayer, OtherPlayersLayer } from './pins/PinsSourceLayers';
+import { QuestLayer,TreasureHuntLayer, MainCharacterLayer, OtherPlayersLayer, ScavengerLayer, GetGameTypeLayer } from './pins/PinsSourceLayers';
 import { RotatingPin, PulsingPin } from './pins/PinAnimations';
 import ScoreAnim from '../ScoreAnim';
 import { LoadPin as LoadPin } from './pins/MapLoader';
@@ -182,7 +182,10 @@ export function GameMap() {
 
                     // Load main icons 
                     LoadPin(map, 'scavenger_hunt', Color.blue, 'base');
-                    LoadPin(map, 'search', Color.green, 'black box');
+                    LoadPin(map, 'treasure_hunt', Color.blue, 'base');
+                    LoadPin(map, 'murder_mystery', Color.blue, 'base');
+                    LoadPin(map, 'search', Color.gold, 'black box');
+                    LoadPin(map, 'done', Color.green, 'black box');
                     LoadPin(map, 'locked', Color.red, 'black box');
 
                     // in creation mode
@@ -286,7 +289,6 @@ export function GameMap() {
                     showAccuracyCircle={false}
                     showUserLocation={false}
                     onGeolocate={(e) => {
-                        console.log('Player location -> ',e.coords)
                         setWorld(pre => ({
                             ...pre, 
                             player: {
@@ -305,7 +307,7 @@ export function GameMap() {
                     ? null
                     : <>
                         <MainCharacterLayer />
-                        {world.selected?.mode == 'trial' ? <ObjectiveLayer /> : <QuestLayer />}
+                            {world.selected?.mode == 'trial' ? <GetGameTypeLayer/> : <QuestLayer />}
                         <OtherPlayersLayer />
                     </>
                 }

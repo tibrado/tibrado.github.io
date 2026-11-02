@@ -15,7 +15,7 @@ export const PlayerIcons: string[] = ['bear', 'buffalo', 'chick', 'chicken', 'co
 export const OtherIcons: string[] = ['quest', 'search', 'locked'];
 export type MapMode = 'game' | 'trial' | 'creation';
 export type ClueLocks = undefined | 'time' | 'distance' | 'clue'; 
-export type GameType = 'scavenger_hunt' | 'murder_mystery';
+export type GameType = 'scavenger_hunt' | 'murder_mystery' | 'treasure_hunt';
 export type MenuOptions = 'none' | 'leaderBoard';
 
 export const Color: Record<string, string> = { // Shade 400 -> https://mui.com/material-ui/customization/color/
@@ -44,6 +44,7 @@ export type ObjectiveData = {
     solution: string[]; // three options: 1. Connect
     inputType: InputTypes[];
     location: LatLng[];
+    done?: boolean;
 };
 
 export type UserSelection = {

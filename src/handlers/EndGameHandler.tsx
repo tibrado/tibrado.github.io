@@ -33,7 +33,7 @@ export const RewardTradingCard: React.FC<RewardCardProps> = ({
 
     // stars
     const maxStars = world.objectives.length; 
-    const stars = Math.floor(world.player.score / 10); 
+    const stars = Math.ceil(world.player.score / 10); 
 
     // Start Feed and mount component
     useEffect(() => { 
@@ -93,7 +93,7 @@ export const RewardTradingCard: React.FC<RewardCardProps> = ({
 
                 const link = document.createElement('a'); 
 
-                link.download = `scavenger.jpeg`; 
+                link.download = `scavenger_${world.player.name}.jpeg`; 
                 link.href = dataUrl; 
                 setDownloadLink(link); 
             } 

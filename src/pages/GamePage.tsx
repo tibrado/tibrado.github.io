@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode} from 'react';
 import type { MapMode } from '../assets/types';
 import ObjectiveCard from '../animations/ObjectiveCard';
 import GameCard from '../animations/GameCard';
@@ -16,46 +16,71 @@ type Props = {
 export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints }) => {
     const { world, setWorld } = useWorld();
 
-    const i: number = world.selected!.index;
-    const p: number = world.selected!.path ?? 0;
+    const index: number = world.selected!.index;
+    const path: number = world.selected!.path ?? 0;
+
+    const scorer = (i: number, p: number) => {
+        if(!setPoints) return; 
+
+        const score: number = Math.round(((600 - world.worldTime) / 600) * 9) + 1;
+        const points: number = score > 1 ? score : 1; 
+        const objs = world.objectives; 
+
+        objs[index].done = true
+        setPoints(points);
+
+        setWorld(pre => ({
+            ...pre,
+            current: { index: i, path: p },
+            player: {
+                ...world.player,
+                score: world.player.score + points
+            },
+            paths: [...world.paths, p],
+            worldTime: 0,
+            reward: objs.every(o => o?.done),
+            objectives: objs
+        }));
+    };
+
+    const score_scavenger = () => {
+        scorer(index, path); 
+    }; 
+
+    const score_treasure = (new_path: number) => {
+        FocusOnPin(
+            world.objectives[index + 1].location[path].longitude,
+            world.objectives[index + 1].location[path].latitude
+        );
+
+        scorer(
+            index + 1, // next objective
+            new_path 
+        ); 
+    }; 
+
+    const score_murder_mystery = () => {
+        console.warn('TODO'); 
+    };
 
     const OnSubmit = (valid: boolean, new_path: number) => {
-        if (!valid || !setPoints) return;
+        if (!valid && !world.objectives[index]) return;
 
-        const get_points = (): number => {
-            const score = Math.round(((600 - world.worldTime) / 600) * 9) + 1;
-            return score > 1 ? score : 1;
-        };
-
-        // end trial
-        if (i >= world.objectives.length - 1) {
-            setWorld(pre => ({
-                ...pre,
-                reward: true
-            })); 
-        } else {
-            FocusOnPin(
-                world.objectives[i + 1].location[p].longitude,
-                world.objectives[i + 1].location[p].latitude
-            );
-
-
-            if (i === world.current.index) {
-                const points: number = get_points();
-                setPoints(points);
-
-                setWorld(pre => ({
-                    ...pre,
-                    current: { index: world.current.index + 1, path: new_path },
-                    player: {
-                        ...world.player,
-                        score: world.player.score + points
-                    },
-                    paths: [...world.paths, new_path],
-                    worldTime: 0
-                }));
-            };
-        };
+        switch(world.gameType) {
+            case 'murder_mystery': 
+                score_murder_mystery(); 
+            break;
+            case 'scavenger_hunt': 
+                score_scavenger();  
+            break;
+            case 'treasure_hunt':
+                score_treasure(new_path);
+            break;
+            default: {
+                console.error(`Game Type >${world.gameType}< not recognized.`) 
+            }
+        }
+        
         handleCancel()
     };
 
@@ -88,15 +113,15 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
     };
 
     const DisplayCard: Record<MapMode, ReactNode> = {
-        game: world.games ? <GameCard transition={world!.selected!.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games[i] ?? ''} /> : <></>,
+        game: world.games ? <GameCard transition={world!.selected!.mode === 'game'} accept={handleGameAccept} cancel={handleCancel} info={world.games[index] ?? ''} /> : <></>,
         creation: world.games ? <CreationCard transition={world!.selected!.mode === 'creation'} close={handleCancel}/> : <></>,
-        trial: world.objectives.length > i ?
+        trial: world.objectives.length > index ?
             <ObjectiveCard
                 OnSubmit={OnSubmit}
                 transition={true}
                 title={world.title}
-                trial={world.objectives[i]}
-                path={p}
+                trial={world.objectives[index]}
+                path={path}
             /> : <></>
     };
 
