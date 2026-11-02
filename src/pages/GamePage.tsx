@@ -51,7 +51,8 @@ export const GamePage: React.FC<Props> = ({ FocusOnPin, setPopupCoord, setPoints
     }; 
 
     const score_treasure = (new_path: number) => {
-        const i = world.objectives.length <= index ? index + 1 : index; 
+        const i = world.objectives.length - 1 > index ? index + 1 : index; 
+        
         FocusOnPin(
             world.objectives[i].location[path].longitude,
             world.objectives[i].location[path].latitude
