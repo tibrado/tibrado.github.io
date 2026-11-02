@@ -23,6 +23,7 @@ function GameCreationMode() {
             detect: LocalSee,
             scavenger_hunt: undefined,
             murder_mystery: undefined,
+            treasure_hunt: undefined
         };
 
         return Icons[it]

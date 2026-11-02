@@ -22,37 +22,29 @@ const content_style = {
     width: '100%',
     flexDirection: "column",
     fontSize: '14px'
-}; 
+};
 
-const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actions, avatar,headerAction, contentStyle=content_style}) => {
-    return(
+const BaseCard: React.FC<CardProps> = ({ style, header, subheader, content, actions, avatar, headerAction, contentStyle = content_style }) => {
+    return (
         <Card sx={style}>
             <CardHeader
-                sx={{p: 0}}
+                sx={{ p: 0 }}
                 avatar={avatar}
                 title={header}
                 subheader={subheader}
                 action={headerAction}
             />
-        
-            <CardContent 
+
+            <CardContent
                 sx={contentStyle}
             >
                 {
                     content
-                    /*<CardMedia
-                        component='iframe'
-                        height="240"
-                        image="https://www.youtube.com/embed/4oHsrTUEu8I" // Path to your video file
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        sx={{border: 'none'}}
-                    />*/
                 }
             </CardContent>
 
-            <CardActions 
-                disableSpacing 
+            <CardActions
+                disableSpacing
                 sx={{
                     p: 0,
                     m: 0
@@ -62,31 +54,31 @@ const BaseCard: React.FC<CardProps> = ({style, header, subheader, content, actio
             </CardActions>
         </Card>
 
-    ); 
-}; 
+    );
+};
 
-export default BaseCard; 
+export default BaseCard;
 
-export const RewardBaseCard: React.FC<CardProps> = ({style, header, subheader, content, actions, avatar}) => {
-    return(
+export const RewardBaseCard: React.FC<CardProps> = ({ style, header, subheader, content, actions, avatar }) => {
+    return (
         <Card sx={style}>
             <CardHeader
-                sx={{p: 0}}
+                sx={{ p: 0 }}
                 avatar={avatar}
                 title={header}
                 subheader={subheader}
             />
-        
-            <CardContent 
+
+            <CardContent
                 sx={{
-                    p: 0, m:0, display: 'flex', height:'100%',  flexDirection: "column", width: '100%'
+                    p: 0, m: 0, display: 'flex', height: '100%', flexDirection: "column", width: '100%'
                 }}
             >
                 {content}
             </CardContent>
 
-            <CardActions 
-                disableSpacing 
+            <CardActions
+                disableSpacing
                 sx={{
                     p: 0,
                     m: 0
@@ -96,5 +88,5 @@ export const RewardBaseCard: React.FC<CardProps> = ({style, header, subheader, c
             </CardActions>
         </Card>
 
-    ); 
+    );
 }; 

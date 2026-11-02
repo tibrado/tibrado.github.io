@@ -5,7 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { GamePage } from '../../pages/GamePage';
 import { PlayerIcons, OtherIcons, Color } from '../../assets/types';
 import { useWorld } from '../../context';
-import { QuestLayer,TreasureHuntLayer, MainCharacterLayer, OtherPlayersLayer, ScavengerLayer, GetGameTypeLayer } from './pins/PinsSourceLayers';
+import { QuestLayer, MainCharacterLayer, OtherPlayersLayer, GetGameTypeLayer } from './pins/PinsSourceLayers';
 import { RotatingPin, PulsingPin } from './pins/PinAnimations';
 import ScoreAnim from '../ScoreAnim';
 import { LoadPin as LoadPin } from './pins/MapLoader';

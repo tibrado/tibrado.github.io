@@ -26,7 +26,7 @@ const CreationCard: React.FC<Props> = ({ transition, close }) => {
     const [inputTypeSelect, setInputTypeSelect] = useState<number>(0);
 
 
-    const gameTypes: GameType[] = ['scavenger_hunt', 'murder_mystery'];
+    const gameTypes: GameType[] = ["scavenger_hunt" , "murder_mystery" , "treasure_hunt"];
     const inputTypes: InputType[] = ['text', 'scan'];
     const edit: boolean = world.creationMode.edit != undefined;
 

@@ -164,7 +164,7 @@ export function GetGameTypeLayer() {
     if(!world.gameType) return; 
 
     const gameTypeRecord: Record<GameType, any> = {
-        scavenger_hunt: <TreasureHuntLayer />,
+        scavenger_hunt: <ScavengerLayer/>,
         murder_mystery: undefined,
         treasure_hunt: <TreasureHuntLayer/>
     }; 
@@ -236,6 +236,7 @@ export function TreasureHuntLayer() {
         </Source>
     );
 };
+
 export function ScavengerLayer() {
     const { world } = useWorld();
 

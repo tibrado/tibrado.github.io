@@ -72,28 +72,34 @@ const GameCard: React.FC<Props> = ({transition, info, accept, cancel}) => {
                         </Box>
                     }
                     actions={
-                        <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        gap: 1,
-                        justifyContent: 'space-between'
-                    }}>
-                        <IconButton
-                            onClick={cancel}
-                            color='error'
-                            size='small'
-                            children={<Cancel />}
+                        <Box 
                             sx={{
-                                boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
-                            }} />
-                        <IconButton
-                            onClick={accept}
-                            color='success'
-                            size='small'
-                            children={<CheckCircle />}
-                            sx={{
-                                boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
-                            }} />
+                                width: '100%',
+                                display: 'flex',
+                                gap: 1,
+                                justifyContent: 'space-between',
+                                mt: '10px'
+                            }}
+                        >
+                            <IconButton
+                                onClick={cancel}
+                                color='error'
+                                size='small'
+                                children={<Cancel />}
+                                sx={{
+                                    boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
+                                }} 
+                            />
+
+                            <IconButton
+                                onClick={accept}
+                                color='success'
+                                size='small'
+                                children={<CheckCircle />}
+                                sx={{
+                                    boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
+                                }} 
+                            />
                         </Box>
                     }                
                 />

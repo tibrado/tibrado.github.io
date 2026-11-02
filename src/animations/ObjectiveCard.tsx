@@ -73,6 +73,8 @@ const ObjectiveCard: React.FC<Props> = ({OnSubmit, transition, title, trial, pat
                             responses={trial.solution.map(r => r.toLocaleLowerCase())}
                             inputType={trial.inputType[path]}
                             hint={`${trial.hint[path]}`}
+                            video={trial.video ? trial.video[path] : undefined} // "https://www.youtube.com/embed/4oHsrTUEu8I"
+                            image={trial.image ? trial.image[path] : undefined} // https://media.gettyimages.com/id/160515715/photo/playful-kitty-cat.jpg?s=612x612&w=gi&k=20&c=xGWvYwxcHOWB7WizdyXGZWPjh78hS0onQO6aDiDw7yU=
                         />
                     }
                     actions={
@@ -80,17 +82,8 @@ const ObjectiveCard: React.FC<Props> = ({OnSubmit, transition, title, trial, pat
                             width:'100%',
                             display: 'flex',
                             gap: 1,
-                            justifyContent: 'space-between'
+                            justifyContent: 'end',
                         }}>
-                            {/*<IconButton 
-                                onClick={undefined}
-                                color='error'
-                                size='small'
-                                children={<ReportProblem/>}
-                                sx={{
-                                    boxShadow: '1px 1px 5px rgba(234, 139, 139, 0.7)',
-                                }}
-                            />*/}
                             <IconButton 
                                 onClick={() => setShowClue(!showClue)}
                                 color='success'
@@ -99,7 +92,7 @@ const ObjectiveCard: React.FC<Props> = ({OnSubmit, transition, title, trial, pat
                                 sx={{
                                     bgcolor: 'success.main',
                                     color: 'white',
-                                    borderRadius: '8px',
+                                    borderRadius: '5%',
                                     padding: '8px 12px',
                                     boxShadow: '1px 1px 5px rgba(139, 234, 174, 0.7)',
                                     '&:hover': {

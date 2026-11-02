@@ -14,7 +14,7 @@ import { RewardTradingCard } from './handlers/EndGameHandler';
 
 const theme = createTheme();
 
-const TESTING: boolean = true; 
+const TESTING: boolean = false; 
 
 export const App: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false); 
@@ -92,7 +92,6 @@ export const App: React.FC = () => {
             </Paper>
         </Box> : 
         <>
-            <RewardTradingCard/>
             {/*Paper elevation={0} sx={{
                 width: '100%',
                 height: '100%',
